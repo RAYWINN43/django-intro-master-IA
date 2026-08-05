@@ -16,9 +16,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+
 from ehlo.views import index
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("ehlo/", index, name="ehlo"),
+    path("", index, name="ehlo"),
 ]

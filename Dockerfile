@@ -7,7 +7,7 @@ WORKDIR /app
 RUN uv venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
-COPY pyproject.toml .
+COPY pyproject.toml uv.lock* ./
 COPY README.md .
 COPY src ./src
 
@@ -30,4 +30,4 @@ USER django
 
 EXPOSE 7860
 
-CMD ["sh", "-c", "python manage.py migrate --noinput && gunicorn --bind 0.0.0.0:${PORT:-7860} --workers 2 --threads 4 config.wsgi:application"]
+CMD ["sh", "-c", "python manage.py migrate --noinput && gunicorn --bind 0.0.0.0:${PORT:-7860} --workers 2 --threads 4 django_intro.wsgi:application"]
