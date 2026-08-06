@@ -3,27 +3,44 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Bienvenue</title>
-    <link rel="stylesheet" href="styles.css" />
-    <script src="app.js" defer></script>
+    <title>Connexion</title>
   </head>
   <body>
-    <main class="welcome-page" aria-labelledby="welcome-title">
-      <h1 class="welcome-title" id="welcome-title">Bienvenue</h1>
+    <main>
+      <h1>Connexion</h1>
 
-      <img
-        class="welcome-logo"
-        src="assets/logo-chat.png"
-        alt="Logo de messagerie"
-      />
+      <form method="post" action="{% url 'login' %}">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{{ next }}" />
 
-      <div class="welcome-actions">
-        <button class="start-button" type="button" data-target="account.html#connexion">
-          C'est parti !
-        </button>
+        {% if form.errors %}
+          <p>Nom d'utilisateur ou mot de passe incorrect.</p>
+        {% endif %}
 
-        <a class="register-link" href="account.html#inscription">S'inscrire</a>
-      </div>
+        <div>
+          <label for="id_username">Nom</label>
+          <input
+            id="id_username"
+            name="username"
+            type="text"
+            autocomplete="username"
+            required
+          />
+        </div>
+
+        <div>
+          <label for="id_password">Mot de passe</label>
+          <input
+            id="id_password"
+            name="password"
+            type="password"
+            autocomplete="current-password"
+            required
+          />
+        </div>
+
+        <button type="submit">Se connecter</button>
+      </form>
     </main>
   </body>
 </html>
