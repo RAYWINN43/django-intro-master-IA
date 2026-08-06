@@ -1,11 +1,12 @@
 <!doctype html>
 <html lang="fr">
   <head>
+    {% load static %}
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Account</title>
-    <link rel="stylesheet" href="account.css" />
-    <script src="account.js" defer></script>
+    <link rel="stylesheet" href="{% static 'account.css' %}?v=3" />
+    <script src="{% static 'account.js' %}?v=3" defer></script>
   </head>
   <body>
     <header class="account-header" data-account-header hidden>
@@ -16,12 +17,21 @@
       </button>
     </header>
 
-    <main class="account-page" data-account-page data-mode="connexion">
+    <main
+      class="account-page"
+      data-account-page
+      data-mode="{{ account_mode|default:'connexion' }}"
+      data-initial-mode="{{ account_mode|default:'connexion' }}"
+    >
       <section class="login-panel" data-account-panel="connexion" aria-labelledby="login-title">
         <h1 class="login-title" id="login-title">Connexion</h1>
 
-        <form class="login-form" method="post" action="/login/" data-login-form>
+        <form class="login-form" method="post" action="{% url 'login' %}" data-login-form>
           {% csrf_token %}
+
+          {% if form.errors %}
+            <p class="form-error">Email ou mot de passe incorrect.</p>
+          {% endif %}
 
           <div class="field-row">
             <div class="field-icon" aria-hidden="true">
@@ -84,36 +94,41 @@
       <section class="signup-panel" data-account-panel="inscription" aria-labelledby="signup-title" hidden>
         <h1 class="signup-title" id="signup-title">Inscription</h1>
 
-        <form class="signup-form" method="post" action="/register/" data-signup-form>
+        <form class="signup-form" method="post" action="{% url 'register' %}" data-signup-form>
           {% csrf_token %}
 
-          <div class="signup-grid">
-            <label class="sr-only" for="last-name">Nom</label>
-            <input id="last-name" name="last_name" type="text" placeholder="Nom" required />
+          {% if register_error %}
+            <p class="form-error form-error--signup">{{ register_error }}</p>
+          {% endif %}
 
-            <label class="sr-only" for="email">Email</label>
-            <input id="email" name="email" type="email" placeholder="Email" required />
+          <div class="signup-fields">
+            <div class="signup-single">
+              <label class="sr-only" for="username">Pseudo</label>
+              <input id="username" name="username" type="text" placeholder="Pseudo" required />
+            </div>
 
-            <label class="sr-only" for="first-name">Prenom</label>
-            <input id="first-name" name="first_name" type="text" placeholder="Pr&eacute;nom" required />
+            <div class="signup-single">
+              <label class="sr-only" for="email">Email</label>
+              <input id="email" name="email" type="email" placeholder="Email" required />
+            </div>
 
-            <label class="sr-only" for="password">Mot de passe</label>
-            <input id="password" name="password" type="password" placeholder="Mot de passe" required />
+            <div class="signup-password-row">
+              <div>
+                <label class="sr-only" for="password">Mot de passe</label>
+                <input id="password" name="password" type="password" placeholder="Mot de passe" required />
+              </div>
 
-            <label class="sr-only" for="username">Pseudo</label>
-            <input id="username" name="username" type="text" placeholder="Pseudo" required />
-
-            <label class="sr-only" for="password-confirm">Confirmer Mot de passe</label>
-            <input
-              id="password-confirm"
-              name="password_confirm"
-              type="password"
-              placeholder="Confirmer Mot de passe"
-              required
-            />
-
-            <label class="sr-only" for="birth-date">Date de Naissance</label>
-            <input id="birth-date" name="birth_date" type="text" placeholder="Date de Naissance" required />
+              <div>
+                <label class="sr-only" for="password-confirm">Confirmer Mot de passe</label>
+                <input
+                  id="password-confirm"
+                  name="password_confirm"
+                  type="password"
+                  placeholder="Confirmer Mot de passe"
+                  required
+                />
+              </div>
+            </div>
 
             <div class="password-rules" aria-live="polite">
               <p>Votre mot de passe doit contenir :</p>

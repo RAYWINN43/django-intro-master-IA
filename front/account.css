@@ -24,19 +24,20 @@ body {
   background: var(--page-bg);
   color: var(--text);
   font-family: Arial, Helvetica, sans-serif;
+  overflow-x: hidden;
 }
 
 .account-header {
-  height: 110px;
+  height: 72px;
   display: flex;
   align-items: center;
-  padding-left: 24px;
+  padding-left: 22px;
   background: var(--header-bg);
 }
 
 .back-button {
-  width: 58px;
-  height: 58px;
+  width: 48px;
+  height: 48px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -48,14 +49,14 @@ body {
 }
 
 .back-button svg {
-  width: 58px;
-  height: 58px;
+  width: 48px;
+  height: 48px;
 }
 
 .back-button path {
   fill: none;
   stroke: currentColor;
-  stroke-width: 6;
+  stroke-width: 5;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
@@ -65,7 +66,7 @@ body {
 }
 
 .account-page[data-mode="inscription"] {
-  min-height: calc(100vh - 110px);
+  min-height: calc(100vh - 72px);
 }
 
 .login-panel {
@@ -73,7 +74,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 52px 24px 46px;
+  padding: 28px 24px 34px;
 }
 
 .login-title,
@@ -84,28 +85,40 @@ body {
 }
 
 .login-title {
-  font-size: clamp(4.6rem, 7.2vw, 6.25rem);
+  font-size: clamp(3.8rem, 5.4vw, 5rem);
 }
 
 .login-form {
-  width: min(100%, 704px);
-  margin-top: 190px;
+  width: min(100%, 690px);
+  margin-top: 118px;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
+.form-error {
+  width: 100%;
+  margin: 0 0 22px;
+  color: var(--danger);
+  font-size: 1.25rem;
+  text-align: center;
+}
+
+.form-error--signup {
+  margin: -18px 0 0;
+}
+
 .field-row {
   width: 100%;
   display: grid;
-  grid-template-columns: 104px minmax(0, 1fr);
+  grid-template-columns: 82px minmax(0, 1fr);
   align-items: center;
-  gap: 26px;
+  gap: 22px;
 }
 
 .field-icon {
-  width: 104px;
-  height: 104px;
+  width: 82px;
+  height: 82px;
   color: var(--icon);
 }
 
@@ -134,7 +147,7 @@ body {
 }
 
 .auth-input,
-.signup-grid input {
+.signup-fields input {
   width: 100%;
   border: 1.5px solid #000000;
   border-radius: 999px;
@@ -145,25 +158,25 @@ body {
 }
 
 .auth-input {
-  height: 102px;
-  padding: 0 36px;
-  font-size: 1.5rem;
+  height: 78px;
+  padding: 0 31px;
+  font-size: 1.35rem;
 }
 
 .auth-input::placeholder,
-.signup-grid input::placeholder {
+.signup-fields input::placeholder {
   color: var(--muted);
   opacity: 1;
 }
 
 .auth-input:focus,
-.signup-grid input:focus {
+.signup-fields input:focus {
   border-width: 2.5px;
 }
 
 .password-block {
   width: 100%;
-  margin-top: 62px;
+  margin-top: 42px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -173,7 +186,7 @@ body {
 .text-link {
   color: var(--text);
   font: inherit;
-  font-size: 1.9rem;
+  font-size: 1.55rem;
   line-height: 1;
   text-decoration: underline;
   text-underline-offset: 6px;
@@ -193,14 +206,14 @@ body {
 .login-button,
 .signup-button {
   width: min(100%, 500px);
-  min-height: 103px;
+  min-height: 78px;
   border: 0;
   border-radius: 999px;
   background: var(--primary);
   color: #ffffff;
   cursor: pointer;
   font: inherit;
-  font-size: clamp(3rem, 4.4vw, 4rem);
+  font-size: clamp(2.55rem, 3.2vw, 3.25rem);
   line-height: 1;
   transition:
     background-color 160ms ease,
@@ -209,11 +222,11 @@ body {
 }
 
 .login-button {
-  margin-top: 58px;
+  margin-top: 42px;
 }
 
 .signup-button {
-  margin-top: 66px;
+  margin-top: 42px;
 }
 
 .login-button:hover,
@@ -231,50 +244,64 @@ body {
 }
 
 .signup-link {
-  margin-top: 34px;
+  margin-top: 24px;
 }
 
 .signup-panel {
-  min-height: calc(100vh - 110px);
+  min-height: calc(100vh - 72px);
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 48px 6vw 54px;
+  padding: 34px 5.5vw 36px;
 }
 
 .signup-title {
-  font-size: clamp(4.5rem, 6.8vw, 6.1rem);
+  font-size: clamp(3.8rem, 5.2vw, 4.9rem);
 }
 
 .signup-form {
-  width: min(100%, 1225px);
-  margin-top: 58px;
+  width: min(100%, 1160px);
+  margin-top: 38px;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-.signup-grid {
+.signup-fields {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 31px;
+}
+
+.signup-single {
+  width: min(100%, 530px);
+}
+
+.signup-password-row {
   width: 100%;
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  column-gap: clamp(72px, 11vw, 164px);
-  row-gap: 41px;
-  align-items: start;
+  column-gap: clamp(58px, 8vw, 124px);
+  margin-top: 32px;
 }
 
-.signup-grid input {
-  height: 95px;
-  padding: 0 31px;
-  font-size: 1.45rem;
+.signup-fields input {
+  height: 72px;
+  padding: 0 27px;
+  font-size: 1.28rem;
 }
 
 .password-rules {
-  min-height: 90px;
-  padding: 20px 0 0 96px;
+  width: min(100%, 560px);
+  min-height: 0;
+  margin-top: -4px;
+  padding: 0;
   color: var(--danger);
-  font-size: 1.5rem;
-  line-height: 1.03;
+  font-size: 1.18rem;
+  line-height: 1.05;
+  text-align: left;
 }
 
 .password-rules p {
@@ -292,7 +319,7 @@ body {
 .forgot-link:focus-visible,
 .text-link:focus-visible,
 .auth-input:focus-visible,
-.signup-grid input:focus-visible {
+.signup-fields input:focus-visible {
   outline: 3px solid var(--primary);
   outline-offset: 6px;
 }
@@ -338,7 +365,7 @@ body {
   }
 
   .auth-input,
-  .signup-grid input {
+  .signup-fields input {
     height: 72px;
     padding: 0 24px;
     font-size: 1.15rem;
@@ -367,9 +394,19 @@ body {
     margin-top: 48px;
   }
 
-  .signup-grid {
+  .signup-fields {
+    gap: 26px;
+  }
+
+  .signup-single,
+  .signup-password-row {
+    width: 100%;
+  }
+
+  .signup-password-row {
     grid-template-columns: 1fr;
     row-gap: 26px;
+    margin-top: 0;
   }
 
   .password-rules {
@@ -379,5 +416,77 @@ body {
 
   .signup-button {
     margin-top: 44px;
+  }
+}
+
+@media (min-width: 861px) and (max-height: 820px) {
+  .login-panel {
+    padding-top: 22px;
+    padding-bottom: 26px;
+  }
+
+  .login-title {
+    font-size: clamp(3.4rem, 4.8vw, 4.5rem);
+  }
+
+  .login-form {
+    margin-top: 88px;
+  }
+
+  .field-icon {
+    width: 74px;
+    height: 74px;
+  }
+
+  .field-row {
+    grid-template-columns: 74px minmax(0, 1fr);
+  }
+
+  .auth-input {
+    height: 70px;
+  }
+
+  .password-block {
+    margin-top: 32px;
+  }
+
+  .login-button {
+    min-height: 70px;
+    margin-top: 34px;
+  }
+
+  .signup-panel {
+    padding-top: 28px;
+    padding-bottom: 28px;
+  }
+
+  .signup-title {
+    font-size: clamp(3.4rem, 4.6vw, 4.35rem);
+  }
+
+  .signup-form {
+    margin-top: 30px;
+  }
+
+  .signup-fields {
+    gap: 22px;
+  }
+
+  .signup-password-row {
+    margin-top: 22px;
+  }
+
+  .signup-fields input {
+    height: 66px;
+  }
+
+  .password-rules {
+    width: min(100%, 520px);
+    font-size: 1.08rem;
+  }
+
+  .signup-button {
+    min-height: 70px;
+    margin-top: 34px;
   }
 }

@@ -11,4 +11,3 @@ wheels/
 
 # Django
 db.sqlite3
-.env
