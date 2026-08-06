@@ -28,6 +28,6 @@ RUN addgroup -S django && adduser -S -G django django \
 
 USER django
 
-EXPOSE 7860
+EXPOSE 8000
 
-CMD ["sh", "-c", "python manage.py migrate --noinput && gunicorn --bind 0.0.0.0:${PORT:-7860} --workers 2 --threads 4 django_intro.wsgi:application"]
+CMD ["sh", "-c", "python manage.py migrate --noinput && python manage.py seed_users && gunicorn --bind 0.0.0.0:${PORT:-8000} --workers 2 --threads 4 django_intro.wsgi:application"]
