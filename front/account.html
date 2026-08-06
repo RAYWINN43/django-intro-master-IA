@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Account</title>
+    <link rel="stylesheet" href="account.css" />
+    <script src="account.js" defer></script>
+  </head>
+  <body>
+    <header class="account-header" data-account-header hidden>
+      <button class="back-button" type="button" data-switch-account="connexion" aria-label="Retour">
+        <svg viewBox="0 0 48 48" aria-hidden="true">
+          <path d="M31 8 15 24l16 16" />
+        </svg>
+      </button>
+    </header>
+
+    <main class="account-page" data-account-page data-mode="connexion">
+      <section class="login-panel" data-account-panel="connexion" aria-labelledby="login-title">
+        <h1 class="login-title" id="login-title">Connexion</h1>
+
+        <form class="login-form" method="post" action="/login/" data-login-form>
+          {% csrf_token %}
+
+          <div class="field-row">
+            <div class="field-icon" aria-hidden="true">
+              <svg viewBox="0 0 100 100" role="img">
+                <circle class="icon-ring" cx="50" cy="50" r="43" />
+                <circle class="icon-fill" cx="50" cy="42" r="17" />
+                <path
+                  class="icon-fill"
+                  d="M20 82c7-16 18-24 30-24s23 8 30 24c-8 7-18 11-30 11s-22-4-30-11z"
+                />
+              </svg>
+            </div>
+
+            <label class="sr-only" for="login-email">Email</label>
+            <input
+              class="auth-input"
+              id="login-email"
+              name="username"
+              type="text"
+              autocomplete="username"
+              placeholder="Email"
+              required
+            />
+          </div>
+
+          <div class="password-block">
+            <div class="field-row">
+              <div class="field-icon" aria-hidden="true">
+                <svg viewBox="0 0 100 100" role="img">
+                  <circle class="icon-ring" cx="50" cy="50" r="43" />
+                  <rect class="icon-stroke" x="29" y="48" width="42" height="31" rx="8" />
+                  <path class="icon-stroke" d="M37 48V38c0-10 5-17 13-17s13 7 13 17v10" />
+                  <circle class="icon-fill" cx="50" cy="64" r="4" />
+                </svg>
+              </div>
+
+              <label class="sr-only" for="login-password">Mot de passe</label>
+              <input
+                class="auth-input"
+                id="login-password"
+                name="password"
+                type="password"
+                autocomplete="current-password"
+                placeholder="Mot de passe"
+                required
+              />
+            </div>
+
+            <a class="forgot-link" href="#">Mot de passe oubli&eacute;?</a>
+          </div>
+
+          <button class="login-button" type="submit">Connexion</button>
+
+          <button class="text-link signup-link" type="button" data-switch-account="inscription">
+            S'inscrire
+          </button>
+        </form>
+      </section>
+
+      <section class="signup-panel" data-account-panel="inscription" aria-labelledby="signup-title" hidden>
+        <h1 class="signup-title" id="signup-title">Inscription</h1>
+
+        <form class="signup-form" method="post" action="/register/" data-signup-form>
+          {% csrf_token %}
+
+          <div class="signup-grid">
+            <label class="sr-only" for="last-name">Nom</label>
+            <input id="last-name" name="last_name" type="text" placeholder="Nom" required />
+
+            <label class="sr-only" for="email">Email</label>
+            <input id="email" name="email" type="email" placeholder="Email" required />
+
+            <label class="sr-only" for="first-name">Prenom</label>
+            <input id="first-name" name="first_name" type="text" placeholder="Pr&eacute;nom" required />
+
+            <label class="sr-only" for="password">Mot de passe</label>
+            <input id="password" name="password" type="password" placeholder="Mot de passe" required />
+
+            <label class="sr-only" for="username">Pseudo</label>
+            <input id="username" name="username" type="text" placeholder="Pseudo" required />
+
+            <label class="sr-only" for="password-confirm">Confirmer Mot de passe</label>
+            <input
+              id="password-confirm"
+              name="password_confirm"
+              type="password"
+              placeholder="Confirmer Mot de passe"
+              required
+            />
+
+            <label class="sr-only" for="birth-date">Date de Naissance</label>
+            <input id="birth-date" name="birth_date" type="text" placeholder="Date de Naissance" required />
+
+            <div class="password-rules" aria-live="polite">
+              <p>Votre mot de passe doit contenir :</p>
+              <ul>
+                <li>Un chiffre</li>
+                <li>Une majuscule, une minuscule</li>
+                <li>Un caract&egrave;re sp&eacute;cial</li>
+                <li>12 caract&egrave;res</li>
+              </ul>
+            </div>
+          </div>
+
+          <button class="signup-button" type="submit">Terminer</button>
+        </form>
+      </section>
+    </main>
+  </body>
+</html>
