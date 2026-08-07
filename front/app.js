@@ -105,6 +105,12 @@ if (ideaForm && ideaInput && formFeedback) {
     }
 
     formFeedback.textContent =
-      "Votre idée est prête. Connectez-vous pour lancer sa génération.";
+      "Vous devez être inscrit pour entrer un prompt.";
+    ideaInput.focus();
+  });
+
+  ideaInput.addEventListener("input", () => {
+    stopPlaceholderAnimation();
+    formFeedback.textContent = "Vous devez être inscrit pour entrer un prompt.";
   });
 }

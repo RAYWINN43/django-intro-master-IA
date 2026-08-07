@@ -16,6 +16,67 @@ const projectTypeInputs = document.querySelectorAll(
   '[data-project-type] input[name="project_type"]',
 );
 
+function getCookie(name) {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop().split(";").shift();
+  return null;
+}
+
+function getCsrfToken() {
+  const cookieToken = getCookie("csrftoken");
+  if (cookieToken) {
+    return cookieToken;
+  }
+
+  const csrfInput = document.querySelector("input[name='csrfmiddlewaretoken']");
+  return csrfInput?.value || null;
+}
+
+async function submitProjectIdea(message) {
+  try {
+    const csrfToken = getCsrfToken();
+    const headers = {
+      "Content-Type": "application/json",
+    };
+
+    if (csrfToken) {
+      headers["X-CSRFToken"] = csrfToken;
+    }
+
+    const response = await fetch("/ai/ask/", {
+      method: "POST",
+      headers,
+      credentials: "same-origin",
+      body: JSON.stringify({ message }),
+    });
+
+    if (response.redirected || response.status === 302) {
+      console.warn("AI request redirected to login. Please authenticate first.");
+      return null;
+    }
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      console.error("AI error:", data.error || response.statusText);
+      if (formFeedback) {
+        formFeedback.textContent = data.error || "Une erreur s'est produite.";
+      }
+      return null;
+    }
+
+    console.log("AI answer:", data.answer);
+    return data.answer;
+  } catch (error) {
+    console.error("Fetch error:", error);
+    if (formFeedback) {
+      formFeedback.textContent = "Erreur de communication avec le service AI.";
+    }
+    return null;
+  }
+}
+
 function setTheme(theme) {
   if (!allowedThemes.includes(theme)) {
     return;
@@ -197,6 +258,21 @@ function stopPlaceholderAnimation() {
   ideaInput.placeholder = "";
 }
 
+if (ideaForm && ideaInput && formFeedback) {
+  ideaForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    if (!ideaInput.value.trim()) {
+      formFeedback.textContent = "Décrivez d’abord votre idée pour continuer.";
+      ideaInput.focus();
+      return;
+    }
+
+    formFeedback.textContent = "Envoi de votre idée au service AI...";
+    await submitProjectIdea(ideaInput.value.trim());
+  });
+}
+
 if (ideaInput) {
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 
@@ -224,20 +300,4 @@ projectTypeInputs.forEach((input) => {
       projectType.dataset.selected = input.value;
     }
   });
-});
-
-ideaForm?.addEventListener("submit", (event) => {
-  event.preventDefault();
-
-  if (!ideaInput?.value.trim()) {
-    if (formFeedback) {
-      formFeedback.textContent = "Décrivez d’abord votre idée pour continuer.";
-    }
-    ideaInput?.focus();
-    return;
-  }
-
-  if (formFeedback) {
-    formFeedback.textContent = "Votre idée est prête à être transformée en projet.";
-  }
 });

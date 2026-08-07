@@ -118,6 +118,7 @@
           <h1 id="welcome-title">Bienvenue dans IWant...</h1>
 
           <form class="idea-form" data-idea-form>
+            {% csrf_token %}
             <label class="sr-only" for="project-idea">Que voulez-vous concevoir&nbsp;?</label>
             <textarea
               id="project-idea"
