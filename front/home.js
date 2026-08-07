@@ -6,15 +6,86 @@ const accountMenu = document.querySelector("[data-account-menu]");
 const preferencesDialog = document.querySelector("[data-preferences-dialog]");
 const legalDialog = document.querySelector("[data-legal-dialog]");
 const projectSearch = document.querySelector("[data-project-search]");
-const projectItems = [...document.querySelectorAll("[data-project-item]")];
+const projectList = document.querySelector("[data-project-list]");
+let projectItems = [...document.querySelectorAll("[data-project-item]")];
+const projectListEmpty = document.querySelector("[data-project-list-empty]");
 const projectSearchEmpty = document.querySelector("[data-project-search-empty]");
 const ideaForm = document.querySelector("[data-idea-form]");
 const ideaInput = document.querySelector("[data-project-idea]");
 const formFeedback = document.querySelector("[data-form-feedback]");
+const ideaWorkspace = document.querySelector(".idea-workspace");
+const projectDetail = document.querySelector("[data-project-detail]");
+const projectDetailTitle = document.querySelector("[data-project-detail-title]");
+const projectDetailDate = document.querySelector("[data-project-detail-date]");
+const projectDetailPrompt = document.querySelector("[data-project-detail-prompt]");
+const projectDetailResponse = document.querySelector(
+  "[data-project-detail-response]",
+);
 const projectType = document.querySelector("[data-project-type]");
 const projectTypeInputs = document.querySelectorAll(
   '[data-project-type] input[name="project_type"]',
 );
+
+function getCookie(name) {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop().split(";").shift();
+  return null;
+}
+
+function getCsrfToken() {
+  const cookieToken = getCookie("csrftoken");
+  if (cookieToken) {
+    return cookieToken;
+  }
+
+  const csrfInput = document.querySelector("input[name='csrfmiddlewaretoken']");
+  return csrfInput?.value || null;
+}
+
+async function submitProjectIdea(message) {
+  try {
+    const csrfToken = getCsrfToken();
+    const headers = {
+      "Content-Type": "application/json",
+    };
+
+    if (csrfToken) {
+      headers["X-CSRFToken"] = csrfToken;
+    }
+
+    const response = await fetch("/ai/ask/", {
+      method: "POST",
+      headers,
+      credentials: "same-origin",
+      body: JSON.stringify({ message }),
+    });
+
+    if (response.redirected || response.status === 302) {
+      console.warn("AI request redirected to login. Please authenticate first.");
+      return null;
+    }
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      console.error("AI error:", data.error || response.statusText);
+      if (formFeedback) {
+        formFeedback.textContent = data.error || "Une erreur s'est produite.";
+      }
+      return null;
+    }
+
+    console.log("AI answer:", data.answer);
+    return data;
+  } catch (error) {
+    console.error("Fetch error:", error);
+    if (formFeedback) {
+      formFeedback.textContent = "Erreur de communication avec le service AI.";
+    }
+    return null;
+  }
+}
 
 function setTheme(theme) {
   if (!allowedThemes.includes(theme)) {
@@ -115,25 +186,179 @@ document.querySelectorAll("dialog").forEach((dialog) => {
   });
 });
 
-if (projectSearch) {
-  projectSearch.addEventListener("input", () => {
-    const query = projectSearch.value.trim().toLocaleLowerCase("fr");
-    let visibleProjects = 0;
+function filterProjects() {
+  const query = projectSearch?.value.trim().toLocaleLowerCase("fr") || "";
+  let visibleProjects = 0;
 
-    projectItems.forEach((item) => {
-      const projectName = (item.dataset.projectName || item.textContent)
-        .trim()
-        .toLocaleLowerCase("fr");
-      const isVisible = projectName.includes(query);
+  projectItems.forEach((item) => {
+    const projectName = (item.dataset.projectName || item.textContent)
+      .trim()
+      .toLocaleLowerCase("fr");
+    const isVisible = projectName.includes(query);
 
-      item.hidden = !isVisible;
-      visibleProjects += Number(isVisible);
-    });
-
-    if (projectSearchEmpty) {
-      projectSearchEmpty.hidden = !query || visibleProjects > 0 || projectItems.length === 0;
-    }
+    item.hidden = !isVisible;
+    visibleProjects += Number(isVisible);
   });
+
+  if (projectSearchEmpty) {
+    projectSearchEmpty.hidden =
+      !query || visibleProjects > 0 || projectItems.length === 0;
+  }
+
+  if (projectListEmpty) {
+    projectListEmpty.hidden = projectItems.length > 0;
+  }
+}
+
+projectSearch?.addEventListener("input", filterProjects);
+
+function formatProjectDate(value, options = {}) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return "";
+  }
+
+  return new Intl.DateTimeFormat("fr-FR", options).format(date);
+}
+
+function getProjectTitle(prompt) {
+  const title = prompt.replace(/\s+/g, " ").trim();
+  return title.length > 68 ? `${title.slice(0, 65)}...` : title;
+}
+
+function setActiveProject(projectId) {
+  projectItems.forEach((item) => {
+    const isActive = item.dataset.projectId === String(projectId);
+    item.classList.toggle("is-active", isActive);
+    item.querySelector("button")?.setAttribute("aria-current", String(isActive));
+  });
+}
+
+function showProjectDetails(project) {
+  if (
+    !projectDetail ||
+    !projectDetailTitle ||
+    !projectDetailDate ||
+    !projectDetailPrompt ||
+    !projectDetailResponse ||
+    !ideaWorkspace
+  ) {
+    return;
+  }
+
+  projectDetailTitle.textContent = getProjectTitle(project.prompt);
+  projectDetailDate.textContent = formatProjectDate(project.created_at, {
+    dateStyle: "long",
+    timeStyle: "short",
+  });
+  projectDetailDate.dateTime = project.created_at;
+  projectDetailPrompt.textContent = project.prompt;
+  projectDetailResponse.textContent = project.response_text;
+  ideaWorkspace.hidden = true;
+  projectDetail.hidden = false;
+  setActiveProject(project.id);
+  projectDetail.scrollTop = 0;
+}
+
+function closeProjectDetails() {
+  if (!projectDetail || !ideaWorkspace) {
+    return;
+  }
+
+  projectDetail.hidden = true;
+  ideaWorkspace.hidden = false;
+  setActiveProject(null);
+  ideaInput?.focus();
+}
+
+document
+  .querySelector("[data-close-project-detail]")
+  ?.addEventListener("click", closeProjectDetails);
+
+async function loadProjectDetails(item) {
+  const button = item.querySelector("button");
+  button?.setAttribute("aria-busy", "true");
+
+  try {
+    const response = await fetch(item.dataset.projectUrl, {
+      credentials: "same-origin",
+    });
+    if (!response.ok) {
+      throw new Error("Project unavailable");
+    }
+
+    const data = await response.json();
+    showProjectDetails(data.project);
+  } catch (error) {
+    console.error("Project loading error:", error);
+    if (formFeedback) {
+      formFeedback.textContent = "Impossible d'ouvrir ce projet.";
+    }
+  } finally {
+    button?.removeAttribute("aria-busy");
+  }
+}
+
+projectList?.addEventListener("click", (event) => {
+  const item = event.target.closest("[data-project-item]");
+  if (item) {
+    loadProjectDetails(item);
+  }
+});
+
+function createProjectListItem(project) {
+  const item = document.createElement("li");
+  item.className = "project-item";
+  item.dataset.projectItem = "";
+  item.dataset.projectId = project.id;
+  item.dataset.projectName = project.prompt;
+  item.dataset.projectUrl = project.detail_url;
+
+  const button = document.createElement("button");
+  button.type = "button";
+
+  const copy = document.createElement("span");
+  copy.className = "project-item-copy";
+
+  const title = document.createElement("span");
+  title.className = "project-item-title";
+  title.textContent = getProjectTitle(project.prompt);
+
+  const date = document.createElement("time");
+  date.dateTime = project.created_at;
+  date.textContent = formatProjectDate(project.created_at, {
+    dateStyle: "short",
+    timeStyle: "short",
+  });
+
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("viewBox", "0 0 24 24");
+  svg.setAttribute("aria-hidden", "true");
+  const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  path.setAttribute("d", "M9 5l7 7-7 7");
+  svg.append(path);
+
+  copy.append(title, date);
+  button.append(copy, svg);
+  item.append(button);
+  return item;
+}
+
+function addProjectToList(project) {
+  if (!projectList) {
+    return;
+  }
+
+  const existingItem = projectItems.find(
+    (item) => item.dataset.projectId === String(project.id),
+  );
+  if (existingItem) {
+    return;
+  }
+
+  projectList.prepend(createProjectListItem(project));
+  projectItems = [...projectList.querySelectorAll("[data-project-item]")];
+  filterProjects();
 }
 
 const avatar = document.querySelector("[data-user-avatar]");
@@ -197,6 +422,32 @@ function stopPlaceholderAnimation() {
   ideaInput.placeholder = "";
 }
 
+if (ideaForm && ideaInput && formFeedback) {
+  ideaForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    if (!ideaInput.value.trim()) {
+      formFeedback.textContent = "Décrivez d’abord votre idée pour continuer.";
+      ideaInput.focus();
+      return;
+    }
+
+    formFeedback.textContent = "Envoi de votre idée au service AI...";
+    const submitButton = ideaForm.querySelector("button[type='submit']");
+    submitButton?.setAttribute("disabled", "");
+
+    const data = await submitProjectIdea(ideaInput.value.trim());
+    submitButton?.removeAttribute("disabled");
+
+    if (data?.project) {
+      addProjectToList(data.project);
+      showProjectDetails(data.project);
+      ideaInput.value = "";
+      formFeedback.textContent = "";
+    }
+  });
+}
+
 if (ideaInput) {
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 
@@ -224,20 +475,4 @@ projectTypeInputs.forEach((input) => {
       projectType.dataset.selected = input.value;
     }
   });
-});
-
-ideaForm?.addEventListener("submit", (event) => {
-  event.preventDefault();
-
-  if (!ideaInput?.value.trim()) {
-    if (formFeedback) {
-      formFeedback.textContent = "Décrivez d’abord votre idée pour continuer.";
-    }
-    ideaInput?.focus();
-    return;
-  }
-
-  if (formFeedback) {
-    formFeedback.textContent = "Votre idée est prête à être transformée en projet.";
-  }
 });

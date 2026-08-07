@@ -98,7 +98,9 @@
             <li
               class="project-item"
               data-project-item
-              data-project-name="{{ project.name|default:project.title }}"
+              data-project-id="{{ project.pk }}"
+              data-project-name="{{ project.prompt }}"
+              data-project-url="{% url 'groq_analysis_detail' project.pk %}"
             >
               <a href="{% static 'project.html' %}?project={{ project.id|default:forloop.counter }}">
                 <span>{{ project.name|default:project.title|default:"Projet sans titre" }}</span>
@@ -107,6 +109,14 @@
             </li>
           {% endfor %}
         </ul>
+
+        <p
+          class="project-list-empty"
+          data-project-list-empty
+          {% if projects %}hidden{% endif %}
+        >
+          Aucun projet pour le moment.
+        </p>
 
         <p class="project-search-empty" data-project-search-empty hidden>
           Aucun projet ne correspond à cette recherche.
@@ -118,6 +128,7 @@
           <h1 id="welcome-title">Bienvenue dans IWant...</h1>
 
           <form class="idea-form" data-idea-form>
+            {% csrf_token %}
             <label class="sr-only" for="project-idea">Que voulez-vous concevoir&nbsp;?</label>
             <textarea
               id="project-idea"
@@ -159,6 +170,43 @@
           </div>
 
           <p class="form-feedback" data-form-feedback aria-live="polite"></p>
+        </section>
+
+        <section
+          class="project-detail"
+          data-project-detail
+          hidden
+          aria-labelledby="project-detail-title"
+        >
+          <header class="project-detail-heading">
+            <div>
+              <p>Projet enregistré</p>
+              <h1 id="project-detail-title" data-project-detail-title></h1>
+              <time data-project-detail-date></time>
+            </div>
+            <button
+              class="project-detail-close"
+              type="button"
+              data-close-project-detail
+              aria-label="Fermer le projet"
+              title="Fermer le projet"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M6 6l12 12M18 6L6 18" />
+              </svg>
+            </button>
+          </header>
+
+          <div class="project-detail-content">
+            <section aria-labelledby="project-prompt-title">
+              <h2 id="project-prompt-title">Votre demande</h2>
+              <p data-project-detail-prompt></p>
+            </section>
+            <section aria-labelledby="project-response-title">
+              <h2 id="project-response-title">Réponse de l'IA</h2>
+              <pre data-project-detail-response></pre>
+            </section>
+          </div>
         </section>
       </main>
     </div>
