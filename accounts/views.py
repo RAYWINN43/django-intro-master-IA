@@ -6,6 +6,8 @@ from django.core.exceptions import ValidationError
 from django.shortcuts import redirect, render
 from django.views.decorators.http import require_POST
 
+from ai.models import GroqAnalysis
+
 from .forms import StrictPasswordChangeForm, get_password_requirement_error
 
 
@@ -15,7 +17,12 @@ def index(request):
 
 @login_required
 def home(request):
-    return render(request, "home.html")
+    projects = GroqAnalysis.objects.filter(user=request.user).only(
+        "id",
+        "prompt",
+        "created_at",
+    )
+    return render(request, "home.html", {"projects": projects})
 
 
 @require_POST

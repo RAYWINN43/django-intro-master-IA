@@ -1,6 +1,5 @@
 from django.conf import settings
 
-
 pre_prompt = """You are a Senior Product Manager, Solution Architect, UX Expert and Startup Advisor.
 
 Your role is NOT to generate project documents.
