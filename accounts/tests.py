@@ -3,6 +3,8 @@ from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
 
+from ai.models import GroqAnalysis
+
 
 class AuthenticationViewsTests(TestCase):
     def setUp(self):
@@ -122,6 +124,30 @@ class AuthenticationViewsTests(TestCase):
         self.assertContains(response, self.user.username)
         self.assertContains(response, self.user.email)
         self.assertContains(response, "Derniere connexion")
+
+    def test_home_displays_only_the_connected_users_projects(self):
+        other_user = get_user_model().objects.create_user(
+            username="other_project_owner",
+            email="other_project_owner@example.com",
+            password=self.password,
+        )
+        GroqAnalysis.objects.create(
+            user=self.user,
+            prompt="Projet personnel visible",
+            response_text="Reponse personnelle",
+        )
+        GroqAnalysis.objects.create(
+            user=other_user,
+            prompt="Projet prive invisible",
+            response_text="Reponse privee",
+        )
+        self.client.force_login(self.user)
+
+        response = self.client.get(reverse("home"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Projet personnel visible")
+        self.assertNotContains(response, "Projet prive invisible")
 
     def test_password_change_keeps_user_connected(self):
         self.client.force_login(self.user)

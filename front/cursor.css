@@ -1,0 +1,5 @@
+html,
+body,
+body * {
+  cursor: url("assets/cursor-dot.svg") 5 5, auto !important;
+}
