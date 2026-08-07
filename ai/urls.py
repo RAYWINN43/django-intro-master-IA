@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import llama_status, llama_chat
+from .views import llama_chat, llama_status
 
 urlpatterns = [
     path("status/", llama_status, name="llama_status"),
