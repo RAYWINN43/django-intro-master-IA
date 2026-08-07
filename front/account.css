@@ -313,6 +313,14 @@ body {
   padding: 0;
 }
 
+.password-rules [data-password-rule] {
+  transition: color 160ms ease;
+}
+
+.password-rules [data-password-rule].is-valid {
+  color: #187a37;
+}
+
 .back-button:focus-visible,
 .login-button:focus-visible,
 .signup-button:focus-visible,
