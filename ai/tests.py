@@ -11,8 +11,8 @@ from .groq_client import GroqConfigurationError
 class GroqAskViewTests(TestCase):
     def setUp(self):
         self.user = get_user_model().objects.create_user(
-            username="antoine",
-            email="antoine@example.com",
+            username="test_ai_user",
+            email="test_ai_user@example.com",
             password="MotDePasse!2026",
         )
         self.url = reverse("groq_ask")

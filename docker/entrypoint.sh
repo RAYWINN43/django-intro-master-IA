@@ -1,7 +1,9 @@
 #!/bin/sh
 set -e
 
-python manage.py migrate --noinput
-python manage.py seed_users
+if [ "$1" = "gunicorn" ]; then
+    python manage.py migrate --noinput
+    python manage.py seed_users
+fi
 
 exec "$@"
