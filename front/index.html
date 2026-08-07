@@ -1,46 +1,30 @@
 <!doctype html>
 <html lang="fr">
   <head>
+    {% load static %}
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Connexion</title>
+    <title>Bienvenue</title>
+    <link rel="stylesheet" href="{% static 'styles.css' %}" />
+    <script src="{% static 'app.js' %}" defer></script>
   </head>
   <body>
-    <main>
-      <h1>Connexion</h1>
+    <main class="welcome-page" aria-labelledby="welcome-title">
+      <h1 class="welcome-title" id="welcome-title">Bienvenue</h1>
 
-      <form method="post" action="{% url 'login' %}">
-        {% csrf_token %}
-        <input type="hidden" name="next" value="{{ next }}" />
+      <img
+        class="welcome-logo"
+        src="{% static 'assets/logo-chat.png' %}"
+        alt="Logo de messagerie"
+      />
 
-        {% if form.errors %}
-          <p>Nom d'utilisateur ou mot de passe incorrect.</p>
-        {% endif %}
+      <div class="welcome-actions">
+        <button class="start-button" type="button" data-target="{% url 'account' %}#connexion">
+          C'est parti !
+        </button>
 
-        <div>
-          <label for="id_username">Nom</label>
-          <input
-            id="id_username"
-            name="username"
-            type="text"
-            autocomplete="username"
-            required
-          />
-        </div>
-
-        <div>
-          <label for="id_password">Mot de passe</label>
-          <input
-            id="id_password"
-            name="password"
-            type="password"
-            autocomplete="current-password"
-            required
-          />
-        </div>
-
-        <button type="submit">Se connecter</button>
-      </form>
+        <a class="register-link" href="{% url 'account' %}#inscription">S'inscrire</a>
+      </div>
     </main>
   </body>
 </html>

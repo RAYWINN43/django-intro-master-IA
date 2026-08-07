@@ -9,8 +9,10 @@ authors = [
 requires-python = ">=3.13"
 dependencies = [
     "django>=6.0.7",
+    "groq>=0.31.0",
     "gunicorn>=26.0.0",
     "psycopg[binary]>=3.3.4",
+    "whitenoise[brotli]>=6.11.0",
 ]
 
 [project.scripts]
@@ -19,3 +21,12 @@ django-intro = "django_intro:main"
 [build-system]
 requires = ["uv_build>=0.12.1,<0.13.0"]
 build-backend = "uv_build"
+
+[tool.black]
+target-version = ["py313"]
+
+[tool.ruff]
+target-version = "py313"
+
+[tool.ruff.lint.per-file-ignores]
+"**/migrations/*.py" = ["RUF012"]
