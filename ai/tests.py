@@ -1,69 +1,77 @@
-from django.test import SimpleTestCase
+import json
+from unittest.mock import patch
 
-from ai.llama_service import LlamaService
+from django.test import SimpleTestCase, TestCase
+from django.urls import reverse
+
+from .llama_service import LlamaService
 
 
 class LlamaServiceTests(SimpleTestCase):
-    def test_service_reads_configuration_from_env(self):
-        service = LlamaService()
-
-class GroqAskViewTests(TestCase):
-    def setUp(self):
-        self.user = get_user_model().objects.create_user(
-            username="test_ai_user",
-            email="test_ai_user@example.com",
-            password="MotDePasse!2026",
-        )
-        self.url = reverse("groq_ask")
-
-    def test_ask_requires_authenticated_user(self):
-        response = self.client.post(
-            self.url,
-            data=json.dumps({"message": "Bonjour"}),
-            content_type="application/json",
+    def test_service_uses_explicit_configuration(self):
+        service = LlamaService(
+            api_key="test-api-key",
+            model="test-model",
+            base_url="https://example.com/chat",
         )
 
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(service.api_key, "test-api-key")
+        self.assertEqual(service.model, "test-model")
+        self.assertEqual(service.base_url, "https://example.com/chat")
 
-    @patch("ai.views.ask_groq", return_value="Bonjour, comment puis-je aider ?")
-    def test_ask_returns_mocked_ai_answer_without_calling_groq(self, mock_ask_groq):
-        self.client.force_login(self.user)
 
+class LlamaViewsTests(TestCase):
+    def test_chat_rejects_invalid_json(self):
         response = self.client.post(
-            self.url,
-            data=json.dumps({"message": "Explique Django"}),
-            content_type="application/json",
-        )
-
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json()["answer"], "Bonjour, comment puis-je aider ?")
-        mock_ask_groq.assert_called_once_with("Explique Django")
-
-    def test_ask_rejects_empty_message(self):
-        self.client.force_login(self.user)
-
-        response = self.client.post(
-            self.url,
-            data=json.dumps({"message": "   "}),
+            reverse("llama_chat"),
+            data="{",
             content_type="application/json",
         )
 
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json()["error"], "Le champ message est obligatoire.")
+        self.assertEqual(response.json()["error"], "JSON invalide.")
 
-    @patch(
-        "ai.views.ask_groq",
-        side_effect=GroqConfigurationError("Configuration Groq absente."),
-    )
-    def test_ask_returns_clear_error_when_ai_is_not_configured(self, mock_ask_groq):
-        self.client.force_login(self.user)
+    @patch("ai.views.LlamaService")
+    def test_chat_returns_mocked_ai_answer_without_calling_groq(self, service_class):
+        service = service_class.return_value
+        service.generate.return_value = "Bonjour, comment puis-je aider ?"
 
         response = self.client.post(
-            self.url,
-            data=json.dumps({"message": "Bonjour"}),
+            reverse("llama_chat"),
+            data=json.dumps({"prompt": "Explique Django"}),
             content_type="application/json",
         )
 
-        self.assertEqual(response.status_code, 503)
-        self.assertEqual(response.json()["error"], "Configuration Groq absente.")
-        mock_ask_groq.assert_called_once_with("Bonjour")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.json()["response"], "Bonjour, comment puis-je aider ?"
+        )
+        service.generate.assert_called_once_with("Explique Django")
+
+    @patch("ai.views.LlamaService")
+    def test_chat_returns_error_when_ai_provider_fails(self, service_class):
+        service = service_class.return_value
+        service.model = "llama-3.3-70b-versatile"
+        service.api_key = "test-api-key"
+        service.generate.side_effect = RuntimeError("Erreur fournisseur IA")
+
+        response = self.client.post(
+            reverse("llama_chat"),
+            data=json.dumps({"prompt": "Bonjour"}),
+            content_type="application/json",
+        )
+
+        self.assertEqual(response.status_code, 502)
+        self.assertEqual(response.json()["error"], "Erreur fournisseur IA")
+
+    @patch("ai.views.LlamaService")
+    def test_status_exposes_configuration_without_secret(self, service_class):
+        service = service_class.return_value
+        service.model = "llama-3.3-70b-versatile"
+        service.api_key = "test-api-key"
+
+        response = self.client.get(reverse("llama_status"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["model"], "llama-3.3-70b-versatile")
+        self.assertTrue(response.json()["api_key_configured"])
