@@ -1,6 +1,6 @@
+import django.db.models.deletion
 from django.conf import settings
 from django.db import migrations, models
-import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
@@ -15,7 +15,15 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name="GroqAnalysis",
             fields=[
-                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
                 ("prompt", models.TextField()),
                 ("response_text", models.TextField()),
                 ("response_json", models.JSONField(blank=True, null=True)),
