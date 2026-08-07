@@ -61,9 +61,8 @@
               <a href="{% url 'profile' %}">Mon compte</a>
               <button type="button" data-open-preferences>Préférences</button>
               <button type="button" data-open-legal>Mentions légales</button>
-              <form method="post" action="{% url 'admin:logout' %}">
+              <form method="post" action="{% url 'logout' %}">
                 {% csrf_token %}
-                <input type="hidden" name="next" value="{% url 'account' %}#connexion" />
                 <button class="logout-button" type="submit">Déconnexion</button>
               </form>
             </div>

@@ -7,9 +7,23 @@ from urllib import error, request
 class LlamaService:
     def __init__(self, api_key=None, model=None, base_url=None):
         self._load_env_file()
-        self.api_key = api_key or os.getenv("GROQ_API_KEY") or os.getenv("LLAMA_API_KEY") or os.getenv("OPENAI_API_KEY")
-        self.model = model or os.getenv("GROQ_MODEL") or os.getenv("LLAMA_MODEL") or "llama-3.3-70b-versatile"
-        self.base_url = base_url or os.getenv("GROQ_API_BASE_URL") or "https://api.groq.com/openai/v1/chat/completions"
+        self.api_key = (
+            api_key
+            or os.getenv("GROQ_API_KEY")
+            or os.getenv("LLAMA_API_KEY")
+            or os.getenv("OPENAI_API_KEY")
+        )
+        self.model = (
+            model
+            or os.getenv("GROQ_MODEL")
+            or os.getenv("LLAMA_MODEL")
+            or "llama-3.3-70b-versatile"
+        )
+        self.base_url = (
+            base_url
+            or os.getenv("GROQ_API_BASE_URL")
+            or "https://api.groq.com/openai/v1/chat/completions"
+        )
 
         if not self.api_key:
             raise ValueError("No API key found. Set GROQ_API_KEY in the .env file.")
