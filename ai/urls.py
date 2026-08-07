@@ -1,7 +1,8 @@
 from django.urls import path
 
-from . import views
+from .views import llama_status, llama_chat
 
 urlpatterns = [
-    path("ask/", views.ask, name="groq_ask"),
+    path("status/", llama_status, name="llama_status"),
+    path("chat/", llama_chat, name="llama_chat"),
 ]

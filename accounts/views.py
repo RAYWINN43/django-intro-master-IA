@@ -1,12 +1,12 @@
-import re
-
-from django.contrib.auth import get_user_model, login
+from django.contrib import messages
+from django.contrib.auth import get_user_model, login, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
-from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.views.decorators.http import require_POST
+
+from .forms import StrictPasswordChangeForm, get_password_requirement_error
 
 
 def index(request):
@@ -15,7 +15,31 @@ def index(request):
 
 @login_required
 def home(request):
-    return HttpResponse(f"Connecte : {request.user.username}")
+    return render(request, "home.html")
+
+
+@login_required
+def profile(request):
+    return render(
+        request,
+        "profile.html",
+        {"password_form": StrictPasswordChangeForm(request.user)},
+    )
+
+
+@login_required
+@require_POST
+def change_password(request):
+    password_form = StrictPasswordChangeForm(request.user, request.POST)
+
+    if not password_form.is_valid():
+        return render(request, "profile.html", {"password_form": password_form})
+
+    user = password_form.save()
+    update_session_auth_hash(request, user)
+    messages.success(request, "Mot de passe modifie avec succes.")
+
+    return redirect("profile")
 
 
 @require_POST
@@ -31,7 +55,7 @@ def register(request):
     if password != password_confirm:
         return render_account_error(request, "Les mots de passe ne correspondent pas.")
 
-    password_error = get_password_error(password)
+    password_error = get_password_requirement_error(password)
     if password_error:
         return render_account_error(request, password_error)
 
@@ -69,19 +93,3 @@ def render_account_error(request, message):
             "register_error": message,
         },
     )
-
-
-def get_password_error(password):
-    if len(password) < 12:
-        return "Le mot de passe doit contenir au moins 12 caracteres."
-
-    if not re.search(r"\d", password):
-        return "Le mot de passe doit contenir un chiffre."
-
-    if not re.search(r"[A-Z]", password) or not re.search(r"[a-z]", password):
-        return "Le mot de passe doit contenir une majuscule et une minuscule."
-
-    if not re.search(r"[^A-Za-z0-9]", password):
-        return "Le mot de passe doit contenir un caractere special."
-
-    return None
