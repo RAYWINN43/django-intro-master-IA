@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="fr" data-theme="green">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Personas générés pour votre projet IWant." />
+    <title>Personas — Projet IWant</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      (() => {
+        const savedTheme = localStorage.getItem("iwant-theme");
+        const themes = ["green", "orange", "violet", "blue"];
+        if (themes.includes(savedTheme)) document.documentElement.dataset.theme = savedTheme;
+      })();
+    </script>
+    <link rel="stylesheet" href="project.css?v=1" />
+    <link rel="stylesheet" href="cursor.css?v=2" />
+    <script src="project.js?v=1" defer></script>
+  </head>
+  <body class="project-body">
+    <header class="project-header">
+      <a class="project-brand" href="/home/" aria-label="IWant, mes projets">
+        <span>IWant</span><small>BETA</small>
+      </a>
+
+      <div class="project-account-controls">
+        <div class="project-theme-switcher" role="group" aria-label="Choisir le thème du site">
+          <button class="project-theme-choice project-theme-choice--green" type="button" data-theme-choice="green" aria-label="Thème vert" aria-pressed="true"></button>
+          <button class="project-theme-choice project-theme-choice--orange" type="button" data-theme-choice="orange" aria-label="Thème orange" aria-pressed="false"></button>
+          <button class="project-theme-choice project-theme-choice--violet" type="button" data-theme-choice="violet" aria-label="Thème violet" aria-pressed="false"></button>
+          <button class="project-theme-choice project-theme-choice--blue" type="button" data-theme-choice="blue" aria-label="Thème bleu" aria-pressed="false"></button>
+        </div>
+
+        <div class="project-account-menu-wrap">
+          <button class="project-menu-toggle" type="button" aria-label="Ouvrir les options du compte" aria-expanded="false" data-project-menu-toggle>
+            <span></span><span></span><span></span>
+          </button>
+          <div class="project-account-menu" data-project-menu hidden>
+            <a href="/profile/">Mon compte</a>
+            <a href="/home/">Mes projets</a>
+            <button type="button" data-project-open-legal>Mentions légales</button>
+          </div>
+        </div>
+
+        <a class="project-avatar" href="/profile/" aria-label="Voir mon compte">S</a>
+      </div>
+    </header>
+
+    <div class="project-layout">
+      <aside class="project-rail" aria-label="Navigation du projet">
+        <div class="project-utilities">
+          <a class="project-utility" href="/home/">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5m6-6-6 6 6 6" /></svg>
+            <span>Retourner sur les projets</span>
+          </a>
+          <button class="project-utility" type="button" data-export-project>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V3m0 0L8 7m4-4 4 4M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7" /></svg>
+            <span>Exporter le projet</span>
+          </button>
+        </div>
+
+        <nav class="project-section-nav" aria-label="Sections générées">
+          <a class="project-nav-item is-active" href="#personas" aria-current="page">
+            <img src="assets/persona.png" alt="" /><span>Personas</span>
+          </a>
+          <a class="project-nav-item" href="#user-story">
+            <img src="assets/user story.png" alt="" /><span>User Story</span>
+          </a>
+          <a class="project-nav-item" href="#backlog">
+            <img src="assets/board.png" alt="" /><span>Backlog</span>
+          </a>
+          <a class="project-nav-item" href="#business-model">
+            <img src="assets/business model.png" alt="" /><span>Business M..</span>
+          </a>
+          <a class="project-nav-item" href="#swot">
+            <img src="assets/swot.png" alt="" /><span>SWOT</span>
+          </a>
+          <a class="project-nav-item" href="#sprint-plan">
+            <img src="assets/sprint planning.png" alt="" /><span>Sprint plan..</span>
+          </a>
+          <a class="project-nav-item" href="#speech">
+            <img src="assets/speech.png" alt="" /><span>Speech</span>
+          </a>
+        </nav>
+      </aside>
+
+      <main class="project-main" id="personas">
+        <div class="project-title-row">
+          <div class="project-title-copy">
+            <div class="project-title-line">
+              <img src="assets/persona.png" alt="" aria-hidden="true" />
+              <h1>Personas</h1>
+            </div>
+            <p>Profils types de vos utilisateurs cibles.</p>
+          </div>
+
+          <div class="project-actions" aria-label="Actions des personas">
+            <button class="project-action project-action--primary" type="button" data-regenerate>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2 1.3 4.7L18 8l-4.7 1.3L12 14l-1.3-4.7L6 8l4.7-1.3L12 2Zm7 11 .8 2.2L22 16l-2.2.8L19 19l-.8-2.2L16 16l2.2-.8L19 13Z" /></svg>
+              <span>Régénérer</span>
+            </button>
+            <button class="project-action" type="button" data-export-section>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V3m0 0L8 7m4-4 4 4M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7" /></svg>
+              <span>Exporter</span>
+            </button>
+          </div>
+        </div>
+
+        <section class="generated-panel" aria-labelledby="generated-title">
+          <h2 id="generated-title">Personas générés (3)</h2>
+          <div class="persona-grid">
+            <article class="persona-card persona-card--green is-selected" data-persona-card data-persona="lucas" role="button" tabindex="0" aria-pressed="true" aria-label="Afficher la fiche détaillée de Lucas">
+              <span class="persona-index">1</span>
+              <button class="persona-more" type="button" aria-label="Options de Lucas"><i></i><i></i><i></i></button>
+              <div class="persona-card-head">
+                <div class="persona-portrait" aria-hidden="true">🧑🏻‍🎓</div>
+                <div>
+                  <h3>Lucas, 20 ans</h3>
+                  <p>Étudiant organisé</p>
+                  <ul>
+                    <li><span aria-hidden="true">▣</span> Étudiant en licence</li>
+                    <li><span aria-hidden="true">⌖</span> Lyon, France</li>
+                    <li><span aria-hidden="true">▤</span> Métier : Étudiant</li>
+                  </ul>
+                </div>
+              </div>
+              <p class="persona-summary">Lucas cherche un moyen simple de partager et trouver des fiches de révision de qualité.</p>
+            </article>
+
+            <article class="persona-card persona-card--violet" data-persona-card data-persona="sarah" role="button" tabindex="0" aria-pressed="false" aria-label="Afficher la fiche détaillée de Sarah">
+              <span class="persona-index">2</span>
+              <button class="persona-more" type="button" aria-label="Options de Sarah"><i></i><i></i><i></i></button>
+              <div class="persona-card-head">
+                <div class="persona-portrait" aria-hidden="true">👩🏻‍💻</div>
+                <div>
+                  <h3>Sarah, 22 ans</h3>
+                  <p>Étudiante engagée</p>
+                  <ul>
+                    <li><span aria-hidden="true">▣</span> Étudiante en master</li>
+                    <li><span aria-hidden="true">⌖</span> Paris, France</li>
+                    <li><span aria-hidden="true">▤</span> Métier : Étudiante</li>
+                  </ul>
+                </div>
+              </div>
+              <p class="persona-summary">Sarah aime collaborer et contribuer à une communauté pour aider les autres étudiants.</p>
+            </article>
+
+            <article class="persona-card persona-card--orange" data-persona-card data-persona="thomas" role="button" tabindex="0" aria-pressed="false" aria-label="Afficher la fiche détaillée de Thomas">
+              <span class="persona-index">3</span>
+              <button class="persona-more" type="button" aria-label="Options de Thomas"><i></i><i></i><i></i></button>
+              <div class="persona-card-head">
+                <div class="persona-portrait" aria-hidden="true">🧑🏼‍💼</div>
+                <div>
+                  <h3>Thomas, 24 ans</h3>
+                  <p>Jeune actif</p>
+                  <ul>
+                    <li><span aria-hidden="true">▣</span> Ingénieur junior</li>
+                    <li><span aria-hidden="true">⌖</span> Toulouse, France</li>
+                    <li><span aria-hidden="true">▤</span> Métier : Salarié</li>
+                  </ul>
+                </div>
+              </div>
+              <p class="persona-summary">Thomas souhaite rester connecté avec ses anciens cours et partager ses connaissances.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="persona-detail" aria-labelledby="detail-title">
+          <h2 id="detail-title">Persona détaillé</h2>
+          <div class="persona-detail-grid">
+            <article class="persona-identity-card" data-persona-detail data-persona="lucas">
+              <div class="persona-identity-head">
+                <div class="persona-portrait persona-portrait--large" data-detail-portrait aria-hidden="true">🧑🏻‍🎓</div>
+                <div>
+                  <h3 data-detail-name>Lucas, 20 ans</h3>
+                  <p data-detail-type>Étudiant organisé</p>
+                  <blockquote data-detail-quote>“Je veux gagner du temps dans mes révisions et réussir mes examens.”</blockquote>
+                </div>
+              </div>
+              <dl>
+                <div><dt>▣ Âge</dt><dd data-detail-age>20 ans</dd></div>
+                <div><dt>⌖ Localisation</dt><dd data-detail-location>Lyon, France</dd></div>
+                <div><dt>▤ Métier</dt><dd data-detail-job>Étudiant en licence</dd></div>
+                <div><dt>♡ Situation</dt><dd data-detail-situation>Célibataire</dd></div>
+                <div><dt>▯ Tech</dt><dd data-detail-tech>À l’aise avec le digital</dd></div>
+              </dl>
+            </article>
+
+            <div class="persona-traits">
+              <article class="trait-card trait-card--green">
+                <h3><span>◎</span> Objectifs</h3>
+                <ul data-detail-objectives><li>Trouver des fiches de révision claires et fiables</li><li>Gagner du temps dans ses révisions</li><li>Réussir ses examens</li><li>Partager ses propres fiches</li></ul>
+              </article>
+              <article class="trait-card trait-card--blue">
+                <h3><span>♡</span> Besoins</h3>
+                <ul data-detail-needs><li>Une plateforme facile à utiliser</li><li>Des fiches bien classées par matière</li><li>Un accès rapide sur mobile</li><li>Une communauté active</li></ul>
+              </article>
+              <article class="trait-card trait-card--red">
+                <h3><span>☹</span> Frustrations</h3>
+                <ul data-detail-frustrations><li>Perdre du temps à chercher des fiches</li><li>Fiches de mauvaise qualité ou incomplètes</li><li>Informations mal organisées</li><li>Pas assez de retours ou d’échanges</li></ul>
+              </article>
+              <article class="trait-card trait-card--orange">
+                <h3><span>◫</span> Comportements</h3>
+                <ul data-detail-behaviors><li>Utilise principalement son smartphone</li><li>Révise le soir et le week-end</li><li>Consulte plusieurs sources avant de faire confiance</li><li>Participe aux forums et groupes d’entraide</li></ul>
+              </article>
+            </div>
+          </div>
+
+          <div class="persona-context">
+            <article>
+              <h3><span>▣</span> Scénario d’usage</h3>
+              <p data-detail-scenario>Lucas a un examen dans 2 semaines. Il recherche des fiches sur un chapitre spécifique, enregistre celles qui l’aident, puis partage ses propres fiches pour aider d’autres étudiants.</p>
+            </article>
+            <article>
+              <h3><span>★</span> Attentes vis-à-vis de la plateforme</h3>
+              <p data-detail-expectations>Facilité d’utilisation, fiabilité du contenu, accès rapide, reconnaissance de sa contribution.</p>
+            </article>
+          </div>
+        </section>
+
+        <p class="project-status" data-project-status aria-live="polite"></p>
+      </main>
+    </div>
+
+    <dialog class="project-dialog" data-project-legal-dialog>
+      <div><h2>Mentions légales</h2><button type="button" data-project-close-dialog aria-label="Fermer">×</button></div>
+      <p>IWant est actuellement proposé en version bêta. Les informations légales complètes seront ajoutées avant la mise en production.</p>
+    </dialog>
+  </body>
+</html>
