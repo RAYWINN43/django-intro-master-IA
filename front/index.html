@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    {% load static %}
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bienvenue</title>
+    <link rel="stylesheet" href="{% static 'styles.css' %}" />
+    <script src="{% static 'app.js' %}" defer></script>
+  </head>
+  <body>
+    <main class="welcome-page" aria-labelledby="welcome-title">
+      <h1 class="welcome-title" id="welcome-title">Bienvenue</h1>
+
+      <img
+        class="welcome-logo"
+        src="{% static 'assets/logo-chat.png' %}"
+        alt="Logo de messagerie"
+      />
+
+      <div class="welcome-actions">
+        <button class="start-button" type="button" data-target="{% url 'account' %}#connexion">
+          C'est parti !
+        </button>
+
+        <a class="register-link" href="{% url 'account' %}#inscription">S'inscrire</a>
+      </div>
+    </main>
+  </body>
+</html>
