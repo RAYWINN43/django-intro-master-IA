@@ -6,7 +6,13 @@ const signupForm = document.querySelector("[data-signup-form]");
 const loginForm = document.querySelector("[data-login-form]");
 
 function getInitialMode() {
-  return window.location.hash.replace("#", "") === "inscription"
+  const hashMode = window.location.hash.replace("#", "");
+
+  if (hashMode === "inscription") {
+    return "inscription";
+  }
+
+  return accountPage?.dataset.initialMode === "inscription"
     ? "inscription"
     : "connexion";
 }
@@ -26,7 +32,9 @@ function showAccountMode(mode) {
     accountHeader.hidden = mode !== "inscription";
   }
 
-  window.location.hash = mode;
+  if (window.location.hash !== `#${mode}`) {
+    window.location.hash = mode;
+  }
 }
 
 switchButtons.forEach((button) => {

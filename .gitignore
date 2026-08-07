@@ -11,6 +11,3 @@ wheels/
 
 # Django
 db.sqlite3
-
-# UV
-uv.lock
