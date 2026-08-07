@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    {% load static %}
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mon profil</title>
+    <link rel="stylesheet" href="{% static 'account.css' %}" />
+    <link rel="stylesheet" href="{% static 'profile.css' %}" />
+    <script src="{% static 'password-rules.js' %}" defer></script>
+    <script src="{% static 'profile.js' %}" defer></script>
+  </head>
+  <body>
+    <header class="account-header">
+      <a class="back-button" href="{% url 'home' %}" aria-label="Retour a l'accueil">
+        <svg viewBox="0 0 48 48" aria-hidden="true">
+          <path d="M31 8 15 24l16 16" />
+        </svg>
+      </a>
+    </header>
+
+    <main class="profile-page">
+      <section class="profile-panel" aria-labelledby="profile-title">
+        <h1 class="profile-title" id="profile-title">Mon profil</h1>
+
+        <dl class="profile-details">
+          <div class="profile-detail">
+            <dt>Pseudo</dt>
+            <dd>{{ user.username }}</dd>
+          </div>
+          <div class="profile-detail">
+            <dt>Email</dt>
+            <dd>{{ user.email }}</dd>
+          </div>
+          <div class="profile-detail">
+            <dt>Derniere connexion</dt>
+            <dd>
+              {% if user.last_login %}
+                {{ user.last_login|date:"d/m/Y H:i" }}
+              {% else %}
+                Premiere connexion
+              {% endif %}
+            </dd>
+          </div>
+        </dl>
+      </section>
+
+      <section class="password-panel" aria-labelledby="password-title">
+        <h2 class="password-title" id="password-title">Modifier mon mot de passe</h2>
+
+        <form class="password-change-form" method="post" action="{% url 'change_password' %}">
+          {% csrf_token %}
+
+          {% for message in messages %}
+            <p class="form-success">{{ message }}</p>
+          {% endfor %}
+
+          {% if password_form.non_field_errors %}
+            <div class="form-error">{{ password_form.non_field_errors }}</div>
+          {% endif %}
+
+          <div class="profile-field">
+            <label for="id_old_password">Mot de passe actuel</label>
+            {{ password_form.old_password }}
+            {% for error in password_form.old_password.errors %}
+              <p class="field-error">{{ error }}</p>
+            {% endfor %}
+          </div>
+
+          <div class="profile-field">
+            <label for="id_new_password1">Nouveau mot de passe</label>
+            {{ password_form.new_password1 }}
+            {% for error in password_form.new_password1.errors %}
+              <p class="field-error">{{ error }}</p>
+            {% endfor %}
+          </div>
+
+          <div class="password-rules password-rules--profile" data-password-rules aria-live="polite">
+            <p>Votre mot de passe doit contenir :</p>
+            <ul>
+              <li data-password-rule="digit">Un chiffre</li>
+              <li data-password-rule="case">Une majuscule, une minuscule</li>
+              <li data-password-rule="special">Un caractere special</li>
+              <li data-password-rule="length">12 caracteres</li>
+            </ul>
+          </div>
+
+          <div class="profile-field">
+            <label for="id_new_password2">Confirmer le nouveau mot de passe</label>
+            {{ password_form.new_password2 }}
+            {% for error in password_form.new_password2.errors %}
+              <p class="field-error">{{ error }}</p>
+            {% endfor %}
+          </div>
+
+          <button class="profile-button" type="submit">Enregistrer</button>
+        </form>
+      </section>
+    </main>
+  </body>
+</html>

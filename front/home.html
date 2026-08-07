@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="fr" data-theme="green">
+  <head>
+    {% load static %}
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Retrouvez vos projets IWant et donnez une direction à votre prochaine idée."
+    />
+    <title>IWant — Espace projets</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      (() => {
+        const savedTheme = localStorage.getItem("iwant-theme");
+        const themes = ["green", "orange", "violet", "blue"];
+
+        if (themes.includes(savedTheme)) {
+          document.documentElement.dataset.theme = savedTheme;
+        }
+      })();
+    </script>
+    <link rel="stylesheet" href="{% static 'home.css' %}?v=1" />
+    <script src="{% static 'home.js' %}?v=1" defer></script>
+  </head>
+  <body>
+    <div class="dashboard-shell">
+      <header class="dashboard-header" aria-label="Navigation principale">
+        <a class="brand" href="{% url 'home' %}" aria-label="IWant, espace projets">
+          <span class="brand-name">IWant</span>
+          <span class="brand-status">BETA</span>
+        </a>
+
+        <div class="account-controls">
+          <div class="theme-switcher" role="group" aria-label="Choisir le thème du site">
+            <button class="theme-choice theme-choice--green" type="button" data-theme-choice="green" aria-label="Thème vert" aria-pressed="true"></button>
+            <button class="theme-choice theme-choice--orange" type="button" data-theme-choice="orange" aria-label="Thème orange" aria-pressed="false"></button>
+            <button class="theme-choice theme-choice--violet" type="button" data-theme-choice="violet" aria-label="Thème violet" aria-pressed="false"></button>
+            <button class="theme-choice theme-choice--blue" type="button" data-theme-choice="blue" aria-label="Thème bleu" aria-pressed="false"></button>
+          </div>
+
+          <div class="account-menu-wrap">
+            <button
+              class="account-menu-toggle"
+              type="button"
+              aria-label="Ouvrir les options du compte"
+              aria-expanded="false"
+              aria-controls="account-menu"
+              data-account-menu-toggle
+            >
+              <span></span><span></span><span></span>
+            </button>
+
+            <div class="account-menu" id="account-menu" data-account-menu hidden>
+              <p class="account-menu-name">{{ user.username }}</p>
+              <a href="{% url 'profile' %}">Mon compte</a>
+              <button type="button" data-open-preferences>Préférences</button>
+              <button type="button" data-open-legal>Mentions légales</button>
+              <form method="post" action="{% url 'admin:logout' %}">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{% url 'account' %}#connexion" />
+                <button class="logout-button" type="submit">Déconnexion</button>
+              </form>
+            </div>
+          </div>
+
+          <a
+            class="user-avatar"
+            href="{% url 'profile' %}"
+            aria-label="Voir le profil de {{ user.username }}"
+            data-username="{{ user.username|escapejs }}"
+            data-user-avatar
+          >{{ user.username|first|upper }}</a>
+        </div>
+      </header>
+
+      <aside class="projects-panel" aria-labelledby="projects-title">
+        <h2 id="projects-title">Mes projets</h2>
+
+        <label class="project-search">
+          <span class="sr-only">Rechercher dans mes projets</span>
+          <img src="{% static 'assets/loupe.png' %}" alt="" aria-hidden="true" />
+          <input
+            type="search"
+            placeholder="Rechercher des projets"
+            autocomplete="off"
+            data-project-search
+          />
+        </label>
+
+        <ul class="project-list" data-project-list>
+          {% for project in projects %}
+            <li
+              class="project-item"
+              data-project-item
+              data-project-name="{{ project.name|default:project.title }}"
+            >
+              <button type="button">
+                <span>{{ project.name|default:project.title|default:"Projet sans titre" }}</span>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" /></svg>
+              </button>
+            </li>
+          {% endfor %}
+        </ul>
+
+        <p class="project-search-empty" data-project-search-empty hidden>
+          Aucun projet ne correspond à cette recherche.
+        </p>
+      </aside>
+
+      <main class="dashboard-main">
+        <section class="idea-workspace" aria-labelledby="welcome-title">
+          <h1 id="welcome-title">Bienvenue dans IWant...</h1>
+
+          <form class="idea-form" data-idea-form>
+            <label class="sr-only" for="project-idea">Que voulez-vous concevoir&nbsp;?</label>
+            <textarea
+              id="project-idea"
+              name="project_idea"
+              rows="5"
+              maxlength="1200"
+              placeholder="Que voulez-vous concevoir aujourd'hui ?"
+              data-project-idea
+            ></textarea>
+
+            <fieldset class="project-type" aria-label="Type de projet" data-project-type data-selected="app">
+              <legend class="sr-only">Choisissez le type de projet</legend>
+              <label class="project-type-option">
+                <input type="radio" name="project_type" value="app" checked />
+                <span>App</span>
+              </label>
+              <label class="project-type-option">
+                <input type="radio" name="project_type" value="web" />
+                <span>Web</span>
+              </label>
+            </fieldset>
+
+            <button class="idea-submit" type="submit" aria-label="Continuer avec cette idée">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M5 12h13M13 6l6 6-6 6" />
+              </svg>
+            </button>
+          </form>
+
+          <div class="prompt-examples" aria-label="Exemples de demandes">
+            <p class="prompt-example">
+              <img src="{% static 'assets/polygonal-star-of-six-points.png' %}" alt="" aria-hidden="true" />
+              <span><strong>JE VEUX</strong> une application pour faire du sport...</span>
+            </p>
+            <p class="prompt-example prompt-example--wide">
+              <img src="{% static 'assets/polygonal-star-of-six-points.png' %}" alt="" aria-hidden="true" />
+              <span><strong>JE VEUX</strong> un site qui me permet de suivre mon activité scolaire...</span>
+            </p>
+          </div>
+
+          <p class="form-feedback" data-form-feedback aria-live="polite"></p>
+        </section>
+      </main>
+    </div>
+
+    <dialog class="dashboard-dialog" data-preferences-dialog>
+      <div class="dialog-heading">
+        <div>
+          <p class="dialog-kicker">Personnalisation</p>
+          <h2>Préférences</h2>
+        </div>
+        <button class="dialog-close" type="button" data-close-dialog aria-label="Fermer">×</button>
+      </div>
+      <p>Choisissez la palette utilisée dans votre espace IWant.</p>
+      <div class="dialog-theme-list" role="group" aria-label="Choisir une palette">
+        <button type="button" data-theme-choice="green"><span class="theme-dot theme-dot--green"></span>Vert</button>
+        <button type="button" data-theme-choice="orange"><span class="theme-dot theme-dot--orange"></span>Orange</button>
+        <button type="button" data-theme-choice="violet"><span class="theme-dot theme-dot--violet"></span>Violet</button>
+        <button type="button" data-theme-choice="blue"><span class="theme-dot theme-dot--blue"></span>Bleu</button>
+      </div>
+    </dialog>
+
+    <dialog class="dashboard-dialog" data-legal-dialog>
+      <div class="dialog-heading">
+        <div>
+          <p class="dialog-kicker">Informations</p>
+          <h2>Mentions légales</h2>
+        </div>
+        <button class="dialog-close" type="button" data-close-dialog aria-label="Fermer">×</button>
+      </div>
+      <p>
+        IWant est actuellement proposé en version bêta. Les informations relatives à
+        l’éditeur, à l’hébergement et à la protection des données seront complétées
+        avant la mise en production.
+      </p>
+    </dialog>
+  </body>
+</html>

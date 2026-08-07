@@ -35,8 +35,8 @@ RUN DJANGO_DEBUG=False python manage.py collectstatic --noinput \
 
 USER django
 
-EXPOSE 8000
+EXPOSE 8001
 
 ENTRYPOINT ["/app/docker/entrypoint.sh"]
 
-CMD ["gunicorn", "django_intro.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "2", "--threads", "4"]
+CMD ["gunicorn", "django_intro.wsgi:application", "--bind", "0.0.0.0:8001", "--workers", "2", "--threads", "4"]

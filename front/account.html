@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Account</title>
     <link rel="stylesheet" href="{% static 'account.css' %}?v=3" />
+    <script src="{% static 'password-rules.js' %}" defer></script>
     <script src="{% static 'account.js' %}?v=3" defer></script>
   </head>
   <body>
@@ -115,7 +116,14 @@
             <div class="signup-password-row">
               <div>
                 <label class="sr-only" for="password">Mot de passe</label>
-                <input id="password" name="password" type="password" placeholder="Mot de passe" required />
+                <input
+                  id="password"
+                  name="password"
+                  type="password"
+                  placeholder="Mot de passe"
+                  data-password-input
+                  required
+                />
               </div>
 
               <div>
@@ -130,13 +138,13 @@
               </div>
             </div>
 
-            <div class="password-rules" aria-live="polite">
+            <div class="password-rules" data-password-rules aria-live="polite">
               <p>Votre mot de passe doit contenir :</p>
               <ul>
-                <li>Un chiffre</li>
-                <li>Une majuscule, une minuscule</li>
-                <li>Un caract&egrave;re sp&eacute;cial</li>
-                <li>12 caract&egrave;res</li>
+                <li data-password-rule="digit">Un chiffre</li>
+                <li data-password-rule="case">Une majuscule, une minuscule</li>
+                <li data-password-rule="special">Un caract&egrave;re sp&eacute;cial</li>
+                <li data-password-rule="length">12 caract&egrave;res</li>
               </ul>
             </div>
           </div>
