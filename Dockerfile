@@ -26,7 +26,7 @@ COPY --from=builder /opt/venv /opt/venv
 
 COPY . .
 
-RUN python manage.py collectstatic --noinput \
+RUN DJANGO_DEBUG=False python manage.py collectstatic --noinput \
     && sed -i 's/\r$//' /app/docker/entrypoint.sh \
     && chmod +x /app/docker/entrypoint.sh \
     && addgroup -S django \

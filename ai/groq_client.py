@@ -7,7 +7,9 @@ class GroqConfigurationError(RuntimeError):
 
 def ask_groq(message):
     if not settings.GROQ_API_KEY:
-        raise GroqConfigurationError("La variable GROQ_API_KEY est manquante dans le .env.")
+        raise GroqConfigurationError(
+            "La variable GROQ_API_KEY est manquante dans le .env."
+        )
 
     try:
         from groq import Groq
