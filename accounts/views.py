@@ -1,5 +1,5 @@
 from django.contrib import messages
-from django.contrib.auth import get_user_model, login, update_session_auth_hash
+from django.contrib.auth import get_user_model, login, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
@@ -16,6 +16,12 @@ def index(request):
 @login_required
 def home(request):
     return render(request, "home.html")
+
+
+@require_POST
+def logout_view(request):
+    logout(request)
+    return redirect("index")
 
 
 @login_required
