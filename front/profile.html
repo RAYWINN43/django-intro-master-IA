@@ -1,101 +1,152 @@
 <!doctype html>
-<html lang="fr">
+<html lang="fr" data-theme="green">
   <head>
     {% load static %}
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Mon profil</title>
+    <title>Mon compte — IWant</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      (() => {
+        const savedTheme = localStorage.getItem("iwant-theme");
+        const themes = ["green", "orange", "violet", "blue"];
+
+        if (themes.includes(savedTheme)) {
+          document.documentElement.dataset.theme = savedTheme;
+        }
+      })();
+    </script>
     <link rel="stylesheet" href="{% static 'account.css' %}" />
-    <link rel="stylesheet" href="{% static 'profile.css' %}" />
+    <link rel="stylesheet" href="{% static 'profile.css' %}?v=2" />
+    <link rel="stylesheet" href="{% static 'cursor.css' %}?v=2" />
     <script src="{% static 'password-rules.js' %}" defer></script>
-    <script src="{% static 'profile.js' %}" defer></script>
+    <script src="{% static 'profile.js' %}?v=2" defer></script>
   </head>
-  <body>
-    <header class="account-header">
-      <a class="back-button" href="{% url 'home' %}" aria-label="Retour a l'accueil">
-        <svg viewBox="0 0 48 48" aria-hidden="true">
-          <path d="M31 8 15 24l16 16" />
-        </svg>
+  <body class="profile-body">
+    <header class="account-header profile-header">
+      <a class="profile-brand" href="{% url 'home' %}" aria-label="IWant, mes projets">
+        <span>IWant</span>
+        <small>BETA</small>
       </a>
+
+      <div class="profile-header-actions">
+        <div class="profile-theme-switcher" role="group" aria-label="Choisir le thème du site">
+          <button class="profile-theme-choice profile-theme-choice--green" type="button" data-theme-choice="green" aria-label="Thème vert" aria-pressed="true"></button>
+          <button class="profile-theme-choice profile-theme-choice--orange" type="button" data-theme-choice="orange" aria-label="Thème orange" aria-pressed="false"></button>
+          <button class="profile-theme-choice profile-theme-choice--violet" type="button" data-theme-choice="violet" aria-label="Thème violet" aria-pressed="false"></button>
+          <button class="profile-theme-choice profile-theme-choice--blue" type="button" data-theme-choice="blue" aria-label="Thème bleu" aria-pressed="false"></button>
+        </div>
+
+        <a class="profile-back-link" href="{% url 'home' %}">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5m6-6-6 6 6 6" /></svg>
+          <span>Retour aux projets</span>
+        </a>
+      </div>
     </header>
 
     <main class="profile-page">
-      <section class="profile-panel" aria-labelledby="profile-title">
-        <h1 class="profile-title" id="profile-title">Mon profil</h1>
+      <div class="profile-heading">
+        <p>Espace personnel</p>
+        <h1 class="profile-title" id="profile-title">Mon compte</h1>
+      </div>
 
-        <dl class="profile-details">
-          <div class="profile-detail">
-            <dt>Pseudo</dt>
-            <dd>{{ user.username }}</dd>
+      <div class="profile-layout">
+        <section class="profile-panel profile-card" aria-labelledby="identity-title">
+          <div class="profile-card-heading">
+            <span class="profile-card-icon" aria-hidden="true">{{ user.username|first|upper }}</span>
+            <div>
+              <h2 id="identity-title">Mes informations</h2>
+              <p>Les informations liées à votre compte IWant.</p>
+            </div>
           </div>
-          <div class="profile-detail">
-            <dt>Email</dt>
-            <dd>{{ user.email }}</dd>
+
+          <dl class="profile-details">
+            <div class="profile-detail">
+              <dt>Pseudo</dt>
+              <dd>{{ user.username }}</dd>
+            </div>
+            <div class="profile-detail">
+              <dt>Email</dt>
+              <dd>{{ user.email }}</dd>
+            </div>
+            <div class="profile-detail">
+              <dt>Dernière connexion</dt>
+              <dd>
+                {% if user.last_login %}
+                  {{ user.last_login|date:"d/m/Y H:i" }}
+                {% else %}
+                  Première connexion
+                {% endif %}
+              </dd>
+            </div>
+          </dl>
+        </section>
+
+        <section class="password-panel profile-card" aria-labelledby="password-title">
+          <div class="profile-card-heading">
+            <span class="profile-card-icon profile-card-icon--lock" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="10" rx="3"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+            </span>
+            <div>
+              <h2 class="password-title" id="password-title">Modifier mon mot de passe</h2>
+              <p>Choisissez un mot de passe unique et sécurisé.</p>
+            </div>
           </div>
-          <div class="profile-detail">
-            <dt>Derniere connexion</dt>
-            <dd>
-              {% if user.last_login %}
-                {{ user.last_login|date:"d/m/Y H:i" }}
-              {% else %}
-                Premiere connexion
-              {% endif %}
-            </dd>
-          </div>
-        </dl>
-      </section>
 
-      <section class="password-panel" aria-labelledby="password-title">
-        <h2 class="password-title" id="password-title">Modifier mon mot de passe</h2>
+          <form class="password-change-form" method="post" action="{% url 'change_password' %}">
+            {% csrf_token %}
 
-        <form class="password-change-form" method="post" action="{% url 'change_password' %}">
-          {% csrf_token %}
-
-          {% for message in messages %}
-            <p class="form-success">{{ message }}</p>
-          {% endfor %}
-
-          {% if password_form.non_field_errors %}
-            <div class="form-error">{{ password_form.non_field_errors }}</div>
-          {% endif %}
-
-          <div class="profile-field">
-            <label for="id_old_password">Mot de passe actuel</label>
-            {{ password_form.old_password }}
-            {% for error in password_form.old_password.errors %}
-              <p class="field-error">{{ error }}</p>
+            {% for message in messages %}
+              <p class="form-success">{{ message }}</p>
             {% endfor %}
-          </div>
 
-          <div class="profile-field">
-            <label for="id_new_password1">Nouveau mot de passe</label>
-            {{ password_form.new_password1 }}
-            {% for error in password_form.new_password1.errors %}
-              <p class="field-error">{{ error }}</p>
-            {% endfor %}
-          </div>
+            {% if password_form.non_field_errors %}
+              <div class="form-error">{{ password_form.non_field_errors }}</div>
+            {% endif %}
 
-          <div class="password-rules password-rules--profile" data-password-rules aria-live="polite">
-            <p>Votre mot de passe doit contenir :</p>
-            <ul>
-              <li data-password-rule="digit">Un chiffre</li>
-              <li data-password-rule="case">Une majuscule, une minuscule</li>
-              <li data-password-rule="special">Un caractere special</li>
-              <li data-password-rule="length">12 caracteres</li>
-            </ul>
-          </div>
+            <div class="profile-field">
+              <label for="id_old_password">Mot de passe actuel</label>
+              {{ password_form.old_password }}
+              {% for error in password_form.old_password.errors %}
+                <p class="field-error">{{ error }}</p>
+              {% endfor %}
+            </div>
 
-          <div class="profile-field">
-            <label for="id_new_password2">Confirmer le nouveau mot de passe</label>
-            {{ password_form.new_password2 }}
-            {% for error in password_form.new_password2.errors %}
-              <p class="field-error">{{ error }}</p>
-            {% endfor %}
-          </div>
+            <div class="profile-field">
+              <label for="id_new_password1">Nouveau mot de passe</label>
+              {{ password_form.new_password1 }}
+              {% for error in password_form.new_password1.errors %}
+                <p class="field-error">{{ error }}</p>
+              {% endfor %}
+            </div>
 
-          <button class="profile-button" type="submit">Enregistrer</button>
-        </form>
-      </section>
+            <div class="password-rules password-rules--profile" data-password-rules aria-live="polite">
+              <p>Votre mot de passe doit contenir :</p>
+              <ul>
+                <li data-password-rule="digit">Un chiffre</li>
+                <li data-password-rule="case">Une majuscule, une minuscule</li>
+                <li data-password-rule="special">Un caractère spécial</li>
+                <li data-password-rule="length">12 caractères</li>
+              </ul>
+            </div>
+
+            <div class="profile-field">
+              <label for="id_new_password2">Confirmer le nouveau mot de passe</label>
+              {{ password_form.new_password2 }}
+              {% for error in password_form.new_password2.errors %}
+                <p class="field-error">{{ error }}</p>
+              {% endfor %}
+            </div>
+
+            <button class="profile-button" type="submit">Enregistrer les modifications</button>
+          </form>
+        </section>
+      </div>
     </main>
   </body>
 </html>

@@ -443,7 +443,7 @@ a {
   scrollbar-width: thin;
 }
 
-.project-item button {
+.project-item a {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -456,11 +456,12 @@ a {
   color: #fff;
   background: rgba(255, 255, 255, 0.09);
   text-align: left;
+  text-decoration: none;
   cursor: pointer;
   transition: background 180ms ease, transform 180ms ease;
 }
 
-.project-item button:hover {
+.project-item a:hover {
   background: rgba(255, 255, 255, 0.18);
   transform: translateX(2px);
 }
