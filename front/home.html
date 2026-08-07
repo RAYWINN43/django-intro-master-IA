@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    {% load static %}
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Accueil</title>
+    <link rel="stylesheet" href="{% static 'account.css' %}" />
+    <link rel="stylesheet" href="{% static 'profile.css' %}" />
+  </head>
+  <body>
+    <main class="home-page">
+      <p class="home-status">Connecte : {{ user.username }}</p>
+      <a class="profile-button" href="{% url 'profile' %}">Voir mon profil</a>
+    </main>
+  </body>
+</html>
