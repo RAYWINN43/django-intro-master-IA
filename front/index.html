@@ -4,27 +4,113 @@
     {% load static %}
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Bienvenue</title>
-    <link rel="stylesheet" href="{% static 'styles.css' %}" />
-    <script src="{% static 'app.js' %}" defer></script>
+    <meta
+      name="description"
+      content="IWant transforme votre idée en lignes directrices pour votre projet web ou mobile."
+    />
+    <title>IWant — Donnez une direction à votre projet</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,600;1,700;1,800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="{% static 'styles.css' %}?v=5" />
+    <script src="{% static 'app.js' %}?v=4" defer></script>
   </head>
   <body>
-    <main class="welcome-page" aria-labelledby="welcome-title">
-      <h1 class="welcome-title" id="welcome-title">Bienvenue</h1>
+    <div class="home-shell">
+      <header class="site-header" aria-label="Navigation principale">
+        <a class="brand" href="{% url 'index' %}" aria-label="IWant, accueil">
+          <span class="brand-name">IWant</span>
+          <span class="brand-status">BETA</span>
+        </a>
 
-      <img
-        class="welcome-logo"
-        src="{% static 'assets/logo-chat.png' %}"
-        alt="Logo de messagerie"
-      />
+        <a class="login-link" href="{% url 'account' %}#connexion">Se connecter</a>
+      </header>
 
-      <div class="welcome-actions">
-        <button class="start-button" type="button" data-target="{% url 'account' %}#connexion">
-          C'est parti !
-        </button>
+      <main class="home-main">
+        <section class="hero" aria-labelledby="hero-title">
+          <div class="hero-copy">
+            <h1 id="hero-title">Un projet ? Il suffit de dire</h1>
+            <p class="hero-subtitle">
+              Avec IWant, un prompt devient un
+              <span class="project-help">
+                <button
+                  class="project-term"
+                  type="button"
+                  aria-describedby="project-tooltip"
+                >projet*</button><span class="project-punctuation">.</span>
+                <span class="project-tooltip" id="project-tooltip" role="tooltip">
+                  IWant ne crée pas le projet entier&nbsp;: il vous aide à structurer vos idées et vous donne un fil directeur.
+                </span>
+              </span>
+            </p>
+          </div>
 
-        <a class="register-link" href="{% url 'account' %}#inscription">S'inscrire</a>
-      </div>
-    </main>
+          <div class="hero-echo" aria-hidden="true">
+            <span>Je veux</span>
+            <span>Je veux</span>
+            <span>Je veux</span>
+          </div>
+        </section>
+
+        <section class="idea-section" aria-label="Décrivez votre idée de projet">
+          <form class="idea-form" data-idea-form>
+            <label class="sr-only" for="project-idea">Que voulez-vous concevoir&nbsp;?</label>
+            <textarea
+              id="project-idea"
+              name="project_idea"
+              rows="5"
+              maxlength="1200"
+              placeholder="Que voulez-vous concevoir aujourd'hui ?"
+              data-project-idea
+            ></textarea>
+
+            <fieldset class="project-type" aria-label="Type de projet" data-project-type data-selected="app">
+              <legend class="sr-only">Choisissez le type de projet</legend>
+
+              <label class="project-type-option">
+                <input type="radio" name="project_type" value="app" checked />
+                <span>App</span>
+              </label>
+
+              <label class="project-type-option">
+                <input type="radio" name="project_type" value="web" />
+                <span>Web</span>
+              </label>
+            </fieldset>
+
+            <button class="idea-submit" type="submit" aria-label="Continuer avec cette idée">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M5 12h13M13 6l6 6-6 6" />
+              </svg>
+            </button>
+          </form>
+
+          <div class="prompt-examples" aria-label="Exemples de demandes">
+            <p class="prompt-example">
+              <img
+                src="{% static 'assets/polygonal-star-of-six-points.png' %}"
+                alt=""
+                aria-hidden="true"
+              />
+              <span><strong>JE VEUX</strong> une application pour faire du sport...</span>
+            </p>
+
+            <p class="prompt-example prompt-example--wide">
+              <img
+                src="{% static 'assets/polygonal-star-of-six-points.png' %}"
+                alt=""
+                aria-hidden="true"
+              />
+              <span><strong>JE VEUX</strong> un site qui me permet de suivre mon activité scolaire...</span>
+            </p>
+          </div>
+
+          <p class="form-feedback" data-form-feedback aria-live="polite"></p>
+        </section>
+      </main>
+    </div>
   </body>
 </html>

@@ -1,12 +1,11 @@
-import json
-from unittest.mock import patch
+from django.test import SimpleTestCase
 
-from django.contrib.auth import get_user_model
-from django.test import TestCase
-from django.urls import reverse
+from ai.llama_service import LlamaService
 
-from .groq_client import GroqConfigurationError
 
+class LlamaServiceTests(SimpleTestCase):
+    def test_service_reads_configuration_from_env(self):
+        service = LlamaService()
 
 class GroqAskViewTests(TestCase):
     def setUp(self):
