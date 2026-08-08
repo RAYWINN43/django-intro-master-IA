@@ -25,6 +25,11 @@ def home(request):
     return render(request, "home.html", {"projects": projects})
 
 
+@login_required
+def project_page(request):
+    return render(request, "project.html")
+
+
 @require_POST
 def logout_view(request):
     logout(request)

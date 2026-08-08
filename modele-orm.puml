@@ -1,0 +1,42 @@
+@startuml
+title Modèle ORM - IWant
+
+hide circle
+skinparam backgroundColor transparent
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam linetype ortho
+
+entity "USER" as User {
+  * id : bigint <<PK>>
+  --
+  username : string
+  email : string
+  password : string
+  last_login : datetime
+  is_staff : boolean
+  is_superuser : boolean
+}
+
+entity "PROFILE" as Profile {
+  * id : bigint <<PK>>
+  --
+  user_id : bigint <<FK>>
+  points : int
+}
+
+entity "GROQ_ANALYSIS" as GroqAnalysis {
+  * id : bigint <<PK>>
+  --
+  user_id : bigint <<FK>>
+  prompt : text
+  response_text : text
+  response_json : json
+  created_at : datetime
+  updated_at : datetime
+}
+
+User ||--|| Profile : possède
+User ||--o{ GroqAnalysis : crée
+
+@enduml
