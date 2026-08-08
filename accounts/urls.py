@@ -3,7 +3,15 @@ from django.urls import path
 from django.views.generic import RedirectView
 
 from .forms import EmailOrUsernameAuthenticationForm
-from .views import change_password, home, index, logout_view, profile, register
+from .views import (
+    change_password,
+    home,
+    index,
+    logout_view,
+    profile,
+    project_page,
+    register,
+)
 
 login_view = auth_views.LoginView.as_view(
     template_name="account.html",
@@ -19,6 +27,7 @@ urlpatterns = [
     path("login/", login_view, name="login"),
     path("register/", register, name="register"),
     path("home/", home, name="home"),
+    path("project.html", project_page, name="project_page"),
     path("logout/", logout_view, name="logout"),
     path("profile/", profile, name="profile"),
     path("profile/change-password/", change_password, name="change_password"),

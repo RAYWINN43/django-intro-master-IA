@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="fr" data-theme="green">
   <head>
+    {% load static %}
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="Personas générés pour votre projet IWant." />
@@ -18,13 +19,13 @@
         if (themes.includes(savedTheme)) document.documentElement.dataset.theme = savedTheme;
       })();
     </script>
-    <link rel="stylesheet" href="project.css?v=1" />
-    <link rel="stylesheet" href="cursor.css?v=2" />
-    <script src="project.js?v=1" defer></script>
+    <link rel="stylesheet" href="{% static 'project.css' %}?v=2" />
+    <link rel="stylesheet" href="{% static 'cursor.css' %}?v=2" />
+    <script src="{% static 'project.js' %}?v=2" defer></script>
   </head>
   <body class="project-body">
     <header class="project-header">
-      <a class="project-brand" href="/home/" aria-label="IWant, mes projets">
+      <a class="project-brand" href="{% url 'home' %}" aria-label="IWant, mes projets">
         <span>IWant</span><small>BETA</small>
       </a>
 
@@ -41,20 +42,31 @@
             <span></span><span></span><span></span>
           </button>
           <div class="project-account-menu" data-project-menu hidden>
-            <a href="/profile/">Mon compte</a>
-            <a href="/home/">Mes projets</a>
+            <p class="project-account-menu-name">{{ user.username }}</p>
+            <a href="{% url 'profile' %}">Mon compte</a>
+            <button type="button" data-project-open-preferences>Préférences</button>
             <button type="button" data-project-open-legal>Mentions légales</button>
+            <form method="post" action="{% url 'logout' %}">
+              {% csrf_token %}
+              <button class="project-logout-button" type="submit">Déconnexion</button>
+            </form>
           </div>
         </div>
 
-        <a class="project-avatar" href="/profile/" aria-label="Voir mon compte">S</a>
+        <a
+          class="project-avatar"
+          href="{% url 'profile' %}"
+          aria-label="Voir le profil de {{ user.username }}"
+          data-username="{{ user.username|escapejs }}"
+          data-user-avatar
+        >{{ user.username|first|upper }}</a>
       </div>
     </header>
 
     <div class="project-layout">
       <aside class="project-rail" aria-label="Navigation du projet">
         <div class="project-utilities">
-          <a class="project-utility" href="/home/">
+          <a class="project-utility" href="{% url 'home' %}">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5m6-6-6 6 6 6" /></svg>
             <span>Retourner sur les projets</span>
           </a>
@@ -66,25 +78,25 @@
 
         <nav class="project-section-nav" aria-label="Sections générées">
           <a class="project-nav-item is-active" href="#personas" aria-current="page">
-            <img src="assets/persona.png" alt="" /><span>Personas</span>
+            <img src="{% static 'assets/persona.png' %}" alt="" /><span>Personas</span>
           </a>
           <a class="project-nav-item" href="#user-story">
-            <img src="assets/user story.png" alt="" /><span>User Story</span>
+            <img src="{% static 'assets/user story.png' %}" alt="" /><span>User Story</span>
           </a>
           <a class="project-nav-item" href="#backlog">
-            <img src="assets/board.png" alt="" /><span>Backlog</span>
+            <img src="{% static 'assets/board.png' %}" alt="" /><span>Backlog</span>
           </a>
           <a class="project-nav-item" href="#business-model">
-            <img src="assets/business model.png" alt="" /><span>Business M..</span>
+            <img src="{% static 'assets/business model.png' %}" alt="" /><span>Business M..</span>
           </a>
           <a class="project-nav-item" href="#swot">
-            <img src="assets/swot.png" alt="" /><span>SWOT</span>
+            <img src="{% static 'assets/swot.png' %}" alt="" /><span>SWOT</span>
           </a>
           <a class="project-nav-item" href="#sprint-plan">
-            <img src="assets/sprint planning.png" alt="" /><span>Sprint plan..</span>
+            <img src="{% static 'assets/sprint planning.png' %}" alt="" /><span>Sprint plan..</span>
           </a>
           <a class="project-nav-item" href="#speech">
-            <img src="assets/speech.png" alt="" /><span>Speech</span>
+            <img src="{% static 'assets/speech.png' %}" alt="" /><span>Speech</span>
           </a>
         </nav>
       </aside>
@@ -93,7 +105,7 @@
         <div class="project-title-row">
           <div class="project-title-copy">
             <div class="project-title-line">
-              <img src="assets/persona.png" alt="" aria-hidden="true" />
+              <img src="{% static 'assets/persona.png' %}" alt="" aria-hidden="true" />
               <h1>Personas</h1>
             </div>
             <p>Profils types de vos utilisateurs cibles.</p>
@@ -226,6 +238,17 @@
         <p class="project-status" data-project-status aria-live="polite"></p>
       </main>
     </div>
+
+    <dialog class="project-dialog" data-project-preferences-dialog>
+      <div><h2>Préférences</h2><button type="button" data-project-close-dialog aria-label="Fermer">×</button></div>
+      <p>Choisissez la palette utilisée dans votre espace IWant.</p>
+      <div class="project-dialog-theme-list" role="group" aria-label="Choisir une palette">
+        <button type="button" data-theme-choice="green"><span class="project-theme-dot project-theme-dot--green"></span>Vert</button>
+        <button type="button" data-theme-choice="orange"><span class="project-theme-dot project-theme-dot--orange"></span>Orange</button>
+        <button type="button" data-theme-choice="violet"><span class="project-theme-dot project-theme-dot--violet"></span>Violet</button>
+        <button type="button" data-theme-choice="blue"><span class="project-theme-dot project-theme-dot--blue"></span>Bleu</button>
+      </div>
+    </dialog>
 
     <dialog class="project-dialog" data-project-legal-dialog>
       <div><h2>Mentions légales</h2><button type="button" data-project-close-dialog aria-label="Fermer">×</button></div>
