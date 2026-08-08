@@ -1,0 +1,41 @@
+@startuml
+title Architecture technique - IWant
+
+left to right direction
+
+skinparam backgroundColor transparent
+skinparam shadowing false
+skinparam componentStyle rectangle
+skinparam defaultFontName Arial
+
+actor "Utilisateur" as User
+
+rectangle "Navigateur" as Browser {
+  component "Interface IWant\nHTML / CSS / JavaScript" as Front
+}
+
+node "Serveur web" as Web {
+  component "Django / Gunicorn" as Django
+  component "accounts\nAuthentification et profil" as Accounts
+  component "ai\nPrompt et historique IA" as Ai
+  component "WhiteNoise\nFichiers statiques" as Static
+}
+
+database "PostgreSQL\nUtilisateurs, profils,\nprompts et réponses IA" as Postgres
+cloud "API Groq\nllama-3.3-70b-versatile" as Groq
+queue "Redis\nBroker et résultats" as Redis
+node "Worker Celery" as Celery
+
+User --> Front : HTTP / HTTPS
+Front --> Django : Session + CSRF
+Django --> Accounts : Routes compte
+Django --> Ai : Routes IA
+Accounts --> Postgres : ORM Django
+Ai --> Postgres : Enregistrement analyse
+Ai --> Groq : Prompt système + idée
+Groq --> Ai : Réponse structurée
+Django --> Static : Assets statiques
+Django ..> Redis : Infrastructure asynchrone
+Redis ..> Celery : File de tâches
+
+@enduml

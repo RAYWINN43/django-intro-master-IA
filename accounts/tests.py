@@ -123,7 +123,7 @@ class AuthenticationViewsTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.user.username)
         self.assertContains(response, self.user.email)
-        self.assertContains(response, "Derniere connexion")
+        self.assertContains(response, "Dernière connexion")
 
     def test_home_displays_only_the_connected_users_projects(self):
         other_user = get_user_model().objects.create_user(
