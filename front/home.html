@@ -102,8 +102,8 @@
               data-project-name="{{ project.prompt }}"
               data-project-url="{% url 'groq_analysis_detail' project.pk %}"
             >
-              <a href="{% static 'project.html' %}?project={{ project.id|default:forloop.counter }}">
-                <span>{{ project.name|default:project.title|default:"Projet sans titre" }}</span>
+              <a href="{% url 'project_page' %}?project={{ project.id|default:forloop.counter }}">
+                <span>{{ project.prompt|truncatechars:42|default:"Projet sans titre" }}</span>
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" /></svg>
               </a>
             </li>
