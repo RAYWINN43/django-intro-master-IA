@@ -1,0 +1,1 @@
+Write a SWOT report for the project you're being given.

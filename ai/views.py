@@ -7,7 +7,8 @@ from django.urls import reverse
 from django.views.decorators.http import require_GET, require_POST
 from groq import GroqError
 
-from .groq_client import GroqConfigurationError, ask_groq
+from ai.groq_client import GroqConfigurationError
+from ai.langgraph import ask_groq
 from .llama_service import LlamaService
 from .models import GroqAnalysis
 
@@ -75,7 +76,7 @@ def groq_ask(request):
         )
 
     try:
-        answer = ask_groq(message)
+        answer = str(ask_groq(message))
     except GroqConfigurationError as exc:
         return JsonResponse(
             {"error": str(exc)},

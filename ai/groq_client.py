@@ -1,6 +1,5 @@
 from django.conf import settings
 from pathlib import Path
-from ai.langgraph import project_graph
 
 
 class GroqConfigurationError(RuntimeError):
@@ -53,14 +52,5 @@ class GroqClient:
 
         return completion.choices[0].message.content or ""
 
-
 def get_groq_client():
     return GroqClient()
-
-
-def ask_groq(message):
-
-    result = project_graph.invoke({
-        "idea": message,
-    })
-    return result

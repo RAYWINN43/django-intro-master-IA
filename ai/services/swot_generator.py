@@ -1,4 +1,4 @@
-from groq_client import GroqClient
+from ai.groq_client import GroqClient
 from pathlib import Path
 
 class SWOTGenerator:

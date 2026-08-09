@@ -1,9 +1,9 @@
 from dataclasses import dataclass
-from services.project_generator import ProjectGenerator
-from services.persona_generator import PersonaGenerator
+from ai.services.project_generator import ProjectGenerator
+from ai.services.persona_generator import PersonaGenerator
 from ai.services.storymap_generator import StorymapGenerator
-from services.backlog_generator import BacklogGenerator
-from services.swot_generator import SWOTGenerator
+from ai.services.backlog_generator import BacklogGenerator
+from ai.services.swot_generator import SWOTGenerator
 
 @dataclass
 class ProjectContext:
@@ -19,47 +19,29 @@ class ProjectContext:
     swot=None
 
 def generate_project(state):
-
-    project = ProjectGenerator().generate(
+    return {"project" : ProjectGenerator().generate(
         state["idea"]
-    )
-
-    state["project"] = project
-
-    return state
+    )}
 
 def generate_personas(state):
-
-    state["personas"] = (
-        PersonaGenerator()
-        .generate(state["project"])
-    )
-
-    return state
+    return {"personas" : PersonaGenerator().generate(
+        state["project"]
+        )}
 
 def generate_storymap(state):
 
-    state["storymap"] = (
-        StorymapGenerator()
-        .generate(state["project"])
-    )
-
-    return state
+    return {"storymap": StorymapGenerator().generate(
+        state["project"]
+    )}
 
 def generate_backlog(state):
 
-    state["backlog"] = (
-        BacklogGenerator()
-        .generate(state["project"])
-    )
-
-    return state
+    return {"backlog": BacklogGenerator().generate(
+        state["storymap"]
+    )}
 
 def generate_swot(state):
 
-    state["swot"] = (
-        SWOTGenerator()
-        .generate(state["project"])
-    )
-
-    return state
+    return {"swot": SWOTGenerator().generate(
+        state["backlog"]
+    )}

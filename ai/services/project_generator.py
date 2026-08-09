@@ -13,9 +13,4 @@ class ProjectGenerator:
                 "ai/prompts/project.md"
             ).read_text()
 
-        response = self.llm.chat(
-            pre_prompt,
-            idea,
-        )
-
-        return response
+        return self.llm.chat(pre_prompt, idea)
