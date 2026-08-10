@@ -476,6 +476,16 @@ a {
   font-weight: 600;
 }
 
+.persona-loading {
+  margin: 18px 0 0;
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 15px;
+}
+
+.persona-loading[hidden] {
+  display: none;
+}
+
 .persona-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -587,7 +597,8 @@ a {
   background: linear-gradient(145deg, #9a6fc4, #53377a);
 }
 
-.persona-identity-card[data-persona="sarah"] .persona-identity-head > div:last-child > p {
+.persona-identity-card[data-persona="sarah"] .persona-identity-head > div:last-child > p,
+.persona-identity-card[data-persona-color="violet"] .persona-identity-head > div:last-child > p {
   color: #b788e2;
 }
 
@@ -595,8 +606,17 @@ a {
   background: linear-gradient(145deg, #f3aa39, #d06a24);
 }
 
-.persona-identity-card[data-persona="thomas"] .persona-identity-head > div:last-child > p {
+.persona-identity-card[data-persona="thomas"] .persona-identity-head > div:last-child > p,
+.persona-identity-card[data-persona-color="orange"] .persona-identity-head > div:last-child > p {
   color: #f3a220;
+}
+
+.persona-identity-card[data-persona-color="violet"] .persona-portrait {
+  background: linear-gradient(145deg, #9a6fc4, #53377a);
+}
+
+.persona-identity-card[data-persona-color="orange"] .persona-portrait {
+  background: linear-gradient(145deg, #f3aa39, #d06a24);
 }
 
 .persona-card--violet .persona-card-head > div:last-child > p { color: #b788e2; }

@@ -1,6 +1,4 @@
 from django.conf import settings
-from pathlib import Path
-
 
 class GroqConfigurationError(RuntimeError):
     pass
@@ -32,12 +30,23 @@ class GroqClient:
 
         self.client = Groq(api_key=settings.GROQ_API_KEY)
 
-    def chat(self, system_prompt: str, user_prompt: str):
+    def chat(
+        self,
+        system_prompt: str,
+        user_prompt: str,
+        max_tokens=1600,
+        response_format=None,
+        temperature=0.2,
+    ):
+        request_options = {}
+        if response_format:
+            request_options["response_format"] = response_format
+
         completion = self.client.chat.completions.create(
             model=settings.GROQ_MODEL,
-            temperature=0,
+            temperature=temperature,
             top_p=1,
-            max_tokens=1600,
+            max_tokens=max_tokens,
             messages=[
                 {
                     "role": "system",
@@ -48,9 +57,11 @@ class GroqClient:
                     "content": user_prompt,
                 },
             ],
+            **request_options,
         )
 
         return completion.choices[0].message.content or ""
+
 
 def get_groq_client():
     return GroqClient()
