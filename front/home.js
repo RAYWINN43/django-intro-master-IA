@@ -361,6 +361,14 @@ function addProjectToList(project) {
   filterProjects();
 }
 
+function openGeneratedProject(project) {
+  if (!project?.id) {
+    return;
+  }
+
+  window.location.assign(`/project.html?project=${encodeURIComponent(project.id)}`);
+}
+
 const avatar = document.querySelector("[data-user-avatar]");
 if (avatar) {
   const avatarColors = ["#6cc46b", "#d06d4b", "#8c52ad", "#477dba", "#d7933e", "#3b9c92"];
@@ -440,10 +448,9 @@ if (ideaForm && ideaInput && formFeedback) {
     submitButton?.removeAttribute("disabled");
 
     if (data?.project) {
-      addProjectToList(data.project);
-      showProjectDetails(data.project);
+      formFeedback.textContent = "Projet généré, ouverture de la page projet...";
+      openGeneratedProject(data.project);
       ideaInput.value = "";
-      formFeedback.textContent = "";
     }
   });
 }

@@ -40,6 +40,15 @@ class AuthenticationViewsTests(TestCase):
         self.assertRedirects(response, reverse("index"))
         self.assertIsNone(self.client.session.get("_auth_user_id"))
 
+    def test_current_user_returns_connected_user(self):
+        self.client.force_login(self.user)
+
+        response = self.client.get(reverse("current_user"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["username"], self.user.username)
+        self.assertEqual(response.json()["initial"], "T")
+
     def test_register_creates_and_connects_user(self):
         response = self.client.post(
             reverse("register"),

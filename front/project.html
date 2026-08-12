@@ -21,7 +21,7 @@
     </script>
     <link rel="stylesheet" href="{% static 'project.css' %}?v=3" />
     <link rel="stylesheet" href="{% static 'cursor.css' %}?v=2" />
-    <script src="{% static 'project.js' %}?v=4" defer></script>
+    <script src="{% static 'project.js' %}?v=8" defer></script>
   </head>
   <body class="project-body personas-page">
     <header class="project-header">
@@ -42,7 +42,7 @@
             <span></span><span></span><span></span>
           </button>
           <div class="project-account-menu" data-project-menu hidden>
-            <p class="project-account-menu-name">{{ user.username }}</p>
+            <p class="project-account-menu-name" data-project-account-name>{{ user.username }}</p>
             <a href="{% url 'profile' %}">Mon compte</a>
             <button type="button" data-project-open-preferences>Préférences</button>
             <button type="button" data-project-open-legal>Mentions légales</button>
@@ -78,20 +78,20 @@
 
         <section class="project-prompt-card" aria-labelledby="project-prompt-heading">
           <h2 id="project-prompt-heading">Prompt du projet</h2>
-          <p data-project-prompt>Fais-moi une application de suivi pour mes cours.</p>
+          <p data-project-prompt>{{ project.prompt|default:"Ouvrez un projet depuis Mes projets." }}</p>
         </section>
 
         <nav class="project-section-nav" aria-label="Sections générées">
           <a class="project-nav-item is-active" href="#personas" aria-current="page">
             <img src="{% static 'assets/persona.png' %}" alt="" /><span>Personas</span>
           </a>
-          <a class="project-nav-item" href="#user-story">
+          <a class="project-nav-item" href="/static/user-story.html" data-project-page>
             <img src="{% static 'assets/user story.png' %}" alt="" /><span>User Story</span>
           </a>
-          <a class="project-nav-item" href="#backlog">
+          <a class="project-nav-item" href="/static/backlog.html" data-project-page>
             <img src="{% static 'assets/board.png' %}" alt="" /><span>Backlog</span>
           </a>
-          <a class="project-nav-item" href="#business-model">
+          <a class="project-nav-item" href="/static/business-model.html" data-project-page>
             <img src="{% static 'assets/business model.png' %}" alt="" /><span>Business M..</span>
           </a>
           <a class="project-nav-item" href="#swot">
