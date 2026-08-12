@@ -16,6 +16,7 @@ from ai.services.backlog_generator import BacklogGenerator
 from ai.services.business_model_generator import BusinessModelGenerator
 from ai.services.persona_generator import PersonaGenerator
 from ai.services.storymap_generator import StorymapGenerator
+
 from .llama_service import LlamaService
 from .models import GroqAnalysis
 
@@ -193,11 +194,11 @@ def normalize_backlog_payload(raw_response):
 def normalize_swot_payload(raw_response):
     payload = coerce_payload(raw_response)
     if not isinstance(payload, dict):
-        raise ValueError("La réponse IA doit contenir une SWOT.")
+        raise TypeError("La réponse IA doit contenir une SWOT.")
 
     swot = payload.get("swot", {})
     if not isinstance(swot, dict):
-        raise ValueError("La réponse IA doit contenir une SWOT.")
+        raise TypeError("La réponse IA doit contenir une SWOT.")
 
     summary = payload.get("summary", {})
     summary = summary if isinstance(summary, dict) else {}
@@ -221,11 +222,11 @@ def normalize_swot_payload(raw_response):
 def normalize_business_model_payload(raw_response):
     payload = coerce_payload(raw_response)
     if not isinstance(payload, dict):
-        raise ValueError("La réponse IA doit contenir un Business Model.")
+        raise TypeError("La réponse IA doit contenir un Business Model.")
 
     canvas = payload.get("business_model_canvas", {})
     if not isinstance(canvas, dict):
-        raise ValueError("La réponse IA doit contenir un Business Model Canvas.")
+        raise TypeError("La réponse IA doit contenir un Business Model Canvas.")
 
     metrics = payload.get("metrics", {})
     metrics = metrics if isinstance(metrics, dict) else {}
@@ -331,7 +332,7 @@ def get_cached_project_artifact(analysis, cache_key, normalizer):
 
     try:
         return normalizer(artifact)
-    except ValueError:
+    except (TypeError, ValueError):
         return None
 
 
@@ -496,7 +497,7 @@ def generate_project_artifact(request, analysis_id, config):
         return JsonResponse({"error": str(exc)}, status=503)
     except GroqError as exc:
         return build_groq_error_response(exc)
-    except ValueError as exc:
+    except (TypeError, ValueError) as exc:
         return JsonResponse({"error": str(exc)}, status=502)
 
     cache_project_artifact(analysis, config["cache_key"], artifact)

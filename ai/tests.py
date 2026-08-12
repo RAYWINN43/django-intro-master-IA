@@ -27,11 +27,9 @@ class LlamaServiceTests(SimpleTestCase):
 
 class PersonaGenerationTests(SimpleTestCase):
     def test_extract_json_payload_accepts_fenced_json(self):
-        payload = extract_json_payload(
-            """```json
+        payload = extract_json_payload("""```json
 {"personas": []}
-```"""
-        )
+```""")
 
         self.assertEqual(payload, {"personas": []})
 
@@ -238,8 +236,8 @@ class GroqAnalysisViewsTests(TestCase):
                         "scenario": "Karim consulte la page sur mobile.",
                         "expectations": "Resultat rapide.",
                     },
-                ]
-            }
+                ],
+            },
         )
         self.client.force_login(self.user)
 
@@ -267,7 +265,7 @@ class GroqAnalysisViewsTests(TestCase):
                 },
                 {"id": "persona_2", "name": "Sarah", "card_color": "violet"},
                 {"id": "persona_3", "name": "Karim", "card_color": "orange"},
-            ]
+            ],
         }
         self.analysis.save(update_fields=["response_json"])
         generator = generator_class.return_value
@@ -277,8 +275,8 @@ class GroqAnalysisViewsTests(TestCase):
                     {"id": "persona_1", "name": "Nina"},
                     {"id": "persona_2", "name": "Omar"},
                     {"id": "persona_3", "name": "Claire"},
-                ]
-            }
+                ],
+            },
         )
         self.client.force_login(self.user)
 
@@ -301,7 +299,7 @@ class GroqAnalysisViewsTests(TestCase):
                 {"id": "persona_1", "name": "A", "card_color": "green"},
                 {"id": "persona_2", "name": "B", "card_color": "violet"},
                 {"id": "persona_3", "name": "C", "card_color": "orange"},
-            ]
+            ],
         }
         self.analysis.save(update_fields=["response_json"])
         self.client.force_login(self.user)
@@ -343,9 +341,9 @@ class GroqAnalysisViewsTests(TestCase):
                         "points": 5,
                         "epic": "Authentification",
                         "acceptance_criteria": ["L'utilisateur peut saisir son email"],
-                    }
-                ]
-            }
+                    },
+                ],
+            },
         )
         self.client.force_login(self.user)
 
@@ -375,9 +373,9 @@ class GroqAnalysisViewsTests(TestCase):
                         "status": "A faire",
                         "epic": "Authentification",
                         "acceptance_criteria": ["L'utilisateur peut saisir son email"],
-                    }
-                ]
-            }
+                    },
+                ],
+            },
         )
         self.client.force_login(self.user)
 
@@ -415,7 +413,7 @@ class GroqAnalysisViewsTests(TestCase):
                     "launch_time": "3 - 6 mois",
                     "estimated_profitability": "Moyenne",
                 },
-            }
+            },
         )
         self.client.force_login(self.user)
 

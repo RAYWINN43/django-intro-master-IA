@@ -1,5 +1,6 @@
-from ai.groq_client import GroqClient
 from pathlib import Path
+
+from ai.groq_client import GroqClient
 
 
 class ProjectGenerator:
