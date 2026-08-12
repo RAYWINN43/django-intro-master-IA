@@ -208,13 +208,13 @@ a {
 .project-account-menu {
   position: absolute;
   z-index: 50;
-  top: calc(100% + 10px);
-  right: -53px;
+  top: calc(100% + 13px);
+  right: -59px;
   display: grid;
-  width: 190px;
-  padding: 9px;
-  border: 1px solid rgba(255, 255, 255, 0.42);
-  border-radius: 15px;
+  width: 210px;
+  padding: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  border-radius: 17px;
   color: var(--project-menu-text);
   background: var(--project-menu);
   box-shadow: 0 18px 44px rgba(0, 0, 0, 0.25);
@@ -222,12 +222,44 @@ a {
 
 .project-account-menu[hidden] { display: none; }
 
+.project-account-menu::before {
+  position: absolute;
+  top: -6px;
+  right: 72px;
+  width: 12px;
+  height: 12px;
+  content: "";
+  background: var(--project-menu);
+  transform: rotate(45deg);
+}
+
+.project-account-menu-name {
+  margin: 3px 7px 8px;
+  padding-bottom: 8px;
+  overflow: hidden;
+  border-bottom: 1px solid rgba(24, 57, 53, 0.14);
+  color: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.project-account-menu form {
+  margin: 2px 0 0;
+  padding-top: 2px;
+  border-top: 1px solid rgba(24, 57, 53, 0.12);
+}
+
 .project-account-menu a,
 .project-account-menu button {
-  min-height: 37px;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 38px;
   padding: 8px 10px;
   border: 0;
-  border-radius: 9px;
+  border-radius: 10px;
   color: inherit;
   background: transparent;
   font-size: 14px;
@@ -237,6 +269,10 @@ a {
 
 .project-account-menu a:hover,
 .project-account-menu button:hover { background: rgba(255, 255, 255, 0.58); }
+
+.project-account-menu .project-logout-button {
+  color: #a23931;
+}
 
 .project-avatar {
   display: grid;
@@ -780,6 +816,35 @@ a {
 .project-dialog h2 { margin: 0; font-size: 27px; }
 .project-dialog p { margin: 16px 0 0; line-height: 1.5; }
 .project-dialog button { width: 34px; height: 34px; border: 0; border-radius: 50%; color: inherit; background: rgba(255,255,255,.56); font-size: 26px; }
+
+.project-dialog-theme-list {
+  display: grid;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.project-dialog-theme-list button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 42px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-size: 15px;
+  text-align: left;
+}
+
+.project-theme-dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+}
+
+.project-theme-dot--green { background: #2c7773; }
+.project-theme-dot--orange { background: #a54f33; }
+.project-theme-dot--violet { background: #88268c; }
+.project-theme-dot--blue { background: #35689a; }
 
 :focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
 

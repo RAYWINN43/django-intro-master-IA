@@ -3,10 +3,12 @@ const projectThemeChoices = document.querySelectorAll("[data-theme-choice]");
 const projectMenuToggle = document.querySelector("[data-project-menu-toggle]");
 const projectMenu = document.querySelector("[data-project-menu]");
 const projectStatus = document.querySelector("[data-project-status]");
+const projectPreferencesDialog = document.querySelector("[data-project-preferences-dialog]");
 const projectLegalDialog = document.querySelector("[data-project-legal-dialog]");
 const projectPrompt = document.querySelector("[data-project-prompt]");
 const personaCards = document.querySelectorAll("[data-persona-card]");
 const personaDetail = document.querySelector("[data-persona-detail]");
+const projectAvatar = document.querySelector("[data-user-avatar]");
 let projectStatusTimer;
 
 async function loadProjectPrompt() {
@@ -245,6 +247,16 @@ projectThemeChoices.forEach((choice) => {
   choice.addEventListener("click", () => setProjectTheme(choice.dataset.themeChoice));
 });
 
+if (projectAvatar) {
+  const avatarColors = ["#6cc46b", "#d06d4b", "#8c52ad", "#477dba", "#d7933e", "#3b9c92"];
+  const username = projectAvatar.dataset.username || "IWant";
+  const colorIndex = [...username].reduce((total, character) => {
+    return total + character.codePointAt(0);
+  }, 0) % avatarColors.length;
+
+  projectAvatar.style.backgroundColor = avatarColors[colorIndex];
+}
+
 projectMenuToggle?.addEventListener("click", (event) => {
   event.stopPropagation();
   const isOpen = projectMenuToggle.getAttribute("aria-expanded") === "true";
@@ -262,18 +274,29 @@ document.addEventListener("keydown", (event) => {
   if (event.key === "Escape") {
     projectMenuToggle?.setAttribute("aria-expanded", "false");
     if (projectMenu) projectMenu.hidden = true;
+    if (projectPreferencesDialog?.open) projectPreferencesDialog.close();
     if (projectLegalDialog?.open) projectLegalDialog.close();
   }
 });
 
-document.querySelector("[data-project-open-legal]")?.addEventListener("click", () => {
-  projectMenu.hidden = true;
+function openProjectDialog(dialog) {
+  if (projectMenu) projectMenu.hidden = true;
   projectMenuToggle?.setAttribute("aria-expanded", "false");
-  projectLegalDialog?.showModal();
-});
+  dialog?.showModal();
+}
 
-document.querySelector("[data-project-close-dialog]")?.addEventListener("click", () => {
-  projectLegalDialog?.close();
+document
+  .querySelector("[data-project-open-preferences]")
+  ?.addEventListener("click", () => openProjectDialog(projectPreferencesDialog));
+
+document
+  .querySelector("[data-project-open-legal]")
+  ?.addEventListener("click", () => openProjectDialog(projectLegalDialog));
+
+document.querySelectorAll("[data-project-close-dialog]").forEach((button) => {
+  button.addEventListener("click", () => {
+    button.closest("dialog")?.close();
+  });
 });
 
 document.querySelector("[data-regenerate]")?.addEventListener("click", (event) => {
