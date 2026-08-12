@@ -23,7 +23,7 @@
     <link rel="stylesheet" href="{% static 'cursor.css' %}?v=2" />
     <script src="{% static 'project.js' %}?v=4" defer></script>
   </head>
-  <body class="project-body">
+  <body class="project-body personas-page">
     <header class="project-header">
       <a class="project-brand" href="{% url 'home' %}" aria-label="IWant, mes projets">
         <span>IWant</span><small>BETA</small>
@@ -75,6 +75,11 @@
             <span>Exporter le projet</span>
           </button>
         </div>
+
+        <section class="project-prompt-card" aria-labelledby="project-prompt-heading">
+          <h2 id="project-prompt-heading">Prompt du projet</h2>
+          <p data-project-prompt>Fais-moi une application de suivi pour mes cours.</p>
+        </section>
 
         <nav class="project-section-nav" aria-label="Sections générées">
           <a class="project-nav-item is-active" href="#personas" aria-current="page">

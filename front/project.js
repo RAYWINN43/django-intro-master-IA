@@ -5,6 +5,9 @@ const projectMenu = document.querySelector("[data-project-menu]");
 const projectStatus = document.querySelector("[data-project-status]");
 const projectPreferencesDialog = document.querySelector("[data-project-preferences-dialog]");
 const projectLegalDialog = document.querySelector("[data-project-legal-dialog]");
+const projectPrompt = document.querySelector("[data-project-prompt]");
+const personaCards = document.querySelectorAll("[data-persona-card]");
+const personaDetail = document.querySelector("[data-persona-detail]");
 const projectAvatar = document.querySelector("[data-user-avatar]");
 const projectMain = document.querySelector("[data-project-main]");
 const personaGrid = document.querySelector("[data-persona-grid]");
@@ -16,6 +19,147 @@ let personaCards = [];
 let personaDetails = [];
 let projectStatusTimer;
 
+async function loadProjectPrompt() {
+  const projectId = new URLSearchParams(window.location.search).get("project");
+  if (!projectPrompt || !/^\d+$/.test(projectId || "")) return;
+
+  projectPrompt.setAttribute("aria-busy", "true");
+  try {
+    const response = await fetch(`/ai/projects/${projectId}/`, {
+      credentials: "same-origin",
+      headers: { Accept: "application/json" },
+    });
+    if (!response.ok) return;
+
+    const data = await response.json();
+    const prompt = data?.project?.prompt?.trim();
+    if (prompt) projectPrompt.textContent = prompt;
+  } catch {
+    // Keep the static fallback when the page is previewed without Django.
+  } finally {
+    projectPrompt.removeAttribute("aria-busy");
+  }
+}
+
+const personaDetails = {
+  lucas: {
+    name: "Lucas, 20 ans",
+    type: "Étudiant organisé",
+    portrait: "🧑🏻‍🎓",
+    quote: "“Je veux gagner du temps dans mes révisions et réussir mes examens.”",
+    age: "20 ans",
+    location: "Lyon, France",
+    job: "Étudiant en licence",
+    situation: "Célibataire",
+    tech: "À l’aise avec le digital",
+    objectives: [
+      "Trouver des fiches de révision claires et fiables",
+      "Gagner du temps dans ses révisions",
+      "Réussir ses examens",
+      "Partager ses propres fiches",
+    ],
+    needs: [
+      "Une plateforme facile à utiliser",
+      "Des fiches bien classées par matière",
+      "Un accès rapide sur mobile",
+      "Une communauté active",
+    ],
+    frustrations: [
+      "Perdre du temps à chercher des fiches",
+      "Fiches de mauvaise qualité ou incomplètes",
+      "Informations mal organisées",
+      "Pas assez de retours ou d’échanges",
+    ],
+    behaviors: [
+      "Utilise principalement son smartphone",
+      "Révise le soir et le week-end",
+      "Consulte plusieurs sources avant de faire confiance",
+      "Participe aux forums et groupes d’entraide",
+    ],
+    scenario:
+      "Lucas a un examen dans 2 semaines. Il recherche des fiches sur un chapitre spécifique, enregistre celles qui l’aident, puis partage ses propres fiches pour aider d’autres étudiants.",
+    expectations:
+      "Facilité d’utilisation, fiabilité du contenu, accès rapide, reconnaissance de sa contribution.",
+  },
+  sarah: {
+    name: "Sarah, 22 ans",
+    type: "Étudiante engagée",
+    portrait: "👩🏻‍💻",
+    quote: "“Je veux apprendre avec les autres et contribuer à une communauté vraiment utile.”",
+    age: "22 ans",
+    location: "Paris, France",
+    job: "Étudiante en master",
+    situation: "Célibataire",
+    tech: "Très à l’aise avec le digital",
+    objectives: [
+      "Collaborer avec d’autres étudiants",
+      "Contribuer à des ressources de qualité",
+      "Centraliser ses supports de cours",
+      "Progresser grâce aux retours de la communauté",
+    ],
+    needs: [
+      "Des outils de partage collaboratifs",
+      "Des commentaires et évaluations utiles",
+      "Un classement clair par thème",
+      "Des notifications pertinentes",
+    ],
+    frustrations: [
+      "Recevoir trop peu de retours sur ses contributions",
+      "Trouver des contenus isolés ou redondants",
+      "Ne pas pouvoir vérifier la fiabilité d’une fiche",
+      "Utiliser des interfaces trop complexes",
+    ],
+    behaviors: [
+      "Travaille surtout le soir sur son ordinateur",
+      "Commente et évalue les ressources consultées",
+      "Partage régulièrement ses propres synthèses",
+      "Alterne entre ordinateur et smartphone",
+    ],
+    scenario:
+      "Sarah prépare un projet de groupe. Elle rassemble les meilleures fiches, échange avec leurs auteurs et publie une synthèse enrichie pour toute sa promotion.",
+    expectations:
+      "Collaboration fluide, retours constructifs, contenus vérifiés et valorisation de ses contributions.",
+  },
+  thomas: {
+    name: "Thomas, 24 ans",
+    type: "Jeune actif",
+    portrait: "🧑🏼‍💼",
+    quote: "“Je veux retrouver rapidement mes connaissances et continuer à les partager après mes études.”",
+    age: "24 ans",
+    location: "Toulouse, France",
+    job: "Ingénieur junior",
+    situation: "En couple",
+    tech: "Expert des outils numériques",
+    objectives: [
+      "Conserver ses anciennes ressources",
+      "Actualiser ses connaissances techniques",
+      "Aider les étudiants de sa filière",
+      "Partager son expérience professionnelle",
+    ],
+    needs: [
+      "Une recherche rapide et précise",
+      "Des contenus accessibles sur tous ses appareils",
+      "Un espace personnel bien organisé",
+      "Des formats courts à consulter",
+    ],
+    frustrations: [
+      "Manquer de temps pour chercher une information",
+      "Retrouver des ressources devenues obsolètes",
+      "Perdre ses documents entre plusieurs services",
+      "Recevoir des notifications inutiles",
+    ],
+    behaviors: [
+      "Consulte les contenus pendant ses trajets",
+      "Enregistre les ressources pour plus tard",
+      "Privilégie les synthèses courtes et fiables",
+      "Répond aux questions liées à son domaine",
+    ],
+    scenario:
+      "Thomas doit réviser une notion avant une réunion. Il retrouve une fiche enregistrée, la complète avec son expérience et la partage avec d’anciens camarades.",
+    expectations:
+      "Recherche efficace, synchronisation des ressources, contenus à jour et consultation rapide sur mobile.",
+  },
+};
 function getCookie(name) {
   const value = `; ${document.cookie}`;
   const parts = value.split(`; ${name}=`);
@@ -376,7 +520,13 @@ function exportProject() {
 document.querySelector("[data-export-project]")?.addEventListener("click", exportProject);
 document.querySelector("[data-export-section]")?.addEventListener("click", exportProject);
 
-document.querySelectorAll(".project-nav-item:not(.is-active)").forEach((item) => {
+document.querySelectorAll("[data-project-page]").forEach((item) => {
+  const target = new URL(item.getAttribute("href"), window.location.href);
+  target.search = window.location.search;
+  item.href = target.href;
+});
+
+document.querySelectorAll(".project-nav-item:not(.is-active):not([data-project-page])").forEach((item) => {
   item.addEventListener("click", (event) => {
     event.preventDefault();
     showProjectStatus(`${item.textContent.trim()} sera disponible dès sa génération.`);
