@@ -4,37 +4,30 @@ from ai.services.persona_generator import PersonaGenerator
 from ai.services.storymap_generator import StorymapGenerator
 from ai.services.backlog_generator import BacklogGenerator
 
+
 @dataclass
 class ProjectContext:
+    project = None
 
-    project=None
+    personas = None
 
-    personas=None
+    story_map = None
 
-    story_map=None
-
-    backlog=None
+    backlog = None
 
 
 def generate_project(state):
-    return {"project" : ProjectGenerator().generate(
-        state["idea"]
-    )}
+    return {"project": ProjectGenerator().generate(state["idea"])}
+
 
 def generate_personas(state):
-    return {"personas" : PersonaGenerator().generate(
-        state["project"]
-        )}
+    return {"personas": PersonaGenerator().generate(state["project"])}
+
 
 def generate_storymap(state):
+    return {"storymap": StorymapGenerator().generate(state["project"])}
 
-    return {"storymap": StorymapGenerator().generate(
-        state["project"]
-    )}
 
 def generate_backlog(state):
-
-    return {"backlog": BacklogGenerator().generate(
-        state["storymap"]
-    )}
+    return {"backlog": BacklogGenerator().generate(state["storymap"])}
 

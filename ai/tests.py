@@ -78,7 +78,8 @@ class LlamaViewsTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
-            response.json()["response"], "Bonjour, comment puis-je aider ?"
+            response.json()["response"],
+            "Bonjour, comment puis-je aider ?",
         )
         service.generate.assert_called_once_with("Explique Django")
 

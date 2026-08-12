@@ -153,8 +153,7 @@ def normalize_user_stories_payload(raw_response):
         raise ValueError("La réponse IA doit contenir des user stories.")
 
     return [
-        normalize_user_story(story, index)
-        for index, story in enumerate(stories[:8])
+        normalize_user_story(story, index) for index, story in enumerate(stories[:8])
     ]
 
 
@@ -187,8 +186,7 @@ def normalize_backlog_payload(raw_response):
         raise ValueError("La réponse IA doit contenir un backlog.")
 
     return [
-        normalize_backlog_item(item, index)
-        for index, item in enumerate(backlog[:12])
+        normalize_backlog_item(item, index) for index, item in enumerate(backlog[:12])
     ]
 
 
@@ -245,13 +243,14 @@ def normalize_business_model_payload(raw_response):
 
     return {
         "business_model_canvas": {
-            key: clean_list(canvas.get(key))[:4]
-            for key in canvas_keys
+            key: clean_list(canvas.get(key))[:4] for key in canvas_keys
         },
         "metrics": {
             "market_potential": str(metrics.get("market_potential") or "Moyen").strip(),
             "complexity": str(metrics.get("complexity") or "Moyenne").strip(),
-            "initial_investment": str(metrics.get("initial_investment") or "Moyen").strip(),
+            "initial_investment": str(
+                metrics.get("initial_investment") or "Moyen"
+            ).strip(),
             "launch_time": str(metrics.get("launch_time") or "3 - 6 mois").strip(),
             "estimated_profitability": str(
                 metrics.get("estimated_profitability") or "Moyenne"
