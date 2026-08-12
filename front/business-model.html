@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="fr" data-theme="green">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Business Model généré pour votre projet IWant." />
+    <title>Business Model — Projet IWant</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      (() => {
+        const savedTheme = localStorage.getItem("iwant-theme");
+        const themes = ["green", "orange", "violet", "blue"];
+        if (themes.includes(savedTheme)) document.documentElement.dataset.theme = savedTheme;
+      })();
+    </script>
+    <link rel="stylesheet" href="project.css?v=3" />
+    <link rel="stylesheet" href="business-model.css?v=1" />
+    <link rel="stylesheet" href="cursor.css?v=2" />
+    <script src="project.js?v=3" defer></script>
+    <script src="business-model.js?v=1" defer></script>
+  </head>
+  <body class="project-body business-page">
+    <header class="project-header">
+      <a class="project-brand" href="/home/" aria-label="IWant, mes projets">
+        <span>IWant</span><small>BETA</small>
+      </a>
+
+      <div class="project-account-controls">
+        <div class="project-theme-switcher" role="group" aria-label="Choisir le thème du site">
+          <button class="project-theme-choice project-theme-choice--green" type="button" data-theme-choice="green" aria-label="Thème vert" aria-pressed="true"></button>
+          <button class="project-theme-choice project-theme-choice--orange" type="button" data-theme-choice="orange" aria-label="Thème orange" aria-pressed="false"></button>
+          <button class="project-theme-choice project-theme-choice--violet" type="button" data-theme-choice="violet" aria-label="Thème violet" aria-pressed="false"></button>
+          <button class="project-theme-choice project-theme-choice--blue" type="button" data-theme-choice="blue" aria-label="Thème bleu" aria-pressed="false"></button>
+        </div>
+
+        <div class="project-account-menu-wrap">
+          <button class="project-menu-toggle" type="button" aria-label="Ouvrir les options du compte" aria-expanded="false" data-project-menu-toggle>
+            <span></span><span></span><span></span>
+          </button>
+          <div class="project-account-menu" data-project-menu hidden>
+            <a href="/profile/">Mon compte</a>
+            <a href="/home/">Mes projets</a>
+            <button type="button" data-project-open-legal>Mentions légales</button>
+          </div>
+        </div>
+
+        <a class="project-avatar" href="/profile/" aria-label="Voir mon compte">S</a>
+      </div>
+    </header>
+
+    <div class="project-layout business-layout">
+      <aside class="project-rail" aria-label="Navigation du projet">
+        <div class="project-utilities">
+          <a class="project-utility" href="/home/">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5m6-6-6 6 6 6" /></svg>
+            <span>Retourner sur les projets</span>
+          </a>
+          <button class="project-utility" type="button" data-export-project>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V3m0 0L8 7m4-4 4 4M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7" /></svg>
+            <span>Exporter le projet</span>
+          </button>
+        </div>
+
+        <section class="project-prompt-card" aria-labelledby="project-prompt-heading">
+          <h2 id="project-prompt-heading">Prompt du projet</h2>
+          <p data-project-prompt>Fais-moi une application de suivi pour mes cours.</p>
+        </section>
+
+        <nav class="project-section-nav" aria-label="Sections générées">
+          <a class="project-nav-item" href="project.html" data-project-page>
+            <img src="assets/persona.png" alt="" /><span>Personas</span>
+          </a>
+          <a class="project-nav-item" href="user-story.html" data-project-page>
+            <img src="assets/user story.png" alt="" /><span>User Story</span>
+          </a>
+          <a class="project-nav-item" href="backlog.html" data-project-page>
+            <img src="assets/board.png" alt="" /><span>Backlog</span>
+          </a>
+          <a class="project-nav-item is-active" href="#business-model" aria-current="page">
+            <img src="assets/business model.png" alt="" /><span>Business M..</span>
+          </a>
+          <a class="project-nav-item" href="#swot">
+            <img src="assets/swot.png" alt="" /><span>SWOT</span>
+          </a>
+          <a class="project-nav-item" href="#sprint-plan">
+            <img src="assets/sprint planning.png" alt="" /><span>Sprint plan..</span>
+          </a>
+          <a class="project-nav-item" href="#speech">
+            <img src="assets/speech.png" alt="" /><span>Speech</span>
+          </a>
+        </nav>
+      </aside>
+
+      <main class="project-main business-main" id="business-model">
+        <div class="project-title-row business-title-row">
+          <div class="project-title-copy">
+            <div class="project-title-line">
+              <img src="assets/business model.png" alt="" aria-hidden="true" />
+              <h1>Business Model</h1>
+            </div>
+            <p>Modèle économique de votre projet.</p>
+          </div>
+
+          <div class="project-actions business-actions" aria-label="Actions du Business Model">
+            <button class="project-action project-action--primary" type="button" data-business-regenerate>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2 1.3 4.7L18 8l-4.7 1.3L12 14l-1.3-4.7L6 8l4.7-1.3L12 2Zm7 11 .8 2.2L22 16l-2.2.8L19 19l-.8-2.2L16 16l2.2-.8L19 13Z" /></svg>
+              <span>Régénérer</span>
+            </button>
+            <button class="project-action" type="button" data-export-section>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V3m0 0L8 7m4-4 4 4M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7" /></svg>
+              <span>Exporter</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="business-workspace">
+          <section class="business-canvas-panel" aria-labelledby="business-canvas-title">
+            <h2 id="business-canvas-title">Business Model Canvas</h2>
+            <div class="business-canvas-grid">
+              <article class="business-block business-block--partners" tabindex="0" data-business-block>
+                <h3><span>🤝</span> Partenaires clés</h3>
+                <ul><li>Hébergeur cloud (AWS, OVH, etc.)</li><li>Fournisseurs de stockage cloud</li><li>Partenaires universitaires et écoles</li><li>Outils et API tiers (IA, paiement, analytics)</li></ul>
+              </article>
+              <article class="business-block business-block--activities" tabindex="0" data-business-block>
+                <h3><span>⚡</span> Activités clés</h3>
+                <ul><li>Développement et maintenance de la plateforme</li><li>Amélioration continue des fonctionnalités IA</li><li>Support utilisateur</li><li>Marketing et acquisition de clients</li></ul>
+              </article>
+              <article class="business-block business-block--resources" tabindex="0" data-business-block>
+                <h3><span>🧊</span> Ressources clés</h3>
+                <ul><li>Plateforme et code source</li><li>Modèles IA et prompts</li><li>Base d’utilisateurs</li><li>Équipe technique</li><li>Infrastructure cloud</li></ul>
+              </article>
+              <article class="business-block business-block--value" tabindex="0" data-business-block>
+                <h3><span>💎</span> Propositions de valeur</h3>
+                <ul><li>Génération automatique de documents projet de qualité</li><li>Gain de temps considérable</li><li>Assistance IA experte disponible 24/7</li><li>Interface simple et intuitive</li><li>Centralisation et suivi de tous les livrables</li></ul>
+              </article>
+              <article class="business-block business-block--relations" tabindex="0" data-business-block>
+                <h3><span>❤️</span> Relations clients</h3>
+                <ul><li>Self-service via la plateforme</li><li>Support en ligne et FAQ</li><li>Communauté et retours utilisateurs</li><li>Accompagnement premium</li></ul>
+              </article>
+              <article class="business-block business-block--channels" tabindex="0" data-business-block>
+                <h3><span>➤</span> Canaux</h3>
+                <ul><li>Site web et application</li><li>Réseaux sociaux</li><li>Partenariats écoles et entreprises</li><li>Référencement (SEO)</li><li>Contenu et marketing</li></ul>
+              </article>
+              <article class="business-block business-block--costs" tabindex="0" data-business-block>
+                <h3><span>◔</span> Structure des coûts</h3>
+                <ul><li>Coûts d’infrastructure cloud</li><li>Frais des API IA (Groq, etc.)</li><li>Développement et maintenance</li><li>Marketing et acquisition</li><li>Support client</li></ul>
+              </article>
+              <article class="business-block business-block--revenue" tabindex="0" data-business-block>
+                <h3><span>💰</span> Sources de revenus</h3>
+                <ul><li>Abonnement mensuel / annuel (SaaS)</li><li>Offres premium et fonctionnalités avancées</li><li>Packs par projet ou crédits</li><li>Partenariats et licences pour entreprises</li><li>Formations et accompagnement</li></ul>
+              </article>
+            </div>
+          </section>
+
+          <aside class="business-side-panel">
+            <section class="business-insights" aria-labelledby="business-about-title">
+              <div class="business-about-heading">
+                <h2 id="business-about-title">À propos de ce modèle</h2>
+                <button type="button" data-business-info aria-label="Informations sur le modèle">i</button>
+              </div>
+              <p>Ce Business Model a été généré à partir de la description de votre projet. Vous pouvez modifier chaque section et régénérer le contenu si nécessaire.</p>
+
+              <div class="business-metrics">
+                <h3><span>📊</span> Métriques clés</h3>
+                <dl>
+                  <div><dt>Potentiel de marché</dt><dd class="business-metric business-metric--high">Élevé</dd></div>
+                  <div><dt>Complexité</dt><dd class="business-metric business-metric--medium">Moyenne</dd></div>
+                  <div><dt>Investissement initial</dt><dd class="business-metric business-metric--blue">Moyen</dd></div>
+                  <div><dt>Temps de lancement</dt><dd class="business-metric business-metric--violet">3 - 6 mois</dd></div>
+                  <div><dt>Rentabilité estimée</dt><dd class="business-metric business-metric--high">Élevée</dd></div>
+                </dl>
+              </div>
+            </section>
+
+            <label class="business-notes">
+              <span>Notes <i aria-hidden="true">✎</i></span>
+              <small>Modèle généré le 05/08/2025</small>
+              <textarea rows="3" placeholder="Ajouter une note..." data-business-notes></textarea>
+            </label>
+          </aside>
+        </div>
+
+        <p class="project-status" data-project-status aria-live="polite"></p>
+      </main>
+    </div>
+
+    <dialog class="project-dialog" data-project-legal-dialog>
+      <div><h2>Mentions légales</h2><button type="button" data-project-close-dialog aria-label="Fermer">×</button></div>
+      <p>IWant est actuellement proposé en version bêta. Les informations légales complètes seront ajoutées avant la mise en production.</p>
+    </dialog>
+  </body>
+</html>
