@@ -5,6 +5,9 @@ from django.contrib.auth import get_user_model
 from django.test import SimpleTestCase, TestCase
 from django.urls import reverse
 
+from ai.services.persona_generator import PersonaGenerator
+from ai.views import extract_json_payload
+
 from .llama_service import LlamaService
 from .models import GroqAnalysis
 
@@ -20,6 +23,35 @@ class LlamaServiceTests(SimpleTestCase):
         self.assertEqual(service.api_key, "test-api-key")
         self.assertEqual(service.model, "test-model")
         self.assertEqual(service.base_url, "https://example.com/chat")
+
+
+class PersonaGenerationTests(SimpleTestCase):
+    def test_extract_json_payload_accepts_fenced_json(self):
+        payload = extract_json_payload(
+            """```json
+{"personas": []}
+```"""
+        )
+
+        self.assertEqual(payload, {"personas": []})
+
+    def test_extract_json_payload_accepts_text_around_json(self):
+        payload = extract_json_payload('Voici le JSON : {"personas": []} merci.')
+
+        self.assertEqual(payload, {"personas": []})
+
+    @patch("ai.services.persona_generator.GroqClient")
+    def test_persona_generator_requests_json_response(self, groq_client_class):
+        groq_client = groq_client_class.return_value
+        groq_client.chat.return_value = '{"personas": []}'
+
+        PersonaGenerator().generate("Projet de test")
+
+        groq_client.chat.assert_called_once()
+        _, _, kwargs = groq_client.chat.mock_calls[0]
+        self.assertEqual(kwargs["max_tokens"], 2500)
+        self.assertEqual(kwargs["response_format"], {"type": "json_object"})
+        self.assertEqual(kwargs["temperature"], 0.7)
 
 
 class LlamaViewsTests(TestCase):
@@ -135,3 +167,162 @@ class GroqAnalysisViewsTests(TestCase):
         analysis = GroqAnalysis.objects.get(prompt="Une nouvelle idee")
         self.assertEqual(analysis.user, self.user)
         self.assertEqual(response.json()["project"]["id"], analysis.pk)
+
+    @patch("ai.views.PersonaGenerator")
+    def test_owner_can_generate_project_personas(self, generator_class):
+        generator = generator_class.return_value
+        generator.generate.return_value = json.dumps(
+            {
+                "personas": [
+                    {
+                        "id": "persona_1",
+                        "card_color": "green",
+                        "name": "Lucas",
+                        "age": "20 ans",
+                        "type": "Etudiant organise",
+                        "portrait": "👤",
+                        "location": "Lyon, France",
+                        "job": "Etudiant",
+                        "social_background": "Classe moyenne",
+                        "situation": "Celibataire",
+                        "tech_level": "A l'aise",
+                        "summary": "Cherche une solution simple.",
+                        "quote": "Je veux gagner du temps.",
+                        "objectives": ["Objectif 1"],
+                        "needs": ["Besoin 1"],
+                        "frustrations": ["Frustration 1"],
+                        "behaviors": ["Comportement 1"],
+                        "scenario": "Lucas utilise la plateforme.",
+                        "expectations": "Interface simple.",
+                    },
+                    {
+                        "id": "persona_2",
+                        "card_color": "violet",
+                        "name": "Sarah",
+                        "age": "34 ans",
+                        "type": "Professionnelle",
+                        "portrait": "👤",
+                        "location": "Paris, France",
+                        "job": "Cheffe de projet",
+                        "social_background": "Cadre urbain",
+                        "situation": "En couple",
+                        "tech_level": "Expert",
+                        "summary": "Cherche a organiser son equipe.",
+                        "quote": "Je veux une vision claire.",
+                        "objectives": ["Objectif 2"],
+                        "needs": ["Besoin 2"],
+                        "frustrations": ["Frustration 2"],
+                        "behaviors": ["Comportement 2"],
+                        "scenario": "Sarah compare les options.",
+                        "expectations": "Donnees fiables.",
+                    },
+                    {
+                        "id": "persona_3",
+                        "card_color": "orange",
+                        "name": "Karim",
+                        "age": "47 ans",
+                        "type": "Artisan independant",
+                        "portrait": "👤",
+                        "location": "Marseille, France",
+                        "job": "Artisan",
+                        "social_background": "Independant",
+                        "situation": "Parent",
+                        "tech_level": "Intermediaire",
+                        "summary": "Cherche une aide concrete.",
+                        "quote": "Je veux aller a l'essentiel.",
+                        "objectives": ["Objectif 3"],
+                        "needs": ["Besoin 3"],
+                        "frustrations": ["Frustration 3"],
+                        "behaviors": ["Comportement 3"],
+                        "scenario": "Karim consulte la page sur mobile.",
+                        "expectations": "Resultat rapide.",
+                    },
+                ]
+            }
+        )
+        self.client.force_login(self.user)
+
+        response = self.client.post(
+            reverse("groq_project_personas", args=[self.analysis.pk]),
+            data=json.dumps({"force": True}),
+            content_type="application/json",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(response.json()["cached"])
+        self.assertEqual(len(response.json()["personas"]), 3)
+        self.analysis.refresh_from_db()
+        self.assertEqual(len(self.analysis.response_json["personas"]), 3)
+
+    @patch("ai.views.PersonaGenerator")
+    def test_force_generation_asks_for_different_personas(self, generator_class):
+        self.analysis.response_json = {
+            "personas": [
+                {
+                    "id": "persona_1",
+                    "name": "Lucas",
+                    "card_color": "green",
+                    "objectives": ["Objectif 1"],
+                },
+                {"id": "persona_2", "name": "Sarah", "card_color": "violet"},
+                {"id": "persona_3", "name": "Karim", "card_color": "orange"},
+            ]
+        }
+        self.analysis.save(update_fields=["response_json"])
+        generator = generator_class.return_value
+        generator.generate.return_value = json.dumps(
+            {
+                "personas": [
+                    {"id": "persona_1", "name": "Nina"},
+                    {"id": "persona_2", "name": "Omar"},
+                    {"id": "persona_3", "name": "Claire"},
+                ]
+            }
+        )
+        self.client.force_login(self.user)
+
+        response = self.client.post(
+            reverse("groq_project_personas", args=[self.analysis.pk]),
+            data=json.dumps({"force": True}),
+            content_type="application/json",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        generation_context = generator.generate.call_args.args[0]
+        self.assertIn("previous_personas_to_avoid", generation_context)
+        self.assertIn("regeneration_nonce", generation_context)
+        self.assertNotIn("Objectif 1", generation_context)
+
+    @patch("ai.views.PersonaGenerator")
+    def test_personas_endpoint_returns_cached_personas(self, generator_class):
+        self.analysis.response_json = {
+            "personas": [
+                {"id": "persona_1", "name": "A", "card_color": "green"},
+                {"id": "persona_2", "name": "B", "card_color": "violet"},
+                {"id": "persona_3", "name": "C", "card_color": "orange"},
+            ]
+        }
+        self.analysis.save(update_fields=["response_json"])
+        self.client.force_login(self.user)
+
+        response = self.client.post(
+            reverse("groq_project_personas", args=[self.analysis.pk]),
+            data=json.dumps({"force": False}),
+            content_type="application/json",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.json()["cached"])
+        self.assertEqual(len(response.json()["personas"]), 3)
+        generator_class.assert_not_called()
+
+    def test_user_cannot_generate_personas_for_another_users_project(self):
+        self.client.force_login(self.other_user)
+
+        response = self.client.post(
+            reverse("groq_project_personas", args=[self.analysis.pk]),
+            data=json.dumps({"force": True}),
+            content_type="application/json",
+        )
+
+        self.assertEqual(response.status_code, 404)
