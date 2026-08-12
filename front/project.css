@@ -79,6 +79,7 @@ html {
 }
 
 body {
+  min-height: 100vh;
   color: #fff;
   font-family: "Jost", sans-serif;
   background:
@@ -271,6 +272,42 @@ a {
   justify-items: start;
   gap: 13px;
   padding-left: 7px;
+}
+
+.personas-page .project-rail {
+  gap: 16px;
+}
+
+.project-prompt-card {
+  width: 217px;
+  min-height: 98px;
+  padding: 16px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.88);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.project-prompt-card h2 {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.project-prompt-card p {
+  display: -webkit-box;
+  margin: 0;
+  overflow: hidden;
+  font-size: 12px;
+  font-weight: 300;
+  line-height: 1.45;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
 }
 
 .project-utility {
@@ -749,6 +786,7 @@ a {
 @media (max-width: 1180px) {
   .project-layout { grid-template-columns: 198px minmax(0, 1fr); gap: 34px; }
   .project-section-nav { width: 198px; }
+  .project-prompt-card { width: 198px; }
   .project-nav-item { font-size: 15px; }
   .persona-card-head { grid-template-columns: 82px minmax(0, 1fr); }
   .persona-portrait { width: 82px; height: 82px; font-size: 56px; }
@@ -761,6 +799,7 @@ a {
   .project-layout { display: block; padding: 84px 16px 36px; }
   .project-rail { position: static; display: block; }
   .project-utilities { display: flex; flex-wrap: wrap; padding: 0; }
+  .project-prompt-card { width: 100%; min-height: 76px; margin-top: 16px; }
   .project-section-nav { display: flex; width: 100%; margin-top: 18px; padding: 10px; gap: 8px; overflow-x: auto; border-radius: 15px; }
   .project-nav-item { flex: 0 0 auto; min-height: 41px; padding: 5px 12px; }
   .project-nav-item img { width: 24px; height: 24px; }
@@ -791,6 +830,141 @@ a {
   .persona-identity-head { grid-template-columns: 94px minmax(0, 1fr); }
   .persona-portrait--large { width: 94px; height: 94px; font-size: 64px; }
   .persona-identity-card dl div { grid-template-columns: 116px minmax(0, 1fr); }
+}
+
+/* Keep the full project overview visible on wide, short laptop screens. */
+@media (min-width: 941px) and (max-height: 980px) {
+  .project-layout {
+    padding-top: 72px;
+    padding-bottom: 16px;
+  }
+
+  .project-rail {
+    top: 72px;
+    gap: 38px;
+  }
+
+  .project-utilities { gap: 9px; }
+  .project-utility { min-height: 40px; }
+
+  .project-prompt-card {
+    min-height: 82px;
+    padding: 12px 15px;
+  }
+
+  .project-main { padding-top: 6px; }
+  .project-title-row { margin-bottom: 12px; }
+
+  .project-title-line img {
+    width: 48px;
+    height: 48px;
+  }
+
+  .project-title-line h1 { font-size: 36px; }
+
+  .project-title-copy > p {
+    margin-top: 7px;
+    font-size: 16px;
+  }
+
+  .project-action { min-height: 45px; }
+
+  .generated-panel { padding: 10px 14px 13px; }
+
+  .persona-grid {
+    gap: 18px;
+    margin-top: 14px;
+  }
+
+  .persona-card {
+    min-height: 230px;
+    padding: 15px 15px 12px;
+  }
+
+  .persona-card-head {
+    grid-template-columns: 96px minmax(0, 1fr);
+    gap: 11px;
+  }
+
+  .persona-portrait {
+    width: 96px;
+    height: 96px;
+    font-size: 66px;
+  }
+
+  .persona-card-head > div:last-child > p { margin-bottom: 9px; }
+
+  .persona-card ul {
+    gap: 4px;
+    font-size: 12px;
+  }
+
+  .persona-summary {
+    margin-top: 10px;
+    font-size: 13px;
+  }
+
+  .persona-detail {
+    margin-top: 6px;
+    padding: 10px 8px;
+  }
+
+  .persona-detail-grid {
+    grid-template-columns: 330px minmax(0, 1fr);
+    gap: 14px;
+    margin-top: 7px;
+  }
+
+  .persona-identity-card { padding: 11px 12px; }
+
+  .persona-identity-head {
+    grid-template-columns: 96px minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  .persona-portrait--large {
+    width: 96px;
+    height: 96px;
+    font-size: 66px;
+  }
+
+  .persona-identity-card h3 { font-size: 19px; }
+
+  .persona-identity-head blockquote {
+    margin-top: 8px;
+    line-height: 1.4;
+  }
+
+  .persona-identity-card dl {
+    gap: 5px;
+    margin-top: 12px;
+    font-size: 12px;
+  }
+
+  .persona-identity-card dl div { grid-template-columns: 120px minmax(0, 1fr); }
+
+  .persona-traits { gap: 8px 12px; }
+
+  .trait-card {
+    min-height: 123px;
+    padding: 8px 13px;
+  }
+
+  .trait-card ul {
+    gap: 2px;
+    margin-top: 5px;
+    font-size: 11.5px;
+    line-height: 1.18;
+  }
+
+  .persona-context { margin-top: 8px; }
+  .persona-context article { padding: 9px 14px; }
+
+  .persona-context p {
+    margin-top: 5px;
+    font-size: 11.5px;
+    line-height: 1.35;
+  }
 }
 
 @media print {

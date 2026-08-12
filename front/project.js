@@ -4,9 +4,32 @@ const projectMenuToggle = document.querySelector("[data-project-menu-toggle]");
 const projectMenu = document.querySelector("[data-project-menu]");
 const projectStatus = document.querySelector("[data-project-status]");
 const projectLegalDialog = document.querySelector("[data-project-legal-dialog]");
+const projectPrompt = document.querySelector("[data-project-prompt]");
 const personaCards = document.querySelectorAll("[data-persona-card]");
 const personaDetail = document.querySelector("[data-persona-detail]");
 let projectStatusTimer;
+
+async function loadProjectPrompt() {
+  const projectId = new URLSearchParams(window.location.search).get("project");
+  if (!projectPrompt || !/^\d+$/.test(projectId || "")) return;
+
+  projectPrompt.setAttribute("aria-busy", "true");
+  try {
+    const response = await fetch(`/ai/projects/${projectId}/`, {
+      credentials: "same-origin",
+      headers: { Accept: "application/json" },
+    });
+    if (!response.ok) return;
+
+    const data = await response.json();
+    const prompt = data?.project?.prompt?.trim();
+    if (prompt) projectPrompt.textContent = prompt;
+  } catch {
+    // Keep the static fallback when the page is previewed without Django.
+  } finally {
+    projectPrompt.removeAttribute("aria-busy");
+  }
+}
 
 const personaDetails = {
   lucas: {
@@ -210,6 +233,7 @@ document.querySelectorAll(".persona-more").forEach((button) => {
 });
 
 selectPersona("lucas", { scroll: false, announce: false });
+loadProjectPrompt();
 
 setProjectTheme(
   projectThemes.includes(document.documentElement.dataset.theme)
@@ -274,7 +298,13 @@ function exportProject() {
 document.querySelector("[data-export-project]")?.addEventListener("click", exportProject);
 document.querySelector("[data-export-section]")?.addEventListener("click", exportProject);
 
-document.querySelectorAll(".project-nav-item:not(.is-active)").forEach((item) => {
+document.querySelectorAll("[data-project-page]").forEach((item) => {
+  const target = new URL(item.getAttribute("href"), window.location.href);
+  target.search = window.location.search;
+  item.href = target.href;
+});
+
+document.querySelectorAll(".project-nav-item:not(.is-active):not([data-project-page])").forEach((item) => {
   item.addEventListener("click", (event) => {
     event.preventDefault();
     showProjectStatus(`${item.textContent.trim()} sera disponible dès sa génération.`);

@@ -18,11 +18,11 @@
         if (themes.includes(savedTheme)) document.documentElement.dataset.theme = savedTheme;
       })();
     </script>
-    <link rel="stylesheet" href="project.css?v=1" />
+    <link rel="stylesheet" href="project.css?v=3" />
     <link rel="stylesheet" href="cursor.css?v=2" />
-    <script src="project.js?v=1" defer></script>
+    <script src="project.js?v=3" defer></script>
   </head>
-  <body class="project-body">
+  <body class="project-body personas-page">
     <header class="project-header">
       <a class="project-brand" href="/home/" aria-label="IWant, mes projets">
         <span>IWant</span><small>BETA</small>
@@ -64,17 +64,22 @@
           </button>
         </div>
 
+        <section class="project-prompt-card" aria-labelledby="project-prompt-heading">
+          <h2 id="project-prompt-heading">Prompt du projet</h2>
+          <p data-project-prompt>Fais-moi une application de suivi pour mes cours.</p>
+        </section>
+
         <nav class="project-section-nav" aria-label="Sections générées">
           <a class="project-nav-item is-active" href="#personas" aria-current="page">
             <img src="assets/persona.png" alt="" /><span>Personas</span>
           </a>
-          <a class="project-nav-item" href="#user-story">
+          <a class="project-nav-item" href="user-story.html" data-project-page>
             <img src="assets/user story.png" alt="" /><span>User Story</span>
           </a>
-          <a class="project-nav-item" href="#backlog">
+          <a class="project-nav-item" href="backlog.html" data-project-page>
             <img src="assets/board.png" alt="" /><span>Backlog</span>
           </a>
-          <a class="project-nav-item" href="#business-model">
+          <a class="project-nav-item" href="business-model.html" data-project-page>
             <img src="assets/business model.png" alt="" /><span>Business M..</span>
           </a>
           <a class="project-nav-item" href="#swot">
