@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="fr" data-theme="green">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Planification détaillée des sprints de votre projet IWant." />
+    <title>Sprint Planning — Projet IWant</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      (() => {
+        const savedTheme = localStorage.getItem("iwant-theme");
+        const themes = ["green", "orange", "violet", "blue"];
+        if (themes.includes(savedTheme)) document.documentElement.dataset.theme = savedTheme;
+      })();
+    </script>
+    <link rel="stylesheet" href="project.css?v=3" />
+    <link rel="stylesheet" href="sprint-planning.css?v=1" />
+    <link rel="stylesheet" href="cursor.css?v=2" />
+    <script src="project.js?v=3" defer></script>
+    <script src="sprint-planning.js?v=1" defer></script>
+  </head>
+  <body class="project-body sprint-page">
+    <header class="project-header">
+      <a class="project-brand" href="/home/" aria-label="IWant, mes projets">
+        <span>IWant</span><small>BETA</small>
+      </a>
+
+      <div class="project-account-controls">
+        <div class="project-theme-switcher" role="group" aria-label="Choisir le thème du site">
+          <button class="project-theme-choice project-theme-choice--green" type="button" data-theme-choice="green" aria-label="Thème vert" aria-pressed="true"></button>
+          <button class="project-theme-choice project-theme-choice--orange" type="button" data-theme-choice="orange" aria-label="Thème orange" aria-pressed="false"></button>
+          <button class="project-theme-choice project-theme-choice--violet" type="button" data-theme-choice="violet" aria-label="Thème violet" aria-pressed="false"></button>
+          <button class="project-theme-choice project-theme-choice--blue" type="button" data-theme-choice="blue" aria-label="Thème bleu" aria-pressed="false"></button>
+        </div>
+
+        <div class="project-account-menu-wrap">
+          <button class="project-menu-toggle" type="button" aria-label="Ouvrir les options du compte" aria-expanded="false" data-project-menu-toggle>
+            <span></span><span></span><span></span>
+          </button>
+          <div class="project-account-menu" data-project-menu hidden>
+            <a href="/profile/">Mon compte</a>
+            <a href="/home/">Mes projets</a>
+            <button type="button" data-project-open-legal>Mentions légales</button>
+          </div>
+        </div>
+
+        <a class="project-avatar" href="/profile/" aria-label="Voir mon compte">S</a>
+      </div>
+    </header>
+
+    <div class="project-layout sprint-layout">
+      <aside class="project-rail" aria-label="Navigation du projet">
+        <div class="project-utilities">
+          <a class="project-utility" href="/home/">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5m6-6-6 6 6 6" /></svg>
+            <span>Retourner sur les projets</span>
+          </a>
+          <button class="project-utility" type="button" data-export-project>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V3m0 0L8 7m4-4 4 4M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7" /></svg>
+            <span>Exporter le projet</span>
+          </button>
+        </div>
+
+        <section class="project-prompt-card" aria-labelledby="project-prompt-heading">
+          <h2 id="project-prompt-heading">Prompt du projet</h2>
+          <p data-project-prompt>Fais-moi une application de suivi pour mes cours.</p>
+        </section>
+
+        <nav class="project-section-nav" aria-label="Sections générées">
+          <a class="project-nav-item" href="project.html" data-project-page>
+            <img src="assets/persona.png" alt="" /><span>Personas</span>
+          </a>
+          <a class="project-nav-item" href="user-story.html" data-project-page>
+            <img src="assets/user story.png" alt="" /><span>User Story</span>
+          </a>
+          <a class="project-nav-item" href="backlog.html" data-project-page>
+            <img src="assets/board.png" alt="" /><span>Backlog</span>
+          </a>
+          <a class="project-nav-item" href="business-model.html" data-project-page>
+            <img src="assets/business model.png" alt="" /><span>Business M..</span>
+          </a>
+          <a class="project-nav-item" href="swot.html" data-project-page>
+            <img src="assets/swot.png" alt="" /><span>SWOT</span>
+          </a>
+          <a class="project-nav-item is-active" href="#sprint-plan" aria-current="page">
+            <img src="assets/sprint planning.png" alt="" /><span>Sprint plan..</span>
+          </a>
+          <a class="project-nav-item" href="speech.html" data-project-page>
+            <img src="assets/speech.png" alt="" /><span>Speech</span>
+          </a>
+        </nav>
+      </aside>
+
+      <main class="project-main sprint-main" id="sprint-plan">
+        <div class="project-title-row sprint-title-row">
+          <div class="project-title-copy">
+            <div class="project-title-line">
+              <img src="assets/sprint planning.png" alt="" aria-hidden="true" />
+              <h1>Sprint Planning</h1>
+            </div>
+            <p>Planification détaillée des sprints de votre projet.</p>
+          </div>
+
+          <div class="project-actions sprint-actions" aria-label="Actions du Sprint Planning">
+            <button class="project-action project-action--primary" type="button" data-sprint-regenerate>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2 1.3 4.7L18 8l-4.7 1.3L12 14l-1.3-4.7L6 8l4.7-1.3L12 2Zm7 11 .8 2.2L22 16l-2.2.8L19 19l-.8-2.2L16 16l2.2-.8L19 13Z" /></svg>
+              <span>Régénérer</span>
+            </button>
+            <button class="project-action" type="button" data-export-section>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V3m0 0L8 7m4-4 4 4M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7" /></svg>
+              <span>Exporter</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="sprint-workspace">
+          <section class="sprint-board" aria-labelledby="sprint-heading">
+            <div class="sprint-tabs" role="tablist" aria-label="Sprints du projet">
+              <button class="is-active" type="button" role="tab" aria-selected="true" data-sprint-tab="1">Sprint 1</button>
+              <button type="button" role="tab" aria-selected="false" data-sprint-tab="2">Sprint 2</button>
+              <button type="button" role="tab" aria-selected="false" data-sprint-tab="3">Sprint 3</button>
+              <button type="button" role="tab" aria-selected="false" data-sprint-tab="4">Sprint 4</button>
+              <button type="button" role="tab" aria-selected="false" data-sprint-tab="5">Sprint 5</button>
+              <button class="sprint-tab-add" type="button" aria-label="Ajouter un sprint" data-sprint-add>＋</button>
+            </div>
+
+            <div class="sprint-board-content">
+              <header class="sprint-board-header">
+                <div>
+                  <div class="sprint-heading-line">
+                    <h2 id="sprint-heading" data-sprint-title>Sprint 1</h2>
+                    <span class="sprint-state" data-sprint-state>En cours</span>
+                  </div>
+                  <p data-sprint-description>Mise en place des fondations de l’application et authentification</p>
+                </div>
+                <div class="sprint-meta">
+                  <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3v3m10-3v3M4 9h16M5 5h14a1 1 0 0 1 1 1v14H4V6a1 1 0 0 1 1-1Z" /></svg><b data-sprint-dates>05/08/2025 → 19/08/2025</b></span>
+                  <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 7v5l3 2m6-2a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg><b>Durée : <i data-sprint-duration>2 semaines</i></b></span>
+                </div>
+              </header>
+
+              <div class="sprint-kpis" aria-label="Indicateurs du sprint">
+                <article>
+                  <span class="sprint-kpi-icon sprint-kpi-icon--blue">◒</span>
+                  <p>Points totaux</p>
+                  <strong><b data-sprint-points>34</b> pts</strong>
+                </article>
+                <article>
+                  <span class="sprint-kpi-icon sprint-kpi-icon--green">✓</span>
+                  <p>Points prévus</p>
+                  <strong><b data-sprint-planned>34</b> pts</strong>
+                </article>
+                <article>
+                  <span class="sprint-kpi-icon sprint-kpi-icon--violet">◕</span>
+                  <p>Avancement</p>
+                  <strong><b data-sprint-progress>65</b>%</strong>
+                  <span class="sprint-progress"><i data-sprint-progress-bar style="width:65%"></i></span>
+                </article>
+                <article>
+                  <span class="sprint-kpi-icon sprint-kpi-icon--orange">≡</span>
+                  <p>User Stories</p>
+                  <strong data-sprint-stories>6</strong>
+                </article>
+                <article>
+                  <span class="sprint-kpi-icon sprint-kpi-icon--cyan">♟</span>
+                  <p>Tâches</p>
+                  <strong data-sprint-tasks>18</strong>
+                </article>
+              </div>
+
+              <section class="sprint-stories" aria-labelledby="sprint-stories-title">
+                <h3 id="sprint-stories-title">User Stories du sprint</h3>
+                <div class="sprint-table-wrap">
+                  <table>
+                    <thead>
+                      <tr><th>ID</th><th>User Story</th><th>Points</th><th>Priorité</th><th>Statut</th><th><span class="visually-hidden">Avancement</span></th></tr>
+                    </thead>
+                    <tbody>
+                      <tr tabindex="0" data-sprint-story="US-01">
+                        <td>US-01</td><td>En tant qu’utilisateur, je souhaite créer un compte pour accéder à la plateforme.</td><td>5</td><td><span class="sprint-priority sprint-priority--high">Haute</span></td><td><span class="sprint-status sprint-status--progress">En cours</span></td><td><span class="story-progress"><i style="width:75%"></i></span><b>75%</b></td>
+                      </tr>
+                      <tr tabindex="0" data-sprint-story="US-02">
+                        <td>US-02</td><td>En tant qu’utilisateur, je souhaite me connecter à mon espace personnel.</td><td>3</td><td><span class="sprint-priority sprint-priority--high">Haute</span></td><td><span class="sprint-status sprint-status--done">Terminé</span></td><td><span class="story-progress"><i style="width:100%"></i></span><b>100%</b></td>
+                      </tr>
+                      <tr tabindex="0" data-sprint-story="US-03">
+                        <td>US-03</td><td>En tant qu’utilisateur, je souhaite rechercher des fiches par mot-clé.</td><td>5</td><td><span class="sprint-priority sprint-priority--medium">Moyenne</span></td><td><span class="sprint-status sprint-status--progress">En cours</span></td><td><span class="story-progress"><i style="width:50%"></i></span><b>50%</b></td>
+                      </tr>
+                      <tr tabindex="0" data-sprint-story="US-04">
+                        <td>US-04</td><td>En tant qu’utilisateur, je souhaite filtrer les fiches par matière et niveau.</td><td>3</td><td><span class="sprint-priority sprint-priority--medium">Moyenne</span></td><td><span class="sprint-status sprint-status--todo">À faire</span></td><td><span class="story-progress"><i style="width:0%"></i></span><b>0%</b></td>
+                      </tr>
+                      <tr tabindex="0" data-sprint-story="US-05">
+                        <td>US-05</td><td>En tant qu’utilisateur, je souhaite télécharger une fiche pour la consulter hors ligne.</td><td>5</td><td><span class="sprint-priority sprint-priority--low">Basse</span></td><td><span class="sprint-status sprint-status--todo">À faire</span></td><td><span class="story-progress"><i style="width:0%"></i></span><b>0%</b></td>
+                      </tr>
+                      <tr tabindex="0" data-sprint-story="US-06">
+                        <td>US-06</td><td>En tant qu’utilisateur, je souhaite noter une fiche pour aider la communauté.</td><td>2</td><td><span class="sprint-priority sprint-priority--low">Basse</span></td><td><span class="sprint-status sprint-status--todo">À faire</span></td><td><span class="story-progress"><i style="width:0%"></i></span><b>0%</b></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <footer>
+                  <button type="button" data-sprint-add-story>＋&nbsp; Ajouter une user story au sprint</button>
+                  <strong>Total : <span data-sprint-total>34</span> pts</strong>
+                </footer>
+              </section>
+            </div>
+          </section>
+
+          <aside class="sprint-side-panel">
+            <section class="sprint-summary" aria-labelledby="sprint-summary-title">
+              <h2 id="sprint-summary-title">Résumé du sprint</h2>
+              <div class="sprint-summary-chart">
+                <div class="sprint-donut" data-sprint-donut><span><strong data-sprint-donut-value>65%</strong><small>Avancement</small></span></div>
+                <ul>
+                  <li><i class="is-done"></i><span>Terminé</span><b>5 (28%)</b></li>
+                  <li><i class="is-progress"></i><span>En cours</span><b>7 (39%)</b></li>
+                  <li><i class="is-todo"></i><span>À faire</span><b>6 (33%)</b></li>
+                </ul>
+              </div>
+              <dl>
+                <div><dt>▣&nbsp; Date de début</dt><dd data-sprint-start>05/08/2025</dd></div>
+                <div><dt>▣&nbsp; Date de fin</dt><dd data-sprint-end>19/08/2025</dd></div>
+                <div><dt>♟&nbsp; Capacité de l’équipe</dt><dd data-sprint-capacity>40 pts</dd></div>
+                <div><dt>▰&nbsp; Charge prévisionnelle</dt><dd data-sprint-load>85%</dd></div>
+                <div><dt>◇&nbsp; Risque</dt><dd><span class="sprint-risk" data-sprint-risk>Moyen</span></dd></div>
+              </dl>
+            </section>
+
+            <section class="sprint-team" aria-labelledby="sprint-team-title">
+              <h2 id="sprint-team-title">Équipe assignée</h2>
+              <ul>
+                <li><span class="team-avatar team-avatar--emma">EM</span><p><strong>Emma Martin</strong><small>Product Owner</small></p><button type="button" aria-label="Options d’Emma Martin">⋮</button></li>
+                <li><span class="team-avatar team-avatar--lucas">LB</span><p><strong>Lucas Bernard</strong><small>Développeur Backend</small></p><button type="button" aria-label="Options de Lucas Bernard">⋮</button></li>
+                <li><span class="team-avatar team-avatar--sarah">SD</span><p><strong>Sarah Dupont</strong><small>Développeuse Frontend</small></p><button type="button" aria-label="Options de Sarah Dupont">⋮</button></li>
+                <li><span class="team-avatar team-avatar--thomas">TL</span><p><strong>Thomas Leroy</strong><small>UI/UX Designer</small></p><button type="button" aria-label="Options de Thomas Leroy">⋮</button></li>
+              </ul>
+            </section>
+
+            <section class="sprint-recent" aria-labelledby="sprint-recent-title">
+              <h2 id="sprint-recent-title">Tâches récentes</h2>
+              <ul>
+                <li tabindex="0" data-sprint-task><i>✓</i><span>Création du modèle User</span><b class="is-done">Terminé</b><small>⋮</small></li>
+                <li tabindex="0" data-sprint-task><i>✓</i><span>API d’authentification</span><b class="is-progress">En cours</b><small>⋮</small></li>
+                <li tabindex="0" data-sprint-task><i>✓</i><span>Page d’inscription</span><b class="is-progress">En cours</b><small>⋮</small></li>
+                <li tabindex="0" data-sprint-task><i>✓</i><span>Recherche par mot-clé</span><b class="is-todo">À faire</b><small>⋮</small></li>
+              </ul>
+              <button class="sprint-all-tasks" type="button" data-sprint-all-tasks>Voir toutes les tâches <span>→</span></button>
+            </section>
+          </aside>
+        </div>
+
+        <p class="project-status" data-project-status aria-live="polite"></p>
+      </main>
+    </div>
+
+    <dialog class="project-dialog" data-project-legal-dialog>
+      <div><h2>Mentions légales</h2><button type="button" data-project-close-dialog aria-label="Fermer">×</button></div>
+      <p>IWant est actuellement proposé en version bêta. Les informations légales complètes seront ajoutées avant la mise en production.</p>
+    </dialog>
+  </body>
+</html>
