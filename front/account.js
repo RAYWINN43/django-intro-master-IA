@@ -1,15 +1,25 @@
 const accountPage = document.querySelector("[data-account-page]");
-const accountHeader = document.querySelector("[data-account-header]");
 const panels = document.querySelectorAll("[data-account-panel]");
+const stories = document.querySelectorAll("[data-account-story]");
 const switchButtons = document.querySelectorAll("[data-switch-account]");
 const signupForm = document.querySelector("[data-signup-form]");
 const loginForm = document.querySelector("[data-login-form]");
+const passwordToggles = document.querySelectorAll("[data-password-toggle]");
+const allowedThemes = ["green", "orange", "violet", "blue"];
+
+function restoreTheme() {
+  const storedTheme = localStorage.getItem("iwant-theme");
+
+  if (allowedThemes.includes(storedTheme)) {
+    document.documentElement.dataset.theme = storedTheme;
+  }
+}
 
 function getInitialMode() {
   const hashMode = window.location.hash.replace("#", "");
 
-  if (hashMode === "inscription") {
-    return "inscription";
+  if (hashMode === "inscription" || hashMode === "connexion") {
+    return hashMode;
   }
 
   return accountPage?.dataset.initialMode === "inscription"
@@ -17,34 +27,60 @@ function getInitialMode() {
     : "connexion";
 }
 
-function showAccountMode(mode) {
+function showAccountMode(mode, shouldFocus = false) {
   if (!accountPage) {
     return;
   }
 
-  accountPage.dataset.mode = mode;
+  const nextMode = mode === "inscription" ? "inscription" : "connexion";
+  accountPage.dataset.mode = nextMode;
+  document.title = `${nextMode === "inscription" ? "Inscription" : "Connexion"} — IWant`;
 
   panels.forEach((panel) => {
-    panel.hidden = panel.dataset.accountPanel !== mode;
+    panel.hidden = panel.dataset.accountPanel !== nextMode;
   });
 
-  if (accountHeader) {
-    accountHeader.hidden = mode !== "inscription";
+  stories.forEach((story) => {
+    story.hidden = story.dataset.accountStory !== nextMode;
+  });
+
+  if (window.location.hash !== `#${nextMode}`) {
+    history.replaceState(null, "", `#${nextMode}`);
   }
 
-  if (window.location.hash !== `#${mode}`) {
-    window.location.hash = mode;
+  if (shouldFocus) {
+    const activePanel = document.querySelector(`[data-account-panel="${nextMode}"]`);
+    requestAnimationFrame(() => activePanel?.querySelector("input")?.focus());
   }
 }
 
 switchButtons.forEach((button) => {
   button.addEventListener("click", () => {
-    showAccountMode(button.dataset.switchAccount);
+    showAccountMode(button.dataset.switchAccount, true);
   });
 });
 
 window.addEventListener("hashchange", () => {
   showAccountMode(getInitialMode());
+});
+
+passwordToggles.forEach((toggle) => {
+  toggle.addEventListener("click", () => {
+    const input = document.getElementById(toggle.dataset.passwordToggle);
+
+    if (!input) {
+      return;
+    }
+
+    const isVisible = input.type === "text";
+    input.type = isVisible ? "password" : "text";
+    toggle.setAttribute("aria-pressed", String(!isVisible));
+    toggle.setAttribute(
+      "aria-label",
+      isVisible ? "Afficher le mot de passe" : "Masquer le mot de passe",
+    );
+    input.focus({ preventScroll: true });
+  });
 });
 
 if (signupForm) {
@@ -59,9 +95,7 @@ if (signupForm) {
       return;
     }
 
-    if (confirmation) {
-      confirmation.setCustomValidity("");
-    }
+    confirmation?.setCustomValidity("");
   });
 }
 
@@ -71,9 +105,10 @@ if (loginForm) {
 
     if (button) {
       button.disabled = true;
-      button.textContent = "Connexion";
+      button.querySelector("span").textContent = "Connexion…";
     }
   });
 }
 
+restoreTheme();
 showAccountMode(getInitialMode());
