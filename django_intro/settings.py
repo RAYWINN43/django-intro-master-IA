@@ -16,14 +16,27 @@ SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "dev-secret-key-django-intro")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get("DJANGO_DEBUG", "True").lower() in {"1", "true", "yes", "on"}
 
-ALLOWED_HOSTS = [
-    host.strip()
-    for host in os.environ.get(
-        "DJANGO_ALLOWED_HOSTS",
-        "localhost,127.0.0.1,testserver",
-    ).split(",")
-    if host.strip()
-]
+
+def csv_env(name, default=""):
+    return [
+        value.strip()
+        for value in os.environ.get(name, default).split(",")
+        if value.strip()
+    ]
+
+
+ALLOWED_HOSTS = csv_env(
+    "DJANGO_ALLOWED_HOSTS",
+    "localhost,127.0.0.1,testserver,django-intro-master.onrender.com",
+)
+
+render_default_hostname = "django-intro-master.onrender.com"
+if render_default_hostname not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append(render_default_hostname)
+
+render_external_hostname = os.environ.get("RENDER_EXTERNAL_HOSTNAME", "").strip()
+if render_external_hostname and render_external_hostname not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append(render_external_hostname)
 
 
 # Application definition
@@ -162,10 +175,20 @@ SESSION_SAVE_EVERY_REQUEST = True
 CSRF_COOKIE_AGE = None
 CSRF_USE_SESSIONS = True
 CSRF_TRUSTED_ORIGINS = [
-    origin.strip()
-    for origin in os.environ.get("DJANGO_CSRF_TRUSTED_ORIGINS", "").split(",")
-    if origin.strip()
+    *csv_env(
+        "DJANGO_CSRF_TRUSTED_ORIGINS",
+        "https://django-intro-master.onrender.com",
+    )
 ]
+
+render_default_origin = f"https://{render_default_hostname}"
+if render_default_origin not in CSRF_TRUSTED_ORIGINS:
+    CSRF_TRUSTED_ORIGINS.append(render_default_origin)
+
+if render_external_hostname:
+    render_origin = f"https://{render_external_hostname}"
+    if render_origin not in CSRF_TRUSTED_ORIGINS:
+        CSRF_TRUSTED_ORIGINS.append(render_origin)
 
 
 # Groq
