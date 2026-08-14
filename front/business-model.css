@@ -118,6 +118,11 @@ html[data-theme="blue"] .business-notes { background: rgba(17, 39, 65, 0.52); }
   line-height: 1.36;
 }
 
+.business-empty-item {
+  color: rgba(255, 255, 255, 0.84);
+  list-style: none;
+}
+
 .business-side-panel {
   display: grid;
   gap: 14px;

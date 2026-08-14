@@ -1,5 +1,7 @@
 import json
+from io import BytesIO
 from unittest.mock import patch
+from zipfile import ZipFile
 
 from django.contrib.auth import get_user_model
 from django.test import SimpleTestCase, TestCase
@@ -430,3 +432,168 @@ class GroqAnalysisViewsTests(TestCase):
         )
         self.analysis.refresh_from_db()
         self.assertIn("business_model", self.analysis.response_json)
+
+    @patch("ai.views.SWOTGenerator")
+    def test_owner_can_generate_swot(self, generator_class):
+        generator = generator_class.return_value
+        generator.generate.return_value = json.dumps(
+            {
+                "swot": {
+                    "strengths": ["Interface simple"],
+                    "weaknesses": ["Dépendance API"],
+                    "opportunities": ["Marché IA en croissance"],
+                    "threats": ["Concurrence forte"],
+                },
+                "recommendations": ["Prioriser un parcours utilisateur clair"],
+                "summary": {
+                    "main_strength": "Interface simple",
+                    "main_risk": "Dépendance API",
+                    "priority_action": "Valider le besoin utilisateur",
+                },
+            },
+        )
+        self.client.force_login(self.user)
+
+        response = self.client.post(
+            reverse("groq_project_swot", args=[self.analysis.pk]),
+            data=json.dumps({"force": True}),
+            content_type="application/json",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.json()["swot"]["swot"]["strengths"][0], "Interface simple"
+        )
+        self.analysis.refresh_from_db()
+        self.assertIn("swot", self.analysis.response_json)
+
+    @patch("ai.views.SpeechGenerator")
+    def test_owner_can_generate_speech(self, generator_class):
+        generator = generator_class.return_value
+        generator.generate.return_value = json.dumps(
+            {
+                "speech": {
+                    "title": "Pitch du projet",
+                    "estimated_duration": "3:30 min",
+                    "word_count": 520,
+                    "sections": [
+                        {
+                            "id": 1,
+                            "emoji": "🎤",
+                            "title": "Introduction",
+                            "time_range": "0:00 - 0:30",
+                            "content": "Bonjour, voici notre projet.",
+                        },
+                    ],
+                    "slide_plan": [
+                        {
+                            "id": 1,
+                            "title": "Introduction",
+                            "visual_suggestion": "Logo et promesse",
+                        },
+                    ],
+                    "presentation_tips": ["Parler clairement"],
+                },
+                "quick_preview": {
+                    "duration": "3:30 min",
+                    "words": 520,
+                    "sections": 1,
+                },
+            },
+        )
+        self.client.force_login(self.user)
+
+        response = self.client.post(
+            reverse("groq_project_speech", args=[self.analysis.pk]),
+            data=json.dumps({"force": True}),
+            content_type="application/json",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.json()["speech"]["sections"][0]["title"], "Introduction"
+        )
+        self.analysis.refresh_from_db()
+        self.assertIn("speech", self.analysis.response_json)
+
+    @patch("ai.views.SprintGenerator")
+    def test_owner_can_generate_sprint(self, generator_class):
+        generator = generator_class.return_value
+        generator.generate.return_value = json.dumps(
+            {
+                "sprint": {
+                    "id": "sprint_1",
+                    "name": "Sprint 1",
+                    "status": "En cours",
+                    "goal": "Poser les bases du produit.",
+                    "duration": "2 semaines",
+                    "start_label": "Semaine 1",
+                    "end_label": "Semaine 2",
+                    "team_capacity_points": 40,
+                    "forecast_load_percent": 80,
+                    "risk": "Moyen",
+                    "total_points": 8,
+                    "planned_points": 8,
+                    "progress_percent": 20,
+                    "user_stories": [
+                        {
+                            "id": "US-01",
+                            "story": "En tant que visiteur, je souhaite creer un compte.",
+                            "points": 5,
+                            "priority": "Haute",
+                            "status": "En cours",
+                            "progress_percent": 30,
+                        }
+                    ],
+                    "tasks": [
+                        {"label": "Creer le modele utilisateur", "status": "En cours"}
+                    ],
+                    "team": [{"name": "Emma Martin", "role": "Product Owner"}],
+                },
+                "summary": {"done": 0, "in_progress": 1, "todo": 0},
+            },
+        )
+        self.client.force_login(self.user)
+
+        response = self.client.post(
+            reverse("groq_project_sprint", args=[self.analysis.pk]),
+            data=json.dumps({"force": True}),
+            content_type="application/json",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.json()["sprint"]["sprint"]["user_stories"][0]["id"],
+            "US-01",
+        )
+        self.analysis.refresh_from_db()
+        self.assertIn("sprint", self.analysis.response_json)
+
+    def test_owner_can_download_speech_slides(self):
+        self.client.force_login(self.user)
+
+        response = self.client.post(
+            reverse("groq_project_speech_slides", args=[self.analysis.pk]),
+            data=json.dumps(
+                {
+                    "speech": {
+                        "estimated_duration": "3:00 min",
+                        "word_count": 320,
+                        "sections": [
+                            {
+                                "id": 1,
+                                "title": "Introduction",
+                                "time_range": "0:00 - 0:30",
+                                "content": "Bonjour, voici le projet.",
+                            }
+                        ],
+                    }
+                }
+            ),
+            content_type="application/json",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.content[:2], b"PK")
+        with ZipFile(BytesIO(response.content)) as archive:
+            self.assertIn("ppt/presentation.xml", archive.namelist())

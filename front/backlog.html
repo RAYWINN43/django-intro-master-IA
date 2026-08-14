@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="fr" data-theme="green">
   <head>
+    {% load static %}
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="Backlog produit généré pour votre projet IWant." />
@@ -18,11 +19,11 @@
         if (themes.includes(savedTheme)) document.documentElement.dataset.theme = savedTheme;
       })();
     </script>
-    <link rel="stylesheet" href="project.css?v=3" />
-    <link rel="stylesheet" href="backlog.css?v=2" />
-    <link rel="stylesheet" href="cursor.css?v=2" />
-    <script src="project.js?v=8" defer></script>
-    <script src="backlog.js?v=4" defer></script>
+    <link rel="stylesheet" href="{% static 'project.css' %}?v=4" />
+    <link rel="stylesheet" href="{% static 'backlog.css' %}?v=3" />
+    <link rel="stylesheet" href="{% static 'cursor.css' %}?v=2" />
+    <script src="{% static 'project.js' %}?v=9" defer></script>
+    <script src="{% static 'backlog.js' %}?v=5" defer></script>
   </head>
   <body class="project-body backlog-page">
     <header class="project-header">
@@ -77,25 +78,25 @@
 
         <nav class="project-section-nav" aria-label="Sections générées">
           <a class="project-nav-item" href="/project.html" data-project-page>
-            <img src="assets/persona.png" alt="" /><span>Personas</span>
+            <img src="{% static 'assets/persona.png' %}" alt="" /><span>Personas</span>
           </a>
           <a class="project-nav-item" href="user-story.html" data-project-page>
-            <img src="assets/user story.png" alt="" /><span>User Story</span>
+            <img src="{% static 'assets/user story.png' %}" alt="" /><span>User Story</span>
           </a>
           <a class="project-nav-item is-active" href="#backlog" aria-current="page">
-            <img src="assets/board.png" alt="" /><span>Backlog</span>
+            <img src="{% static 'assets/board.png' %}" alt="" /><span>Backlog</span>
           </a>
           <a class="project-nav-item" href="business-model.html" data-project-page>
-            <img src="assets/business model.png" alt="" /><span>Business M..</span>
+            <img src="{% static 'assets/business model.png' %}" alt="" /><span>Business M..</span>
           </a>
           <a class="project-nav-item" href="swot.html" data-project-page>
-            <img src="assets/swot.png" alt="" /><span>SWOT</span>
+            <img src="{% static 'assets/swot.png' %}" alt="" /><span>SWOT</span>
           </a>
-          <a class="project-nav-item" href="#sprint-plan">
-            <img src="assets/sprint planning.png" alt="" /><span>Sprint plan..</span>
+          <a class="project-nav-item" href="sprint-planning.html" data-project-page>
+            <img src="{% static 'assets/sprint planning.png' %}" alt="" /><span>Sprint plan..</span>
           </a>
           <a class="project-nav-item" href="speech.html" data-project-page>
-            <img src="assets/speech.png" alt="" /><span>Speech</span>
+            <img src="{% static 'assets/speech.png' %}" alt="" /><span>Speech</span>
           </a>
         </nav>
       </aside>
@@ -104,7 +105,7 @@
         <div class="project-title-row backlog-title-row">
           <div class="project-title-copy">
             <div class="project-title-line">
-              <img src="assets/board.png" alt="" aria-hidden="true" />
+              <img src="{% static 'assets/board.png' %}" alt="" aria-hidden="true" />
               <h1>Backlog</h1>
             </div>
             <p>Liste priorisée des user stories de votre projet.</p>

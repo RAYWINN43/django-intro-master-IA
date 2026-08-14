@@ -2,7 +2,7 @@ import json
 from uuid import uuid4
 
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django.middleware.csrf import get_token
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
@@ -15,7 +15,11 @@ from ai.langgraph import ask_groq
 from ai.services.backlog_generator import BacklogGenerator
 from ai.services.business_model_generator import BusinessModelGenerator
 from ai.services.persona_generator import PersonaGenerator
+from ai.services.pptx_generator import build_speech_pptx
+from ai.services.speech_generator import SpeechGenerator
+from ai.services.sprint_generator import SprintGenerator
 from ai.services.storymap_generator import StorymapGenerator
+from ai.services.swot_generator import SWOTGenerator
 
 from .llama_service import LlamaService
 from .models import GroqAnalysis
@@ -74,6 +78,9 @@ GENERATED_SECTION_KEYS = {
     "user_stories",
     "backlog",
     "business_model",
+    "swot",
+    "speech",
+    "sprint",
 }
 
 
@@ -119,6 +126,91 @@ def normalize_status(value):
     if "termin" in status or status == "done":
         return "Terminée"
     return "À faire"
+
+
+def normalize_percent(value, default=0):
+    try:
+        percent = int(value)
+    except (TypeError, ValueError):
+        percent = default
+
+    return min(max(percent, 0), 100)
+
+
+def normalize_sprint_status(value):
+    status = str(value or "").strip().lower()
+    if "cours" in status or status in {"progress", "in_progress"}:
+        return "En cours"
+    if "termin" in status or status in {"done", "complete", "completed"}:
+        return "TerminÃ©"
+    return "Ã€ faire"
+
+
+def normalize_sprint_priority(value):
+    priority = str(value or "").strip().lower()
+    if "haut" in priority or "high" in priority or priority == "p0":
+        return "Haute"
+    if "bas" in priority or "low" in priority or priority == "p2":
+        return "Basse"
+    return "Moyenne"
+
+
+def normalize_sprint_risk(value):
+    risk = str(value or "").strip().lower()
+    if "elev" in risk or "Ã©lev" in risk or "high" in risk:
+        return "Ã‰levÃ©"
+    if "faible" in risk or "low" in risk:
+        return "Faible"
+    return "Moyen"
+
+
+def normalize_sprint_story(story, index):
+    story = story if isinstance(story, dict) else {}
+    story_text = str(story.get("story") or story.get("title") or "").strip()
+    if not story_text:
+        story_text = "En tant qu'utilisateur, je souhaite utiliser la fonctionnalite."
+
+    return {
+        "id": str(story.get("id") or f"US-{index + 1:02d}"),
+        "story": story_text,
+        "points": normalize_points(story.get("points")),
+        "priority": normalize_sprint_priority(story.get("priority")),
+        "status": normalize_sprint_status(story.get("status")),
+        "progress_percent": normalize_percent(story.get("progress_percent")),
+    }
+
+
+def normalize_sprint_task(task, index):
+    if not isinstance(task, dict):
+        task = {"label": task}
+
+    return {
+        "label": str(task.get("label") or f"Tache {index + 1}").strip(),
+        "status": normalize_sprint_status(task.get("status")),
+    }
+
+
+def normalize_sprint_member(member, index):
+    if not isinstance(member, dict):
+        member = {"name": member}
+
+    return {
+        "name": str(member.get("name") or f"Membre {index + 1}").strip(),
+        "role": str(member.get("role") or "Equipe projet").strip(),
+    }
+
+
+def summarize_sprint_statuses(stories):
+    summary = {"done": 0, "in_progress": 0, "todo": 0}
+    for story in stories:
+        status = story.get("status")
+        if status == "TerminÃ©":
+            summary["done"] += 1
+        elif status == "En cours":
+            summary["in_progress"] += 1
+        else:
+            summary["todo"] += 1
+    return summary
 
 
 def normalize_user_story(story, index):
@@ -215,6 +307,196 @@ def normalize_swot_payload(raw_response):
             "main_strength": str(summary.get("main_strength") or "").strip(),
             "main_risk": str(summary.get("main_risk") or "").strip(),
             "priority_action": str(summary.get("priority_action") or "").strip(),
+        },
+    }
+
+
+def normalize_speech_section(section, index):
+    section = section if isinstance(section, dict) else {}
+    default_titles = [
+        "Introduction",
+        "Le problème",
+        "Notre solution",
+        "Démonstration",
+        "Valeur ajoutée",
+        "Conclusion",
+    ]
+    default_times = [
+        "0:00 - 0:30",
+        "0:30 - 1:00",
+        "1:00 - 2:00",
+        "2:00 - 3:00",
+        "3:00 - 3:30",
+        "3:30 - 3:45",
+    ]
+    content = section.get("content") or ""
+    if isinstance(content, list):
+        content = "\n".join(str(item).strip() for item in content if str(item).strip())
+
+    return {
+        "id": normalize_word_count(section.get("id")) or index + 1,
+        "emoji": str(section.get("emoji") or "🎤").strip(),
+        "title": str(section.get("title") or default_titles[index % 6]).strip(),
+        "time_range": str(
+            section.get("time_range") or default_times[index % 6]
+        ).strip(),
+        "content": str(content).strip(),
+    }
+
+
+def normalize_speech_slide(slide, index, sections):
+    slide = slide if isinstance(slide, dict) else {}
+    fallback_title = (
+        sections[index]["title"] if index < len(sections) else f"Slide {index + 1}"
+    )
+    return {
+        "id": normalize_word_count(slide.get("id")) or index + 1,
+        "title": str(slide.get("title") or fallback_title).strip(),
+        "visual_suggestion": str(slide.get("visual_suggestion") or "").strip(),
+    }
+
+
+def normalize_word_count(value):
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return 0
+
+
+def normalize_speech_payload(raw_response):
+    payload = coerce_payload(raw_response)
+    if not isinstance(payload, dict):
+        raise TypeError("La réponse IA doit contenir un speech.")
+
+    speech = payload.get("speech", payload)
+    if not isinstance(speech, dict):
+        raise TypeError("La réponse IA doit contenir un speech.")
+
+    raw_sections = speech.get("sections", [])
+    if not isinstance(raw_sections, list) or len(raw_sections) < 1:
+        raise ValueError("La réponse IA doit contenir des sections de speech.")
+
+    sections = [
+        normalize_speech_section(section, index)
+        for index, section in enumerate(raw_sections[:6])
+    ]
+    raw_slides = speech.get("slide_plan", [])
+    raw_slides = raw_slides if isinstance(raw_slides, list) else []
+    slide_plan = [
+        normalize_speech_slide(slide, index, sections)
+        for index, slide in enumerate(raw_slides[:6])
+    ]
+    if not slide_plan:
+        slide_plan = [
+            normalize_speech_slide({}, index, sections)
+            for index in range(len(sections))
+        ]
+
+    quick_preview = payload.get("quick_preview", {})
+    quick_preview = quick_preview if isinstance(quick_preview, dict) else {}
+    word_count = normalize_word_count(speech.get("word_count"))
+
+    return {
+        "title": str(speech.get("title") or "Speech / Pitch").strip(),
+        "estimated_duration": str(
+            speech.get("estimated_duration")
+            or quick_preview.get("duration")
+            or "3:45 min"
+        ).strip(),
+        "word_count": word_count,
+        "sections": sections,
+        "slide_plan": slide_plan[:6],
+        "presentation_tips": clean_list(speech.get("presentation_tips"))[:4],
+        "quick_preview": {
+            "duration": str(
+                quick_preview.get("duration")
+                or speech.get("estimated_duration")
+                or "3:45 min"
+            ).strip(),
+            "words": normalize_word_count(quick_preview.get("words")) or word_count,
+            "sections": normalize_word_count(quick_preview.get("sections"))
+            or len(sections),
+        },
+    }
+
+
+def normalize_sprint_payload(raw_response):
+    payload = coerce_payload(raw_response)
+    if not isinstance(payload, dict):
+        raise TypeError("La rÃ©ponse IA doit contenir un sprint.")
+
+    sprint = payload.get("sprint", payload)
+    if not isinstance(sprint, dict):
+        raise TypeError("La rÃ©ponse IA doit contenir un sprint.")
+
+    raw_stories = sprint.get("user_stories", [])
+    if not isinstance(raw_stories, list) or len(raw_stories) < 1:
+        raise ValueError("La rÃ©ponse IA doit contenir des user stories de sprint.")
+
+    stories = [
+        normalize_sprint_story(story, index)
+        for index, story in enumerate(raw_stories[:6])
+    ]
+    raw_tasks = sprint.get("tasks", [])
+    raw_tasks = raw_tasks if isinstance(raw_tasks, list) else []
+    tasks = [
+        normalize_sprint_task(task, index) for index, task in enumerate(raw_tasks[:6])
+    ]
+    if not tasks:
+        tasks = [normalize_sprint_task("Preparer le socle du projet", 0)]
+
+    raw_team = sprint.get("team", [])
+    raw_team = raw_team if isinstance(raw_team, list) else []
+    team = [
+        normalize_sprint_member(member, index)
+        for index, member in enumerate(raw_team[:3])
+    ]
+    if not team:
+        team = [
+            normalize_sprint_member({"name": "Product Owner", "role": "Cadrage"}, 0)
+        ]
+
+    total_points = sum(story["points"] for story in stories)
+    summary = payload.get("summary", {})
+    summary = summary if isinstance(summary, dict) else {}
+    normalized_summary = summarize_sprint_statuses(stories)
+
+    return {
+        "sprint": {
+            "id": str(sprint.get("id") or "sprint_1"),
+            "name": str(sprint.get("name") or "Sprint 1").strip(),
+            "status": normalize_sprint_status(sprint.get("status")),
+            "goal": str(
+                sprint.get("goal") or "Lancer les fondations du projet."
+            ).strip(),
+            "duration": str(sprint.get("duration") or "2 semaines").strip(),
+            "start_label": str(sprint.get("start_label") or "Semaine 1").strip(),
+            "end_label": str(sprint.get("end_label") or "Semaine 2").strip(),
+            "team_capacity_points": normalize_word_count(
+                sprint.get("team_capacity_points")
+            )
+            or 40,
+            "forecast_load_percent": normalize_percent(
+                sprint.get("forecast_load_percent"),
+                default=85,
+            ),
+            "risk": normalize_sprint_risk(sprint.get("risk")),
+            "total_points": normalize_word_count(sprint.get("total_points"))
+            or total_points,
+            "planned_points": normalize_word_count(sprint.get("planned_points"))
+            or total_points,
+            "progress_percent": normalize_percent(sprint.get("progress_percent")),
+            "user_stories": stories,
+            "tasks": tasks,
+            "team": team,
+        },
+        "summary": {
+            "done": normalize_word_count(summary.get("done"))
+            or normalized_summary["done"],
+            "in_progress": normalize_word_count(summary.get("in_progress"))
+            or normalized_summary["in_progress"],
+            "todo": normalize_word_count(summary.get("todo"))
+            or normalized_summary["todo"],
         },
     }
 
@@ -720,3 +1002,121 @@ def groq_project_business_model(request, analysis_id):
             "normalizer": normalize_business_model_payload,
         },
     )
+
+
+@csrf_exempt
+@require_POST
+@login_required
+def groq_project_swot(request, analysis_id):
+    return generate_project_artifact(
+        request,
+        analysis_id,
+        {
+            "cache_key": "swot",
+            "response_key": "swot",
+            "section_label": "SWOT",
+            "previous_context_key": "previous_swot_to_avoid",
+            "regeneration_instruction": (
+                "Genere une nouvelle analyse SWOT. Change les angles "
+                "strategiques, les risques, les opportunites et les "
+                "recommandations, sans sortir du projet."
+            ),
+            "generator": SWOTGenerator,
+            "normalizer": normalize_swot_payload,
+        },
+    )
+
+
+@csrf_exempt
+@require_POST
+@login_required
+def groq_project_speech(request, analysis_id):
+    return generate_project_artifact(
+        request,
+        analysis_id,
+        {
+            "cache_key": "speech",
+            "response_key": "speech",
+            "section_label": "Speech / Pitch",
+            "previous_context_key": "previous_speech_to_avoid",
+            "regeneration_instruction": (
+                "Genere une nouvelle version du speech. Change l'accroche, "
+                "les formulations, les exemples, la demonstration et le "
+                "call-to-action, tout en gardant le meme projet."
+            ),
+            "generator": SpeechGenerator,
+            "normalizer": normalize_speech_payload,
+        },
+    )
+
+
+@csrf_exempt
+@require_POST
+@login_required
+def groq_project_sprint(request, analysis_id):
+    return generate_project_artifact(
+        request,
+        analysis_id,
+        {
+            "cache_key": "sprint",
+            "response_key": "sprint",
+            "section_label": "Sprint Planning",
+            "previous_context_key": "previous_sprint_to_avoid",
+            "regeneration_instruction": (
+                "Genere une nouvelle version du Sprint 1. Change la selection "
+                "des user stories, les taches, les risques ou les estimations, "
+                "tout en gardant un premier sprint realiste."
+            ),
+            "generator": SprintGenerator,
+            "normalizer": normalize_sprint_payload,
+        },
+    )
+
+
+@csrf_exempt
+@require_POST
+@login_required
+def groq_project_speech_slides(request, analysis_id):
+    analysis = get_object_or_404(
+        GroqAnalysis,
+        pk=analysis_id,
+        user=request.user,
+    )
+
+    try:
+        payload = json.loads(request.body.decode("utf-8") or "{}")
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "JSON invalide."}, status=400)
+
+    speech = None
+    client_speech = payload.get("speech")
+    if client_speech:
+        try:
+            speech = normalize_speech_payload({"speech": client_speech})
+        except (TypeError, ValueError):
+            speech = None
+
+    if speech is None:
+        speech = get_cached_project_artifact(
+            analysis,
+            "speech",
+            normalize_speech_payload,
+        )
+
+    if speech is None:
+        return JsonResponse(
+            {"error": "Aucun speech disponible pour generer les slides."},
+            status=400,
+        )
+
+    pptx_content = build_speech_pptx(speech)
+    response = HttpResponse(
+        pptx_content,
+        content_type=(
+            "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+        ),
+    )
+    response["Content-Disposition"] = (
+        f'attachment; filename="speech-project-{analysis.pk}.pptx"'
+    )
+    return response

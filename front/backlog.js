@@ -9,6 +9,7 @@ const backlogSortPoints = document.querySelector("[data-sort-points]");
 const backlogNotes = document.querySelector("[data-backlog-notes]");
 const backlogProjectId = new URLSearchParams(window.location.search).get("project");
 const backlogNotesKey = `iwant-backlog-notes-${backlogProjectId || "demo"}`;
+const hasBacklogProject = /^\d+$/.test(backlogProjectId || "");
 let backlogRows = [...document.querySelectorAll("[data-backlog-row]")];
 let backlogItemsById = new Map();
 let backlogActiveStatus = "all";
@@ -17,7 +18,7 @@ let backlogSortDescending = false;
 let backlogSelectedRow = backlogRows[0] || null;
 
 function getBacklogUrl() {
-  if (!/^\d+$/.test(backlogProjectId || "")) return null;
+  if (!hasBacklogProject) return null;
   return `/ai/projects/${backlogProjectId}/backlog/`;
 }
 
@@ -276,6 +277,23 @@ function renderBacklogItems(items) {
   selectBacklogRow(backlogSelectedRow, { announce: false });
 }
 
+function setBacklogLoading(message) {
+  if (backlogList) {
+    const state = document.createElement("p");
+    state.className = "backlog-empty-state";
+    state.textContent = message;
+    backlogList.replaceChildren(state);
+  }
+
+  backlogRows = [];
+  backlogItemsById = new Map();
+  backlogSelectedRow = null;
+  refreshBacklogTabs();
+  updateBacklogSummary([]);
+  if (backlogDetail) backlogDetail.hidden = true;
+  backlogWorkspace?.classList.add("is-detail-closed");
+}
+
 async function loadBacklog({ force = false } = {}) {
   const url = getBacklogUrl();
   if (!url) {
@@ -294,6 +312,8 @@ async function loadBacklog({ force = false } = {}) {
 
   if (button) button.disabled = true;
   if (label) label.textContent = force ? "Régénération..." : "Génération...";
+  const currentArtifact = force ? getCurrentBacklogArtifact() : null;
+  setBacklogLoading(force ? "Régénération du backlog..." : "Génération du backlog...");
   notifyBacklog(force ? "Régénération du backlog..." : "Génération du backlog...");
 
   try {
@@ -303,7 +323,7 @@ async function loadBacklog({ force = false } = {}) {
       credentials: "same-origin",
       body: JSON.stringify({
         force,
-        current_artifact: force ? getCurrentBacklogArtifact() : null,
+        current_artifact: currentArtifact,
       }),
     });
     const data = typeof readJsonResponse === "function"
@@ -318,6 +338,7 @@ async function loadBacklog({ force = false } = {}) {
     notifyBacklog(data.cached ? "Backlog chargé depuis le projet." : "Backlog généré avec l'IA.");
   } catch (error) {
     console.error("Backlog generation error:", error);
+    setBacklogLoading(error.message);
     notifyBacklog(error.message);
   } finally {
     if (button) button.disabled = false;
@@ -426,14 +447,18 @@ document.querySelector("[data-backlog-regenerate]")?.addEventListener("click", (
   loadBacklog({ force: true });
 });
 
-backlogRows.forEach((row) => {
-  backlogItemsById.set(row.dataset.id, {
-    acceptance_criteria: [],
-    notes: "",
+if (hasBacklogProject) {
+  setBacklogLoading("Génération du backlog...");
+} else {
+  backlogRows.forEach((row) => {
+    backlogItemsById.set(row.dataset.id, {
+      acceptance_criteria: [],
+      notes: "",
+    });
+    bindBacklogRow(row);
   });
-  bindBacklogRow(row);
-});
-selectBacklogRow(backlogSelectedRow, { announce: false });
-refreshBacklogTabs();
-applyBacklogFilters();
+  selectBacklogRow(backlogSelectedRow, { announce: false });
+  refreshBacklogTabs();
+  applyBacklogFilters();
+}
 loadBacklog();
