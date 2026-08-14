@@ -27,11 +27,9 @@ class LlamaServiceTests(SimpleTestCase):
 
 class PersonaGenerationTests(SimpleTestCase):
     def test_extract_json_payload_accepts_fenced_json(self):
-        payload = extract_json_payload(
-            """```json
+        payload = extract_json_payload("""```json
 {"personas": []}
-```"""
-        )
+```""")
 
         self.assertEqual(payload, {"personas": []})
 
@@ -78,7 +76,8 @@ class LlamaViewsTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
-            response.json()["response"], "Bonjour, comment puis-je aider ?"
+            response.json()["response"],
+            "Bonjour, comment puis-je aider ?",
         )
         service.generate.assert_called_once_with("Explique Django")
 
@@ -237,8 +236,8 @@ class GroqAnalysisViewsTests(TestCase):
                         "scenario": "Karim consulte la page sur mobile.",
                         "expectations": "Resultat rapide.",
                     },
-                ]
-            }
+                ],
+            },
         )
         self.client.force_login(self.user)
 
@@ -266,7 +265,7 @@ class GroqAnalysisViewsTests(TestCase):
                 },
                 {"id": "persona_2", "name": "Sarah", "card_color": "violet"},
                 {"id": "persona_3", "name": "Karim", "card_color": "orange"},
-            ]
+            ],
         }
         self.analysis.save(update_fields=["response_json"])
         generator = generator_class.return_value
@@ -276,8 +275,8 @@ class GroqAnalysisViewsTests(TestCase):
                     {"id": "persona_1", "name": "Nina"},
                     {"id": "persona_2", "name": "Omar"},
                     {"id": "persona_3", "name": "Claire"},
-                ]
-            }
+                ],
+            },
         )
         self.client.force_login(self.user)
 
@@ -300,7 +299,7 @@ class GroqAnalysisViewsTests(TestCase):
                 {"id": "persona_1", "name": "A", "card_color": "green"},
                 {"id": "persona_2", "name": "B", "card_color": "violet"},
                 {"id": "persona_3", "name": "C", "card_color": "orange"},
-            ]
+            ],
         }
         self.analysis.save(update_fields=["response_json"])
         self.client.force_login(self.user)
@@ -326,3 +325,108 @@ class GroqAnalysisViewsTests(TestCase):
         )
 
         self.assertEqual(response.status_code, 404)
+
+    @patch("ai.views.StorymapGenerator")
+    def test_owner_can_generate_user_stories(self, generator_class):
+        generator = generator_class.return_value
+        generator.generate.return_value = json.dumps(
+            {
+                "user_stories": [
+                    {
+                        "id": "US-01",
+                        "role": "visiteur",
+                        "action": "creer un compte",
+                        "benefit": "acceder a son espace",
+                        "priority": "Haute",
+                        "points": 5,
+                        "epic": "Authentification",
+                        "acceptance_criteria": ["L'utilisateur peut saisir son email"],
+                    },
+                ],
+            },
+        )
+        self.client.force_login(self.user)
+
+        response = self.client.post(
+            reverse("groq_project_user_stories", args=[self.analysis.pk]),
+            data=json.dumps({"force": True}),
+            content_type="application/json",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(response.json()["cached"])
+        self.analysis.refresh_from_db()
+        self.assertEqual(len(self.analysis.response_json["user_stories"]), 1)
+
+    @patch("ai.views.BacklogGenerator")
+    def test_owner_can_generate_backlog(self, generator_class):
+        generator = generator_class.return_value
+        generator.generate.return_value = json.dumps(
+            {
+                "backlog": [
+                    {
+                        "id": "US-01",
+                        "priority": "P0",
+                        "title": "Creer un compte",
+                        "story": "En tant que visiteur, je souhaite creer un compte.",
+                        "points": 5,
+                        "status": "A faire",
+                        "epic": "Authentification",
+                        "acceptance_criteria": ["L'utilisateur peut saisir son email"],
+                    },
+                ],
+            },
+        )
+        self.client.force_login(self.user)
+
+        response = self.client.post(
+            reverse("groq_project_backlog", args=[self.analysis.pk]),
+            data=json.dumps({"force": True}),
+            content_type="application/json",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["backlog"][0]["priority"], "P0")
+        self.analysis.refresh_from_db()
+        self.assertEqual(len(self.analysis.response_json["backlog"]), 1)
+
+    @patch("ai.views.BusinessModelGenerator")
+    def test_owner_can_generate_business_model(self, generator_class):
+        generator = generator_class.return_value
+        generator.generate.return_value = json.dumps(
+            {
+                "business_model_canvas": {
+                    "key_partners": ["Hebergeur"],
+                    "key_activities": ["Developpement"],
+                    "key_resources": ["Equipe"],
+                    "value_propositions": ["Gain de temps"],
+                    "customer_relationships": ["Self-service"],
+                    "channels": ["Site web"],
+                    "customer_segments": ["Etudiants"],
+                    "cost_structure": ["API IA"],
+                    "revenue_streams": ["Abonnement"],
+                },
+                "metrics": {
+                    "market_potential": "Moyen",
+                    "complexity": "Moyenne",
+                    "initial_investment": "Moyen",
+                    "launch_time": "3 - 6 mois",
+                    "estimated_profitability": "Moyenne",
+                },
+            },
+        )
+        self.client.force_login(self.user)
+
+        response = self.client.post(
+            reverse("groq_project_business_model", args=[self.analysis.pk]),
+            data=json.dumps({"force": True}),
+            content_type="application/json",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(
+            "customer_segments",
+            response.json()["business_model"]["business_model_canvas"],
+        )
+        self.analysis.refresh_from_db()
+        self.assertIn("business_model", self.analysis.response_json)

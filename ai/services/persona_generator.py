@@ -1,9 +1,9 @@
-from ai.groq_client import GroqClient
 from pathlib import Path
+
+from ai.groq_client import GroqClient
 
 
 class PersonaGenerator:
-
     def __init__(self):
         self.llm = GroqClient()
 

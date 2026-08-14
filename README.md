@@ -106,7 +106,7 @@ technique.
 Les paramètres IA principaux sont :
 
 - modèle : `llama-3.3-70b-versatile`,
-- température : `0` pour obtenir une réponse plus stable,
+- température : `0.2` pour obtenir une réponse plus stable,
 - limite de sortie : `1600` tokens.
 
 ### Modèle ORM
@@ -158,7 +158,7 @@ Points forts :
 - bonne compréhension des idées formulées en langage naturel,
 - production rapide d'une première spécification produit,
 - structure JSON demandée dans le prompt système,
-- température à `0`, ce qui rend les réponses plus régulières.
+- température à `0.2`, ce qui rend les réponses plus régulières.
 
 Limites :
 
@@ -254,7 +254,7 @@ backend Django et la valeur ajoutée de l'expérience utilisateur liée à l'IA.
 | 2.1.2. Ergonomie UI/UX & Retours d'État IA | Gestion des Latences IA | Message d'attente et bouton désactivé pendant l'appel IA. | **1,5 / 2** |
 | 2.1.2. Ergonomie UI/UX & Retours d'État IA | Gestion des Erreurs & Quotas | Messages d'erreur visibles en cas de problème réseau, configuration Groq manquante ou erreur API. | **1,5 / 2** |
 | 2.1.3. Valeur Métier & Originalité du Projet | Utilité & Pertinence du Cas | L'application répond à un besoin clair : transformer une idée en base de cadrage produit exploitable. | **3 / 3** |
-| 2.1.3. Valeur Métier & Originalité du Projet | Qualité du Prompt / Modèle | Prompt système structuré, rôle produit/UX/architecture, température à `0` et réponse attendue en JSON. | **2,5 / 3** |
+| 2.1.3. Valeur Métier & Originalité du Projet | Qualité du Prompt / Modèle | Prompt système structuré, rôle produit/UX/architecture, température à `0.2` et réponse attendue en JSON. | **2,5 / 3** |
 | **Total partie 1** |  |  | **17 / 20** |
 
 ### PARTIE 2 : Cloud, Infrastructure, DevOps & Documentation

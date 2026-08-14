@@ -21,8 +21,8 @@
     <link rel="stylesheet" href="project.css?v=3" />
     <link rel="stylesheet" href="backlog.css?v=2" />
     <link rel="stylesheet" href="cursor.css?v=2" />
-    <script src="project.js?v=3" defer></script>
-    <script src="backlog.js?v=2" defer></script>
+    <script src="project.js?v=8" defer></script>
+    <script src="backlog.js?v=4" defer></script>
   </head>
   <body class="project-body backlog-page">
     <header class="project-header">
@@ -43,13 +43,17 @@
             <span></span><span></span><span></span>
           </button>
           <div class="project-account-menu" data-project-menu hidden>
+            <p class="project-account-menu-name" data-project-account-name>Utilisateur</p>
             <a href="/profile/">Mon compte</a>
-            <a href="/home/">Mes projets</a>
+            <button type="button" data-project-open-preferences>Préférences</button>
             <button type="button" data-project-open-legal>Mentions légales</button>
+            <form method="post" action="/logout/">
+              <button class="project-logout-button" type="submit">Déconnexion</button>
+            </form>
           </div>
         </div>
 
-        <a class="project-avatar" href="/profile/" aria-label="Voir mon compte">S</a>
+        <a class="project-avatar" href="/profile/" aria-label="Voir mon compte" data-username="" data-user-avatar>?</a>
       </div>
     </header>
 
@@ -68,11 +72,11 @@
 
         <section class="project-prompt-card" aria-labelledby="project-prompt-heading">
           <h2 id="project-prompt-heading">Prompt du projet</h2>
-          <p data-project-prompt>Fais-moi une application de suivi pour mes cours.</p>
+          <p data-project-prompt>Chargement du prompt du projet...</p>
         </section>
 
         <nav class="project-section-nav" aria-label="Sections générées">
-          <a class="project-nav-item" href="project.html" data-project-page>
+          <a class="project-nav-item" href="/project.html" data-project-page>
             <img src="assets/persona.png" alt="" /><span>Personas</span>
           </a>
           <a class="project-nav-item" href="user-story.html" data-project-page>
@@ -229,6 +233,17 @@
         <p class="project-status" data-project-status aria-live="polite"></p>
       </main>
     </div>
+
+    <dialog class="project-dialog" data-project-preferences-dialog>
+      <div><h2>Préférences</h2><button type="button" data-project-close-dialog aria-label="Fermer">×</button></div>
+      <p>Choisissez la palette utilisée dans votre espace IWant.</p>
+      <div class="project-dialog-theme-list" role="group" aria-label="Choisir une palette">
+        <button type="button" data-theme-choice="green"><span class="project-theme-dot project-theme-dot--green"></span>Vert</button>
+        <button type="button" data-theme-choice="orange"><span class="project-theme-dot project-theme-dot--orange"></span>Orange</button>
+        <button type="button" data-theme-choice="violet"><span class="project-theme-dot project-theme-dot--violet"></span>Violet</button>
+        <button type="button" data-theme-choice="blue"><span class="project-theme-dot project-theme-dot--blue"></span>Bleu</button>
+      </div>
+    </dialog>
 
     <dialog class="project-dialog" data-project-legal-dialog>
       <div><h2>Mentions légales</h2><button type="button" data-project-close-dialog aria-label="Fermer">×</button></div>

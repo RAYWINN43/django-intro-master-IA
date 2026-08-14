@@ -1,8 +1,14 @@
-from langgraph.graph import StateGraph, START
-from ai.workflow import generate_project, generate_personas, generate_storymap, generate_backlog, generate_swot
+from typing import TypedDict
 
-import operator
-from typing import TypedDict, Annotated
+from langgraph.graph import START, StateGraph
+
+from ai.workflow import (
+    generate_backlog,
+    generate_personas,
+    generate_project,
+    generate_storymap,
+)
+
 
 class State(TypedDict, total=False):
     idea: str
@@ -10,7 +16,7 @@ class State(TypedDict, total=False):
     personas: str
     storymap: str
     backlog: str
-    swot: str
+
 
 builder = StateGraph(State)
 
@@ -34,11 +40,6 @@ builder.add_node(
     generate_backlog,
 )
 
-builder.add_node(
-    "swot",
-    generate_swot,
-)
-
 builder.add_edge(
     START,
     "project",
@@ -59,14 +60,12 @@ builder.add_edge(
     "backlog",
 )
 
-builder.add_edge(
-    "backlog",
-    "swot",
-)
-
 project_graph = builder.compile()
 
+
 def ask_groq(message):
-    return project_graph.invoke({
-        "idea": message,
-    })
+    return project_graph.invoke(
+        {
+            "idea": message,
+        }
+    )

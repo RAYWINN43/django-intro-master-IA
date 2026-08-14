@@ -5,6 +5,7 @@ from django.views.generic import RedirectView
 from .forms import EmailOrUsernameAuthenticationForm
 from .views import (
     change_password,
+    current_user,
     home,
     index,
     logout_view,
@@ -27,6 +28,7 @@ urlpatterns = [
     path("login/", login_view, name="login"),
     path("register/", register, name="register"),
     path("home/", home, name="home"),
+    path("me/", current_user, name="current_user"),
     path("project.html", project_page, name="project_page"),
     path("logout/", logout_view, name="logout"),
     path("profile/", profile, name="profile"),
