@@ -40,8 +40,7 @@ async function loadProjectPrompt() {
   }
 }
 
-/*
-const staticPersonaDetails = {
+const fallbackPersonaDetails = {
   lucas: {
     name: "Lucas, 20 ans",
     type: "Étudiant organisé",
