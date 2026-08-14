@@ -57,7 +57,7 @@ html[data-theme="blue"] .sprint-side-panel > section { background: rgba(17, 39, 
 
 .sprint-tabs {
   display: grid;
-  grid-template-columns: repeat(5, minmax(82px, 1fr)) 64px;
+  grid-template-columns: minmax(120px, 180px);
   min-height: 45px;
   border-bottom: 1px solid var(--project-border);
   background: rgba(255, 255, 255, 0.035);
@@ -89,13 +89,6 @@ html[data-theme="blue"] .sprint-side-panel > section { background: rgba(17, 39, 
   height: 2px;
   content: "";
   background: var(--project-accent);
-}
-
-.sprint-tabs .sprint-tab-add {
-  border-right: 0;
-  color: var(--project-accent);
-  font-size: 22px;
-  font-weight: 300;
 }
 
 .sprint-board-content {
@@ -314,6 +307,24 @@ html[data-theme="blue"] .sprint-side-panel > section { background: rgba(17, 39, 
   background: rgba(255, 255, 255, 0.065);
   box-shadow: inset 3px 0 var(--project-accent);
   outline: 0;
+}
+
+.sprint-stories tbody tr.sprint-empty-row:hover,
+.sprint-stories tbody tr.sprint-empty-row:focus-visible {
+  background: transparent;
+  box-shadow: none;
+}
+
+.sprint-empty-row td,
+.sprint-empty-item {
+  color: rgba(255, 255, 255, 0.78);
+  font-weight: 400;
+}
+
+.sprint-empty-item {
+  display: block;
+  min-height: 28px;
+  padding-top: 5px;
 }
 
 .sprint-priority,
@@ -608,7 +619,7 @@ html[data-theme="blue"] .sprint-side-panel > section { background: rgba(17, 39, 
   .sprint-title-row { align-items: flex-start; flex-direction: column; }
   .sprint-actions { width: 100%; }
   .sprint-actions .project-action { flex: 1; }
-  .sprint-tabs { grid-template-columns: repeat(5, minmax(86px, 1fr)) 58px; overflow-x: auto; }
+  .sprint-tabs { grid-template-columns: minmax(120px, 180px); }
   .sprint-board-header { flex-direction: column; }
   .sprint-meta { align-items: flex-start; flex-direction: row; flex-wrap: wrap; }
   .sprint-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }

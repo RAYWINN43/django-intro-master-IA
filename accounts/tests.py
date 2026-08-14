@@ -172,6 +172,7 @@ class AuthenticationViewsTests(TestCase):
             "business_model_page",
             "swot_page",
             "speech_page",
+            "sprint_planning_page",
         ]
 
         for page_name in page_names:

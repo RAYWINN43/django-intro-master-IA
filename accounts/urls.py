@@ -61,6 +61,12 @@ urlpatterns = [
         {"template_name": "speech.html"},
         name="speech_page",
     ),
+    path(
+        "sprint-planning.html",
+        project_section_page,
+        {"template_name": "sprint-planning.html"},
+        name="sprint_planning_page",
+    ),
     path("logout/", logout_view, name="logout"),
     path("profile/", profile, name="profile"),
     path("profile/change-password/", change_password, name="change_password"),

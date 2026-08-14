@@ -13,6 +13,11 @@ function getSpeechUrl() {
   return `/ai/projects/${speechProjectId}/speech/`;
 }
 
+function getSpeechSlidesUrl() {
+  if (!hasSpeechProject) return null;
+  return `/ai/projects/${speechProjectId}/speech/slides/`;
+}
+
 function notifySpeech(message) {
   if (typeof showProjectStatus === "function") {
     showProjectStatus(message);
@@ -265,6 +270,74 @@ function getCurrentSpeechArtifact() {
   };
 }
 
+function getCurrentSpeechForSlides() {
+  return {
+    sections: speechSections.map((section, index) => {
+      const title = section.querySelector("h3")?.textContent.trim() || `Slide ${index + 1}`;
+      return {
+        id: index + 1,
+        title: title.replace(/^\S*\s*\d+\.\s*/, "").trim() || title,
+        time_range: section.querySelector(".speech-time")?.textContent.trim() || "",
+        content: section.querySelector(".speech-section-copy > p")?.innerText.trim() || "",
+      };
+    }),
+  };
+}
+
+async function downloadSpeechSlides(button) {
+  const url = getSpeechSlidesUrl();
+  if (!url) {
+    notifySpeech("Ouvrez un projet depuis Mes projets pour generer les slides.");
+    return;
+  }
+
+  const originalContent = button.innerHTML;
+  const headers = { "Content-Type": "application/json" };
+  const csrfToken = typeof ensureCsrfToken === "function"
+    ? await ensureCsrfToken(speechProjectId)
+    : null;
+  if (csrfToken) headers["X-CSRFToken"] = csrfToken;
+
+  button.disabled = true;
+  button.innerHTML = "<span aria-hidden=\"true\">...</span> Generation...";
+  notifySpeech("Generation du PowerPoint...");
+
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers,
+      credentials: "same-origin",
+      body: JSON.stringify({ speech: getCurrentSpeechForSlides() }),
+    });
+
+    if (!response.ok) {
+      const contentType = response.headers.get("content-type") || "";
+      const payload = contentType.includes("application/json")
+        ? await response.json()
+        : { error: await response.text() };
+      throw new Error(payload.error || "Impossible de generer les slides.");
+    }
+
+    const blob = await response.blob();
+    const downloadUrl = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = downloadUrl;
+    link.download = `speech-project-${speechProjectId}.pptx`;
+    document.body.append(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(downloadUrl);
+    button.classList.add("is-active");
+    notifySpeech("PowerPoint genere et telecharge.");
+  } catch (error) {
+    console.error("Speech slides generation error:", error);
+    notifySpeech(error.message);
+  } finally {
+    button.disabled = false;
+    button.innerHTML = originalContent;
+  }
+}
+
 async function loadSpeech({ force = false } = {}) {
   const url = getSpeechUrl();
   if (!url) {
@@ -332,17 +405,7 @@ document.querySelector("[data-speech-regenerate]")?.addEventListener("click", ()
 });
 
 document.querySelector("[data-speech-generate-slides]")?.addEventListener("click", (event) => {
-  const button = event.currentTarget;
-  const originalContent = button.innerHTML;
-  button.disabled = true;
-  button.innerHTML = "<span aria-hidden=\"true\">⋯</span> Génération...";
-
-  window.setTimeout(() => {
-    button.disabled = false;
-    button.innerHTML = originalContent;
-    button.classList.add("is-active");
-    notifySpeech("Le plan de slides est prêt à être exporté.");
-  }, 900);
+  downloadSpeechSlides(event.currentTarget);
 });
 
 function resetSpeechReading() {

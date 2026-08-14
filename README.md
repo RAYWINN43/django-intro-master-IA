@@ -247,15 +247,15 @@ backend Django et la valeur ajoutée de l'expérience utilisateur liée à l'IA.
 
 | Partie | Critère | Détail | Note |
 | --- | --- | --- | ---: |
-| 2.1.1. Architecture Django, ORM & Moteur IA | Intégration du Moteur IA | Pipeline Groq fonctionnel, endpoint `/ai/ask/`, traitement JSON et enregistrement de la réponse IA. | **2,5 / 3** |
-| 2.1.1. Architecture Django, ORM & Moteur IA | Modélisation ORM & Storage | Modèles `User`, `Profile` et `GroqAnalysis`, persistance des prompts, réponses texte, JSON IA et dates de création. | **2,5 / 3** |
-| 2.1.1. Architecture Django, ORM & Moteur IA | Architecture Asynchrone / SRP | Client IA séparé des vues Django et infrastructure Redis/Celery présente. L'appel principal à Groq reste encore synchrone. | **1,5 / 2** |
-| 2.1.2. Ergonomie UI/UX & Retours d'État IA | Design System & Tokens | Interface responsive, thèmes visuels, variables CSS, navigation compte/profil et espace projets. | **2 / 2** |
-| 2.1.2. Ergonomie UI/UX & Retours d'État IA | Gestion des Latences IA | Message d'attente et bouton désactivé pendant l'appel IA. | **1,5 / 2** |
-| 2.1.2. Ergonomie UI/UX & Retours d'État IA | Gestion des Erreurs & Quotas | Messages d'erreur visibles en cas de problème réseau, configuration Groq manquante ou erreur API. | **1,5 / 2** |
-| 2.1.3. Valeur Métier & Originalité du Projet | Utilité & Pertinence du Cas | L'application répond à un besoin clair : transformer une idée en base de cadrage produit exploitable. | **3 / 3** |
-| 2.1.3. Valeur Métier & Originalité du Projet | Qualité du Prompt / Modèle | Prompt système structuré, rôle produit/UX/architecture, température à `0.2` et réponse attendue en JSON. | **2,5 / 3** |
-| **Total partie 1** |  |  | **17 / 20** |
+| 2.1.1. Architecture Django, ORM & Moteur IA | Intégration du Moteur IA | Pipeline Groq fonctionnel pour les personas, user stories, backlog, SWOT, Business Model Canvas, speech et Sprint 1. Les réponses sont demandées en JSON, normalisées côté Django, mises en cache et régénérables avec un contexte différent. | **2,5 / 3** |
+| 2.1.1. Architecture Django, ORM & Moteur IA | Modélisation ORM & Storage | Modèles `User`, `Profile` et `GroqAnalysis`, persistance du prompt initial, des réponses texte/JSON et des sections générées. Il manque encore des modèles séparés de type `History`, `Result` ou stockage média dédié. | **2,5 / 3** |
+| 2.1.1. Architecture Django, ORM & Moteur IA | Architecture Asynchrone / SRP | Générateurs IA séparés dans `ai/services`, prompts isolés dans `ai/prompts` et vues Django centrées sur l'orchestration. Redis/Celery sont présents, mais les appels Groq des pages restent encore synchrones côté requête HTTP. | **1,5 / 2** |
+| 2.1.2. Ergonomie UI/UX & Retours d'État IA | Design System & Tokens | Interface cohérente avec thèmes, variables CSS, navigation projet, avatar dynamique, menu compte, pages spécialisées et mise en page responsive. | **2 / 2** |
+| 2.1.2. Ergonomie UI/UX & Retours d'État IA | Gestion des Latences IA | Les pages IA affichent un état de génération, désactivent les boutons pendant l'appel et évitent d'afficher les anciennes valeurs en dur au premier chargement. Il n'y a pas encore de streaming ni de skeleton avancé. | **1,5 / 2** |
+| 2.1.2. Ergonomie UI/UX & Retours d'État IA | Gestion des Erreurs & Quotas | Les erreurs JSON, session expirée, projet introuvable, configuration Groq et quota/réseau sont renvoyées à l'utilisateur avec des messages visibles. | **2 / 2** |
+| 2.1.3. Valeur Métier & Originalité du Projet | Utilité & Pertinence du Cas | L'application répond à un cas d'usage clair : transformer une idée de projet en livrables produit exploitables pour cadrer rapidement une application. | **3 / 3** |
+| 2.1.3. Valeur Métier & Originalité du Projet | Qualité du Prompt / Modèle | Prompts `.md` spécialisés par livrable, contraintes strictes de JSON, diversité à la régénération et prise en compte du prompt initial. LangChain/LangGraph reste une amélioration prévue. | **2,5 / 3** |
+| **Total partie 1** |  |  | **17,5 / 20** |
 
 ### PARTIE 2 : Cloud, Infrastructure, DevOps & Documentation
 
@@ -275,8 +275,8 @@ sécurité des secrets, la qualité de code et la documentation.
 | **Total partie 2** |  |  | **20 / 20** |
 
 ### Capture d'écran de l'interface 
-page admin de django : ![](src/admin.png)
-page admin de django coter utilisateur: ![](src/ADMINDJANGO.png)
-page admin de django vue log du joueur : ![](src/adminhisto.png)
-maquette Figma : ![](src/Maquettes_FIGMA.png)
-en jeux : ![](src/Screen_in_game.png)
+Home page : ![](src/homepage.png)
+![](src/homepage2.png)
+maquette Figma : ![](src/maquette_figma.png)
+lien de la maquette : https://www.figma.com/design/nb8sZ0HtAib1RrgGGWqXq7/Messagerie--Copy-?node-id=18-79&p=f&t=DBORX0MkIUz2fPnJ-0
+interface personas : ![](src/personas.png)
