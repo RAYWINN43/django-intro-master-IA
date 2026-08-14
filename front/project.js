@@ -6,8 +6,6 @@ const projectStatus = document.querySelector("[data-project-status]");
 const projectPreferencesDialog = document.querySelector("[data-project-preferences-dialog]");
 const projectLegalDialog = document.querySelector("[data-project-legal-dialog]");
 const projectPrompt = document.querySelector("[data-project-prompt]");
-const personaCards = document.querySelectorAll("[data-persona-card]");
-const personaDetail = document.querySelector("[data-persona-detail]");
 const projectAvatar = document.querySelector("[data-user-avatar]");
 const projectMain = document.querySelector("[data-project-main]");
 const personaGrid = document.querySelector("[data-persona-grid]");
@@ -41,7 +39,7 @@ async function loadProjectPrompt() {
   }
 }
 
-const personaDetails = {
+const fallbackPersonaDetails = {
   lucas: {
     name: "Lucas, 20 ans",
     type: "Étudiant organisé",
@@ -533,4 +531,5 @@ document.querySelectorAll(".project-nav-item:not(.is-active):not([data-project-p
   });
 });
 
+loadProjectPrompt();
 loadPersonas();
