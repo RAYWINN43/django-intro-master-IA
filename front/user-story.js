@@ -3,10 +3,11 @@ const userStoryProjectId = userStoryParams.get("project");
 const userStoryList = document.querySelector("[data-story-list]");
 const userStoryTitle = document.querySelector("#stories-title");
 const userStoryStorageKey = `iwant-user-stories-${userStoryProjectId || "demo"}`;
+const hasUserStoryProject = /^\d+$/.test(userStoryProjectId || "");
 let userStoryCards = [...document.querySelectorAll("[data-story-id]")];
 
 function getUserStoriesUrl() {
-  if (!/^\d+$/.test(userStoryProjectId || "")) return null;
+  if (!hasUserStoryProject) return null;
   return `/ai/projects/${userStoryProjectId}/user-stories/`;
 }
 
@@ -141,6 +142,17 @@ function bindUserStoryCard(card) {
   });
 }
 
+function setUserStoriesLoading(message) {
+  if (userStoryTitle) userStoryTitle.textContent = "User Stories générées";
+  if (!userStoryList) return;
+
+  const state = document.createElement("p");
+  state.className = "story-empty-state";
+  state.textContent = message;
+  userStoryList.replaceChildren(state);
+  userStoryCards = [];
+}
+
 function createStoryCard(story, index) {
   const normalizedStory = normalizeStory(story, index);
   const card = document.createElement("article");
@@ -246,6 +258,8 @@ async function loadUserStories({ force = false } = {}) {
 
   if (button) button.disabled = true;
   if (label) label.textContent = force ? "Régénération..." : "Génération...";
+  const currentArtifact = force ? userStoryCards.map(getStoryValues) : null;
+  setUserStoriesLoading(force ? "Régénération des user stories..." : "Génération des user stories...");
   notifyUserStories(force ? "Régénération des user stories..." : "Génération des user stories...");
 
   try {
@@ -255,7 +269,7 @@ async function loadUserStories({ force = false } = {}) {
       credentials: "same-origin",
       body: JSON.stringify({
         force,
-        current_artifact: force ? userStoryCards.map(getStoryValues) : null,
+        current_artifact: currentArtifact,
       }),
     });
     const data = typeof readJsonResponse === "function"
@@ -277,6 +291,7 @@ async function loadUserStories({ force = false } = {}) {
     );
   } catch (error) {
     console.error("User story generation error:", error);
+    setUserStoriesLoading(error.message);
     notifyUserStories(error.message);
   } finally {
     if (button) button.disabled = false;
@@ -295,6 +310,10 @@ document.querySelectorAll("[data-view-version]").forEach((button) => {
   });
 });
 
-userStoryCards.forEach(bindUserStoryCard);
-restoreUserStories();
+if (hasUserStoryProject) {
+  setUserStoriesLoading("Génération des user stories...");
+} else {
+  userStoryCards.forEach(bindUserStoryCard);
+  restoreUserStories();
+}
 loadUserStories();

@@ -430,3 +430,86 @@ class GroqAnalysisViewsTests(TestCase):
         )
         self.analysis.refresh_from_db()
         self.assertIn("business_model", self.analysis.response_json)
+
+    @patch("ai.views.SWOTGenerator")
+    def test_owner_can_generate_swot(self, generator_class):
+        generator = generator_class.return_value
+        generator.generate.return_value = json.dumps(
+            {
+                "swot": {
+                    "strengths": ["Interface simple"],
+                    "weaknesses": ["Dépendance API"],
+                    "opportunities": ["Marché IA en croissance"],
+                    "threats": ["Concurrence forte"],
+                },
+                "recommendations": ["Prioriser un parcours utilisateur clair"],
+                "summary": {
+                    "main_strength": "Interface simple",
+                    "main_risk": "Dépendance API",
+                    "priority_action": "Valider le besoin utilisateur",
+                },
+            },
+        )
+        self.client.force_login(self.user)
+
+        response = self.client.post(
+            reverse("groq_project_swot", args=[self.analysis.pk]),
+            data=json.dumps({"force": True}),
+            content_type="application/json",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.json()["swot"]["swot"]["strengths"][0], "Interface simple"
+        )
+        self.analysis.refresh_from_db()
+        self.assertIn("swot", self.analysis.response_json)
+
+    @patch("ai.views.SpeechGenerator")
+    def test_owner_can_generate_speech(self, generator_class):
+        generator = generator_class.return_value
+        generator.generate.return_value = json.dumps(
+            {
+                "speech": {
+                    "title": "Pitch du projet",
+                    "estimated_duration": "3:30 min",
+                    "word_count": 520,
+                    "sections": [
+                        {
+                            "id": 1,
+                            "emoji": "🎤",
+                            "title": "Introduction",
+                            "time_range": "0:00 - 0:30",
+                            "content": "Bonjour, voici notre projet.",
+                        },
+                    ],
+                    "slide_plan": [
+                        {
+                            "id": 1,
+                            "title": "Introduction",
+                            "visual_suggestion": "Logo et promesse",
+                        },
+                    ],
+                    "presentation_tips": ["Parler clairement"],
+                },
+                "quick_preview": {
+                    "duration": "3:30 min",
+                    "words": 520,
+                    "sections": 1,
+                },
+            },
+        )
+        self.client.force_login(self.user)
+
+        response = self.client.post(
+            reverse("groq_project_speech", args=[self.analysis.pk]),
+            data=json.dumps({"force": True}),
+            content_type="application/json",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.json()["speech"]["sections"][0]["title"], "Introduction"
+        )
+        self.analysis.refresh_from_db()
+        self.assertIn("speech", self.analysis.response_json)

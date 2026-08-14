@@ -159,7 +159,7 @@ const fallbackPersonaDetails = {
       "Recherche efficace, synchronisation des ressources, contenus à jour et consultation rapide sur mobile.",
   },
 };
-*/
+
 function getCookie(name) {
   const value = `; ${document.cookie}`;
   const parts = value.split(`; ${name}=`);

@@ -43,6 +43,21 @@ def project_page(request):
 
 
 @login_required
+def project_section_page(request, template_name):
+    project = None
+    project_id = request.GET.get("project")
+
+    if project_id:
+        project = get_object_or_404(
+            GroqAnalysis,
+            pk=project_id,
+            user=request.user,
+        )
+
+    return render(request, template_name, {"project": project})
+
+
+@login_required
 @require_GET
 def current_user(request):
     username = request.user.get_username()

@@ -15,7 +15,9 @@ from ai.langgraph import ask_groq
 from ai.services.backlog_generator import BacklogGenerator
 from ai.services.business_model_generator import BusinessModelGenerator
 from ai.services.persona_generator import PersonaGenerator
+from ai.services.speech_generator import SpeechGenerator
 from ai.services.storymap_generator import StorymapGenerator
+from ai.services.swot_generator import SWOTGenerator
 
 from .llama_service import LlamaService
 from .models import GroqAnalysis
@@ -74,6 +76,8 @@ GENERATED_SECTION_KEYS = {
     "user_stories",
     "backlog",
     "business_model",
+    "swot",
+    "speech",
 }
 
 
@@ -215,6 +219,115 @@ def normalize_swot_payload(raw_response):
             "main_strength": str(summary.get("main_strength") or "").strip(),
             "main_risk": str(summary.get("main_risk") or "").strip(),
             "priority_action": str(summary.get("priority_action") or "").strip(),
+        },
+    }
+
+
+def normalize_speech_section(section, index):
+    section = section if isinstance(section, dict) else {}
+    default_titles = [
+        "Introduction",
+        "Le problème",
+        "Notre solution",
+        "Démonstration",
+        "Valeur ajoutée",
+        "Conclusion",
+    ]
+    default_times = [
+        "0:00 - 0:30",
+        "0:30 - 1:00",
+        "1:00 - 2:00",
+        "2:00 - 3:00",
+        "3:00 - 3:30",
+        "3:30 - 3:45",
+    ]
+    content = section.get("content") or ""
+    if isinstance(content, list):
+        content = "\n".join(str(item).strip() for item in content if str(item).strip())
+
+    return {
+        "id": normalize_word_count(section.get("id")) or index + 1,
+        "emoji": str(section.get("emoji") or "🎤").strip(),
+        "title": str(section.get("title") or default_titles[index % 6]).strip(),
+        "time_range": str(
+            section.get("time_range") or default_times[index % 6]
+        ).strip(),
+        "content": str(content).strip(),
+    }
+
+
+def normalize_speech_slide(slide, index, sections):
+    slide = slide if isinstance(slide, dict) else {}
+    fallback_title = (
+        sections[index]["title"] if index < len(sections) else f"Slide {index + 1}"
+    )
+    return {
+        "id": normalize_word_count(slide.get("id")) or index + 1,
+        "title": str(slide.get("title") or fallback_title).strip(),
+        "visual_suggestion": str(slide.get("visual_suggestion") or "").strip(),
+    }
+
+
+def normalize_word_count(value):
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return 0
+
+
+def normalize_speech_payload(raw_response):
+    payload = coerce_payload(raw_response)
+    if not isinstance(payload, dict):
+        raise TypeError("La réponse IA doit contenir un speech.")
+
+    speech = payload.get("speech", payload)
+    if not isinstance(speech, dict):
+        raise TypeError("La réponse IA doit contenir un speech.")
+
+    raw_sections = speech.get("sections", [])
+    if not isinstance(raw_sections, list) or len(raw_sections) < 1:
+        raise ValueError("La réponse IA doit contenir des sections de speech.")
+
+    sections = [
+        normalize_speech_section(section, index)
+        for index, section in enumerate(raw_sections[:6])
+    ]
+    raw_slides = speech.get("slide_plan", [])
+    raw_slides = raw_slides if isinstance(raw_slides, list) else []
+    slide_plan = [
+        normalize_speech_slide(slide, index, sections)
+        for index, slide in enumerate(raw_slides[:6])
+    ]
+    if not slide_plan:
+        slide_plan = [
+            normalize_speech_slide({}, index, sections)
+            for index in range(len(sections))
+        ]
+
+    quick_preview = payload.get("quick_preview", {})
+    quick_preview = quick_preview if isinstance(quick_preview, dict) else {}
+    word_count = normalize_word_count(speech.get("word_count"))
+
+    return {
+        "title": str(speech.get("title") or "Speech / Pitch").strip(),
+        "estimated_duration": str(
+            speech.get("estimated_duration")
+            or quick_preview.get("duration")
+            or "3:45 min"
+        ).strip(),
+        "word_count": word_count,
+        "sections": sections,
+        "slide_plan": slide_plan[:6],
+        "presentation_tips": clean_list(speech.get("presentation_tips"))[:4],
+        "quick_preview": {
+            "duration": str(
+                quick_preview.get("duration")
+                or speech.get("estimated_duration")
+                or "3:45 min"
+            ).strip(),
+            "words": normalize_word_count(quick_preview.get("words")) or word_count,
+            "sections": normalize_word_count(quick_preview.get("sections"))
+            or len(sections),
         },
     }
 
@@ -718,5 +831,51 @@ def groq_project_business_model(request, analysis_id):
             ),
             "generator": BusinessModelGenerator,
             "normalizer": normalize_business_model_payload,
+        },
+    )
+
+
+@csrf_exempt
+@require_POST
+@login_required
+def groq_project_swot(request, analysis_id):
+    return generate_project_artifact(
+        request,
+        analysis_id,
+        {
+            "cache_key": "swot",
+            "response_key": "swot",
+            "section_label": "SWOT",
+            "previous_context_key": "previous_swot_to_avoid",
+            "regeneration_instruction": (
+                "Genere une nouvelle analyse SWOT. Change les angles "
+                "strategiques, les risques, les opportunites et les "
+                "recommandations, sans sortir du projet."
+            ),
+            "generator": SWOTGenerator,
+            "normalizer": normalize_swot_payload,
+        },
+    )
+
+
+@csrf_exempt
+@require_POST
+@login_required
+def groq_project_speech(request, analysis_id):
+    return generate_project_artifact(
+        request,
+        analysis_id,
+        {
+            "cache_key": "speech",
+            "response_key": "speech",
+            "section_label": "Speech / Pitch",
+            "previous_context_key": "previous_speech_to_avoid",
+            "regeneration_instruction": (
+                "Genere une nouvelle version du speech. Change l'accroche, "
+                "les formulations, les exemples, la demonstration et le "
+                "call-to-action, tout en gardant le meme projet."
+            ),
+            "generator": SpeechGenerator,
+            "normalizer": normalize_speech_payload,
         },
     )

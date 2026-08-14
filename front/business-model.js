@@ -3,6 +3,7 @@ const businessNotes = document.querySelector("[data-business-notes]");
 const businessNotesKey = `iwant-business-model-notes-${businessProjectId || "demo"}`;
 const businessBlocks = [...document.querySelectorAll("[data-business-block]")];
 const businessGeneratedDate = document.querySelector(".business-notes small");
+const hasBusinessProject = /^\d+$/.test(businessProjectId || "");
 
 const businessBlockConfig = [
   { key: "key_partners", selector: ".business-block--partners", icon: "🤝", label: "Partenaires clés" },
@@ -25,7 +26,7 @@ const businessMetricConfig = {
 };
 
 function getBusinessModelUrl() {
-  if (!/^\d+$/.test(businessProjectId || "")) return null;
+  if (!hasBusinessProject) return null;
   return `/ai/projects/${businessProjectId}/business-model/`;
 }
 
@@ -77,6 +78,31 @@ function renderBusinessMetrics(metrics = {}) {
     element.textContent = value;
     element.className = metricClass(value);
   });
+}
+
+function setBusinessLoading(message) {
+  businessBlockConfig.forEach((config, index) => {
+    const list = document.querySelector(config.selector)?.querySelector("ul");
+    if (!list) return;
+
+    if (index === 0) {
+      const state = document.createElement("li");
+      state.className = "business-empty-item";
+      state.textContent = message;
+      list.replaceChildren(state);
+      return;
+    }
+
+    list.replaceChildren();
+  });
+
+  Object.values(businessMetricConfig).forEach((element) => {
+    if (!element) return;
+    element.textContent = "-";
+    element.className = "business-metric";
+  });
+
+  if (businessGeneratedDate) businessGeneratedDate.textContent = "Génération en cours...";
 }
 
 function getCurrentBusinessModelArtifact() {
@@ -135,6 +161,8 @@ async function loadBusinessModel({ force = false } = {}) {
 
   if (button) button.disabled = true;
   if (label) label.textContent = force ? "Régénération..." : "Génération...";
+  const currentArtifact = force ? getCurrentBusinessModelArtifact() : null;
+  setBusinessLoading(force ? "Régénération du Business Model..." : "Génération du Business Model...");
   notifyBusiness(force ? "Régénération du Business Model..." : "Génération du Business Model...");
 
   try {
@@ -144,7 +172,7 @@ async function loadBusinessModel({ force = false } = {}) {
       credentials: "same-origin",
       body: JSON.stringify({
         force,
-        current_artifact: force ? getCurrentBusinessModelArtifact() : null,
+        current_artifact: currentArtifact,
       }),
     });
     const data = typeof readJsonResponse === "function"
@@ -159,6 +187,7 @@ async function loadBusinessModel({ force = false } = {}) {
     notifyBusiness(data.cached ? "Business Model chargé depuis le projet." : "Business Model généré avec l'IA.");
   } catch (error) {
     console.error("Business model generation error:", error);
+    setBusinessLoading(error.message);
     notifyBusiness(error.message);
   } finally {
     if (button) button.disabled = false;
@@ -202,4 +231,7 @@ document.querySelector("[data-business-regenerate]")?.addEventListener("click", 
   loadBusinessModel({ force: true });
 });
 
+if (hasBusinessProject) {
+  setBusinessLoading("Génération du Business Model...");
+}
 loadBusinessModel();

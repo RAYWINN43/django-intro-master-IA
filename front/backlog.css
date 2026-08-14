@@ -150,6 +150,13 @@ html[data-theme="blue"] .backlog-history { background: rgba(17, 39, 65, 0.52); }
   scrollbar-width: thin;
 }
 
+.backlog-empty-state {
+  margin: 18px 20px;
+  color: rgba(255, 255, 255, 0.84);
+  font-size: 14px;
+  font-weight: 400;
+}
+
 .backlog-row {
   position: relative;
   min-height: 53px;

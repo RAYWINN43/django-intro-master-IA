@@ -47,6 +47,13 @@
 .story-list::-webkit-scrollbar-track { border-radius: 999px; background: rgba(255, 255, 255, 0.08); }
 .story-list::-webkit-scrollbar-thumb { border: 3px solid transparent; border-radius: 999px; background: rgba(239, 250, 249, 0.76); background-clip: padding-box; }
 
+.story-empty-state {
+  margin: 4px 0 0;
+  color: rgba(255, 255, 255, 0.84);
+  font-size: 17px;
+  font-weight: 400;
+}
+
 .story-card {
   display: grid;
   grid-template-columns: 48px minmax(0, 1fr) 180px;
