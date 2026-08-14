@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="fr" data-theme="green">
+  <head>
+    {% load static %}
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Analyse SWOT générée pour votre projet IWant." />
+    <title>SWOT — Projet IWant</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      (() => {
+        const savedTheme = localStorage.getItem("iwant-theme");
+        const themes = ["green", "orange", "violet", "blue"];
+        if (themes.includes(savedTheme)) document.documentElement.dataset.theme = savedTheme;
+      })();
+    </script>
+    <link rel="stylesheet" href="{% static 'project.css' %}?v=4" />
+    <link rel="stylesheet" href="{% static 'swot.css' %}?v=2" />
+    <link rel="stylesheet" href="{% static 'cursor.css' %}?v=2" />
+    <script src="{% static 'project.js' %}?v=9" defer></script>
+    <script src="{% static 'swot.js' %}?v=2" defer></script>
+  </head>
+  <body class="project-body swot-page">
+    <header class="project-header">
+      <a class="project-brand" href="/home/" aria-label="IWant, mes projets">
+        <span>IWant</span><small>BETA</small>
+      </a>
+
+      <div class="project-account-controls">
+        <div class="project-theme-switcher" role="group" aria-label="Choisir le thème du site">
+          <button class="project-theme-choice project-theme-choice--green" type="button" data-theme-choice="green" aria-label="Thème vert" aria-pressed="true"></button>
+          <button class="project-theme-choice project-theme-choice--orange" type="button" data-theme-choice="orange" aria-label="Thème orange" aria-pressed="false"></button>
+          <button class="project-theme-choice project-theme-choice--violet" type="button" data-theme-choice="violet" aria-label="Thème violet" aria-pressed="false"></button>
+          <button class="project-theme-choice project-theme-choice--blue" type="button" data-theme-choice="blue" aria-label="Thème bleu" aria-pressed="false"></button>
+        </div>
+
+        <div class="project-account-menu-wrap">
+          <button class="project-menu-toggle" type="button" aria-label="Ouvrir les options du compte" aria-expanded="false" data-project-menu-toggle>
+            <span></span><span></span><span></span>
+          </button>
+          <div class="project-account-menu" data-project-menu hidden>
+            <p class="project-account-menu-name" data-project-account-name>Utilisateur</p>
+            <a href="/profile/">Mon compte</a>
+            <button type="button" data-project-open-preferences>Préférences</button>
+            <button type="button" data-project-open-legal>Mentions légales</button>
+            <form method="post" action="/logout/">
+              <button class="project-logout-button" type="submit">Déconnexion</button>
+            </form>
+          </div>
+        </div>
+
+        <a class="project-avatar" href="/profile/" aria-label="Voir mon compte" data-username="" data-user-avatar>?</a>
+      </div>
+    </header>
+
+    <div class="project-layout swot-layout">
+      <aside class="project-rail" aria-label="Navigation du projet">
+        <div class="project-utilities">
+          <a class="project-utility" href="/home/">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5m6-6-6 6 6 6" /></svg>
+            <span>Retourner sur les projets</span>
+          </a>
+          <button class="project-utility" type="button" data-export-project>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V3m0 0L8 7m4-4 4 4M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7" /></svg>
+            <span>Exporter le projet</span>
+          </button>
+        </div>
+
+        <section class="project-prompt-card" aria-labelledby="project-prompt-heading">
+          <h2 id="project-prompt-heading">Prompt du projet</h2>
+          <p data-project-prompt>Chargement du prompt du projet...</p>
+        </section>
+
+        <nav class="project-section-nav" aria-label="Sections générées">
+          <a class="project-nav-item" href="project.html" data-project-page>
+            <img src="{% static 'assets/persona.png' %}" alt="" /><span>Personas</span>
+          </a>
+          <a class="project-nav-item" href="user-story.html" data-project-page>
+            <img src="{% static 'assets/user story.png' %}" alt="" /><span>User Story</span>
+          </a>
+          <a class="project-nav-item" href="backlog.html" data-project-page>
+            <img src="{% static 'assets/board.png' %}" alt="" /><span>Backlog</span>
+          </a>
+          <a class="project-nav-item" href="business-model.html" data-project-page>
+            <img src="{% static 'assets/business model.png' %}" alt="" /><span>Business M..</span>
+          </a>
+          <a class="project-nav-item is-active" href="#swot" aria-current="page">
+            <img src="{% static 'assets/swot.png' %}" alt="" /><span>SWOT</span>
+          </a>
+          <a class="project-nav-item" href="sprint-planning.html" data-project-page>
+            <img src="{% static 'assets/sprint planning.png' %}" alt="" /><span>Sprint plan..</span>
+          </a>
+          <a class="project-nav-item" href="speech.html" data-project-page>
+            <img src="{% static 'assets/speech.png' %}" alt="" /><span>Speech</span>
+          </a>
+        </nav>
+      </aside>
+
+      <main class="project-main swot-main" id="swot">
+        <div class="project-title-row swot-title-row">
+          <div class="project-title-copy">
+            <div class="project-title-line">
+              <img src="{% static 'assets/swot.png' %}" alt="" aria-hidden="true" />
+              <h1>SWOT</h1>
+            </div>
+            <p>Analyse stratégique de votre projet.</p>
+          </div>
+
+          <div class="project-actions swot-actions" aria-label="Actions du SWOT">
+            <button class="project-action project-action--primary" type="button" data-swot-regenerate>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2 1.3 4.7L18 8l-4.7 1.3L12 14l-1.3-4.7L6 8l4.7-1.3L12 2Zm7 11 .8 2.2L22 16l-2.2.8L19 19l-.8-2.2L16 16l2.2-.8L19 13Z" /></svg>
+              <span>Régénérer</span>
+            </button>
+            <button class="project-action" type="button" data-export-section>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V3m0 0L8 7m4-4 4 4M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7" /></svg>
+              <span>Exporter</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="swot-workspace">
+          <section class="swot-grid" aria-label="Matrice SWOT">
+            <article class="swot-quadrant swot-quadrant--strengths" tabindex="0" data-swot-quadrant>
+              <div class="swot-quadrant-heading">
+                <h2><span aria-hidden="true">💪</span> Forces</h2>
+                <span class="swot-kind">Interne</span>
+              </div>
+              <ul>
+                <li>Interface simple et intuitive</li>
+                <li>Expérience utilisateur fluide</li>
+                <li>Fonctionnalités IA intégrées</li>
+                <li>Équipe motivée et complémentaire</li>
+                <li>Technologie moderne et évolutive</li>
+                <li>Approche centrée utilisateur</li>
+              </ul>
+              <span class="swot-watermark" aria-hidden="true">S</span>
+            </article>
+
+            <article class="swot-quadrant swot-quadrant--weaknesses" tabindex="0" data-swot-quadrant>
+              <div class="swot-quadrant-heading">
+                <h2><span aria-hidden="true">🔗</span> Faiblesses</h2>
+                <span class="swot-kind">Interne</span>
+              </div>
+              <ul>
+                <li>Manque de notoriété sur le marché</li>
+                <li>Ressources financières limitées</li>
+                <li>Dépendance à des services externes (IA)</li>
+                <li>Équipe encore réduite</li>
+                <li>Processus internes à structurer</li>
+                <li>Temps de développement parfois sous-estimé</li>
+              </ul>
+              <span class="swot-watermark" aria-hidden="true">W</span>
+            </article>
+
+            <article class="swot-quadrant swot-quadrant--opportunities" tabindex="0" data-swot-quadrant>
+              <div class="swot-quadrant-heading">
+                <h2><span aria-hidden="true">🎯</span> Opportunités</h2>
+                <span class="swot-kind">Externe</span>
+              </div>
+              <ul>
+                <li>Marché en forte croissance</li>
+                <li>Demande croissante d’outils IA</li>
+                <li>Possibilités de partenariats stratégiques</li>
+                <li>Internationalisation possible</li>
+                <li>Évolutions technologiques favorables</li>
+                <li>Nouveaux usages et besoins émergents</li>
+              </ul>
+              <span class="swot-watermark" aria-hidden="true">O</span>
+            </article>
+
+            <article class="swot-quadrant swot-quadrant--threats" tabindex="0" data-swot-quadrant>
+              <div class="swot-quadrant-heading">
+                <h2><span aria-hidden="true">🛡️</span> Menaces</h2>
+                <span class="swot-kind">Externe</span>
+              </div>
+              <ul>
+                <li>Concurrence directe et indirecte</li>
+                <li>Évolution rapide des technologies</li>
+                <li>Risques liés à la sécurité des données</li>
+                <li>Changements réglementaires</li>
+                <li>Dépendance aux infrastructures tierces</li>
+                <li>Risque d’adoption par les utilisateurs</li>
+              </ul>
+              <span class="swot-watermark" aria-hidden="true">T</span>
+            </article>
+          </section>
+
+          <aside class="swot-analysis" aria-labelledby="swot-about-title">
+            <section class="swot-about">
+              <div class="swot-panel-heading">
+                <h2 id="swot-about-title">À propos de cette analyse</h2>
+                <button type="button" data-swot-info aria-label="Informations sur l’analyse">i</button>
+              </div>
+              <p>Cette analyse SWOT a été générée à partir de la description de votre projet. Vous pouvez modifier chaque élément et régénérer l’analyse si nécessaire.</p>
+            </section>
+
+            <section class="swot-score" aria-labelledby="swot-score-title">
+              <h2 id="swot-score-title">Évaluation globale</h2>
+              <div class="swot-score-content">
+                <div class="swot-score-ring" aria-label="Évaluation globale : 72 pour cent"><strong>72%</strong></div>
+                <p>Positionnement<br /><span>favorable</span></p>
+              </div>
+            </section>
+
+            <section class="swot-advice" aria-labelledby="swot-advice-title">
+              <h2 id="swot-advice-title">Conseils stratégiques</h2>
+              <ul>
+                <li><span aria-hidden="true">💡</span>Exploitez vos forces pour saisir les opportunités du marché.</li>
+                <li><span aria-hidden="true">♙</span>Travaillez sur vos faiblesses critiques en priorité.</li>
+                <li><span aria-hidden="true">⌛</span>Anticipez les menaces et préparez des plans d’atténuation.</li>
+                <li><span aria-hidden="true">◉</span>Surveillez votre environnement concurrentiel en continu.</li>
+              </ul>
+            </section>
+
+            <label class="swot-notes">
+              <span>Notes <i aria-hidden="true">✎</i></span>
+              <textarea rows="2" placeholder="Ajouter une note..." data-swot-notes></textarea>
+            </label>
+          </aside>
+        </div>
+
+        <p class="project-status" data-project-status aria-live="polite"></p>
+      </main>
+    </div>
+
+    <dialog class="project-dialog" data-project-preferences-dialog>
+      <div><h2>Préférences</h2><button type="button" data-project-close-dialog aria-label="Fermer">×</button></div>
+      <p>Choisissez la palette utilisée dans votre espace IWant.</p>
+      <div class="project-dialog-theme-list" role="group" aria-label="Choisir une palette">
+        <button type="button" data-theme-choice="green"><span class="project-theme-dot project-theme-dot--green"></span>Vert</button>
+        <button type="button" data-theme-choice="orange"><span class="project-theme-dot project-theme-dot--orange"></span>Orange</button>
+        <button type="button" data-theme-choice="violet"><span class="project-theme-dot project-theme-dot--violet"></span>Violet</button>
+        <button type="button" data-theme-choice="blue"><span class="project-theme-dot project-theme-dot--blue"></span>Bleu</button>
+      </div>
+    </dialog>
+
+    <dialog class="project-dialog" data-project-legal-dialog>
+      <div><h2>Mentions légales</h2><button type="button" data-project-close-dialog aria-label="Fermer">×</button></div>
+      <p>IWant est actuellement proposé en version bêta. Les informations légales complètes seront ajoutées avant la mise en production.</p>
+    </dialog>
+  </body>
+</html>

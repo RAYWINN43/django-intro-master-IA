@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    {% load static %}
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Connectez-vous à IWant ou créez votre compte pour retrouver vos projets."
+    />
+    <title>Connexion — IWant</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="{% static 'account.css' %}?v=4" />
+    <link rel="stylesheet" href="{% static 'cursor.css' %}?v=1" />
+    <script src="{% static 'password-rules.js' %}" defer></script>
+    <script src="{% static 'account.js' %}?v=4" defer></script>
+  </head>
+  <body>
+    <header class="auth-header" aria-label="Navigation d’authentification">
+      <a class="brand" href="{% url 'index' %}" aria-label="IWant, retour à l’accueil">
+        <span class="brand-name">IWant</span>
+        <span class="brand-status">BETA</span>
+      </a>
+
+      <a class="home-link" href="{% url 'index' %}">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="m14.5 6-6 6 6 6" />
+        </svg>
+        <span>Retour à l’accueil</span>
+      </a>
+    </header>
+
+    <main
+      class="account-page"
+      data-account-page
+      data-mode="{{ account_mode|default:'connexion' }}"
+      data-initial-mode="{{ account_mode|default:'connexion' }}"
+    >
+      <section class="auth-surface" aria-label="Accès à votre espace IWant">
+        <section class="auth-panel" data-account-panel="connexion" aria-labelledby="login-title">
+          <div class="panel-heading">
+            <h2 id="login-title">Connexion</h2>
+            <p>Heureux de vous revoir.</p>
+          </div>
+
+          <form class="auth-form login-form" method="post" action="{% url 'login' %}" data-login-form>
+            {% csrf_token %}
+
+            {% if form.errors %}
+              <p class="form-error" role="alert">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <circle cx="12" cy="12" r="9" />
+                  <path d="M12 7v6m0 4h.01" />
+                </svg>
+                Email ou mot de passe incorrect.
+              </p>
+            {% endif %}
+
+            <div class="form-field">
+              <label for="login-email">Email ou pseudo</label>
+              <div class="input-shell">
+                <svg class="input-icon" viewBox="0 0 24 24" aria-hidden="true">
+                  <circle cx="12" cy="8" r="3.5" />
+                  <path d="M5 20c.6-4.2 3-6.4 7-6.4s6.4 2.2 7 6.4" />
+                </svg>
+                <input
+                  id="login-email"
+                  name="username"
+                  type="text"
+                  autocomplete="username"
+                  placeholder="Entrez votre email ou pseudo"
+                  required
+                />
+              </div>
+            </div>
+
+            <div class="form-field">
+              <div class="label-row">
+                <label for="login-password">Mot de passe</label>
+              </div>
+              <div class="input-shell">
+                <svg class="input-icon" viewBox="0 0 24 24" aria-hidden="true">
+                  <rect x="5" y="10" width="14" height="10" rx="2" />
+                  <path d="M8 10V7a4 4 0 0 1 8 0v3" />
+                </svg>
+                <input
+                  id="login-password"
+                  name="password"
+                  type="password"
+                  autocomplete="current-password"
+                  placeholder="Entrez votre mot de passe"
+                  required
+                />
+                <button
+                  class="password-toggle"
+                  type="button"
+                  data-password-toggle="login-password"
+                  aria-label="Afficher le mot de passe"
+                  aria-pressed="false"
+                >
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M3 12s3.2-5 9-5 9 5 9 5-3.2 5-9 5-9-5-9-5Z" />
+                    <circle cx="12" cy="12" r="2.5" />
+                  </svg>
+                </button>
+              </div>
+              <a class="forgot-link" href="#" aria-label="Mot de passe oublié">Mot de passe oublié&nbsp;?</a>
+            </div>
+
+            <button class="primary-button login-button" type="submit">
+              <span>Se connecter</span>
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M5 12h14m-5-5 5 5-5 5" />
+              </svg>
+            </button>
+
+            <p class="account-switch">
+              Pas encore de compte&nbsp;?
+              <button type="button" data-switch-account="inscription">S’inscrire</button>
+            </p>
+          </form>
+        </section>
+
+        <section class="auth-panel signup-panel" data-account-panel="inscription" aria-labelledby="signup-title" hidden>
+          <div class="panel-heading">
+            <h2 id="signup-title">Inscription</h2>
+            <p>Commençons par faire connaissance.</p>
+          </div>
+
+          <form class="auth-form signup-form" method="post" action="{% url 'register' %}" data-signup-form>
+            {% csrf_token %}
+
+            {% if register_error %}
+              <p class="form-error" role="alert">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <circle cx="12" cy="12" r="9" />
+                  <path d="M12 7v6m0 4h.01" />
+                </svg>
+                {{ register_error }}
+              </p>
+            {% endif %}
+
+            <div class="signup-grid">
+              <div class="form-field">
+                <label for="username">Pseudo</label>
+                <div class="input-shell">
+                  <svg class="input-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <circle cx="12" cy="8" r="3.5" />
+                    <path d="M5 20c.6-4.2 3-6.4 7-6.4s6.4 2.2 7 6.4" />
+                  </svg>
+                  <input id="username" name="username" type="text" autocomplete="username" placeholder="Votre pseudo" required />
+                </div>
+              </div>
+
+              <div class="form-field">
+                <label for="email">Email</label>
+                <div class="input-shell">
+                  <svg class="input-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <rect x="3" y="5" width="18" height="14" rx="2" />
+                    <path d="m4 7 8 6 8-6" />
+                  </svg>
+                  <input id="email" name="email" type="email" autocomplete="email" placeholder="vous@exemple.com" required />
+                </div>
+              </div>
+
+              <div class="form-field">
+                <label for="password">Mot de passe</label>
+                <div class="input-shell">
+                  <svg class="input-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <rect x="5" y="10" width="14" height="10" rx="2" />
+                    <path d="M8 10V7a4 4 0 0 1 8 0v3" />
+                  </svg>
+                  <input id="password" name="password" type="password" autocomplete="new-password" placeholder="Créez votre mot de passe" data-password-input required />
+                  <button class="password-toggle" type="button" data-password-toggle="password" aria-label="Afficher le mot de passe" aria-pressed="false">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M3 12s3.2-5 9-5 9 5 9 5-3.2 5-9 5-9-5-9-5Z" />
+                      <circle cx="12" cy="12" r="2.5" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <div class="form-field">
+                <label for="password-confirm">Confirmer le mot de passe</label>
+                <div class="input-shell">
+                  <svg class="input-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <rect x="5" y="10" width="14" height="10" rx="2" />
+                    <path d="M8 10V7a4 4 0 0 1 8 0v3" />
+                  </svg>
+                  <input id="password-confirm" name="password_confirm" type="password" autocomplete="new-password" placeholder="Confirmez votre mot de passe" required />
+                  <button class="password-toggle" type="button" data-password-toggle="password-confirm" aria-label="Afficher le mot de passe" aria-pressed="false">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M3 12s3.2-5 9-5 9 5 9 5-3.2 5-9 5-9-5-9-5Z" />
+                      <circle cx="12" cy="12" r="2.5" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="password-rules" data-password-rules aria-live="polite">
+              <p>Votre mot de passe doit contenir&nbsp;:</p>
+              <ul>
+                <li data-password-rule="length">12 caractères</li>
+                <li data-password-rule="case">Une majuscule et une minuscule</li>
+                <li data-password-rule="digit">Un chiffre</li>
+                <li data-password-rule="special">Un caractère spécial</li>
+              </ul>
+            </div>
+
+            <button class="primary-button signup-button" type="submit">
+              <span>Créer mon compte</span>
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M5 12h14m-5-5 5 5-5 5" />
+              </svg>
+            </button>
+
+            <p class="account-switch">
+              Déjà inscrit&nbsp;?
+              <button type="button" data-switch-account="connexion">Se connecter</button>
+            </p>
+          </form>
+        </section>
+      </section>
+    </main>
+  </body>
+</html>

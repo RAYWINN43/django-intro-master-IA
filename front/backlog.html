@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="fr" data-theme="green">
+  <head>
+    {% load static %}
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Backlog produit généré pour votre projet IWant." />
+    <title>Backlog — Projet IWant</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      (() => {
+        const savedTheme = localStorage.getItem("iwant-theme");
+        const themes = ["green", "orange", "violet", "blue"];
+        if (themes.includes(savedTheme)) document.documentElement.dataset.theme = savedTheme;
+      })();
+    </script>
+    <link rel="stylesheet" href="{% static 'project.css' %}?v=4" />
+    <link rel="stylesheet" href="{% static 'backlog.css' %}?v=3" />
+    <link rel="stylesheet" href="{% static 'cursor.css' %}?v=2" />
+    <script src="{% static 'project.js' %}?v=9" defer></script>
+    <script src="{% static 'backlog.js' %}?v=5" defer></script>
+  </head>
+  <body class="project-body backlog-page">
+    <header class="project-header">
+      <a class="project-brand" href="/home/" aria-label="IWant, mes projets">
+        <span>IWant</span><small>BETA</small>
+      </a>
+
+      <div class="project-account-controls">
+        <div class="project-theme-switcher" role="group" aria-label="Choisir le thème du site">
+          <button class="project-theme-choice project-theme-choice--green" type="button" data-theme-choice="green" aria-label="Thème vert" aria-pressed="true"></button>
+          <button class="project-theme-choice project-theme-choice--orange" type="button" data-theme-choice="orange" aria-label="Thème orange" aria-pressed="false"></button>
+          <button class="project-theme-choice project-theme-choice--violet" type="button" data-theme-choice="violet" aria-label="Thème violet" aria-pressed="false"></button>
+          <button class="project-theme-choice project-theme-choice--blue" type="button" data-theme-choice="blue" aria-label="Thème bleu" aria-pressed="false"></button>
+        </div>
+
+        <div class="project-account-menu-wrap">
+          <button class="project-menu-toggle" type="button" aria-label="Ouvrir les options du compte" aria-expanded="false" data-project-menu-toggle>
+            <span></span><span></span><span></span>
+          </button>
+          <div class="project-account-menu" data-project-menu hidden>
+            <p class="project-account-menu-name" data-project-account-name>Utilisateur</p>
+            <a href="/profile/">Mon compte</a>
+            <button type="button" data-project-open-preferences>Préférences</button>
+            <button type="button" data-project-open-legal>Mentions légales</button>
+            <form method="post" action="/logout/">
+              <button class="project-logout-button" type="submit">Déconnexion</button>
+            </form>
+          </div>
+        </div>
+
+        <a class="project-avatar" href="/profile/" aria-label="Voir mon compte" data-username="" data-user-avatar>?</a>
+      </div>
+    </header>
+
+    <div class="project-layout backlog-layout">
+      <aside class="project-rail" aria-label="Navigation du projet">
+        <div class="project-utilities">
+          <a class="project-utility" href="/home/">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5m6-6-6 6 6 6" /></svg>
+            <span>Retourner sur les projets</span>
+          </a>
+          <button class="project-utility" type="button" data-export-project>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V3m0 0L8 7m4-4 4 4M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7" /></svg>
+            <span>Exporter le projet</span>
+          </button>
+        </div>
+
+        <section class="project-prompt-card" aria-labelledby="project-prompt-heading">
+          <h2 id="project-prompt-heading">Prompt du projet</h2>
+          <p data-project-prompt>Chargement du prompt du projet...</p>
+        </section>
+
+        <nav class="project-section-nav" aria-label="Sections générées">
+          <a class="project-nav-item" href="/project.html" data-project-page>
+            <img src="{% static 'assets/persona.png' %}" alt="" /><span>Personas</span>
+          </a>
+          <a class="project-nav-item" href="user-story.html" data-project-page>
+            <img src="{% static 'assets/user story.png' %}" alt="" /><span>User Story</span>
+          </a>
+          <a class="project-nav-item is-active" href="#backlog" aria-current="page">
+            <img src="{% static 'assets/board.png' %}" alt="" /><span>Backlog</span>
+          </a>
+          <a class="project-nav-item" href="business-model.html" data-project-page>
+            <img src="{% static 'assets/business model.png' %}" alt="" /><span>Business M..</span>
+          </a>
+          <a class="project-nav-item" href="swot.html" data-project-page>
+            <img src="{% static 'assets/swot.png' %}" alt="" /><span>SWOT</span>
+          </a>
+          <a class="project-nav-item" href="sprint-planning.html" data-project-page>
+            <img src="{% static 'assets/sprint planning.png' %}" alt="" /><span>Sprint plan..</span>
+          </a>
+          <a class="project-nav-item" href="speech.html" data-project-page>
+            <img src="{% static 'assets/speech.png' %}" alt="" /><span>Speech</span>
+          </a>
+        </nav>
+      </aside>
+
+      <main class="project-main backlog-main" id="backlog">
+        <div class="project-title-row backlog-title-row">
+          <div class="project-title-copy">
+            <div class="project-title-line">
+              <img src="{% static 'assets/board.png' %}" alt="" aria-hidden="true" />
+              <h1>Backlog</h1>
+            </div>
+            <p>Liste priorisée des user stories de votre projet.</p>
+          </div>
+
+          <div class="project-actions backlog-actions" aria-label="Actions du backlog">
+            <button class="project-action project-action--primary backlog-regenerate" type="button" data-backlog-regenerate>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2 1.3 4.7L18 8l-4.7 1.3L12 14l-1.3-4.7L6 8l4.7-1.3L12 2Zm7 11 .8 2.2L22 16l-2.2.8L19 19l-.8-2.2L16 16l2.2-.8L19 13Z" /></svg>
+              <span>Régénérer</span>
+            </button>
+            <button class="project-action" type="button" data-export-section>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V3m0 0L8 7m4-4 4 4M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7" /></svg>
+              <span>Exporter</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="backlog-workspace" data-backlog-workspace>
+          <section class="backlog-product-panel" aria-labelledby="backlog-product-title">
+            <h2 id="backlog-product-title">Backlog produit</h2>
+
+            <div class="backlog-toolbar">
+              <div class="backlog-tabs" role="group" aria-label="Filtrer par statut">
+                <button class="is-active" type="button" data-status-filter="all" aria-pressed="true">Tout (12)</button>
+                <button type="button" data-status-filter="todo" aria-pressed="false">À faire (8)</button>
+                <button type="button" data-status-filter="progress" aria-pressed="false">En cours (2)</button>
+                <button type="button" data-status-filter="done" aria-pressed="false">Terminée (2)</button>
+              </div>
+              <div class="backlog-toolbar-actions">
+                <button type="button" data-priority-filter aria-expanded="false">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16l-6 7v6l-4 2v-8L4 5Z" /></svg>
+                  <span>Filtrer</span><span aria-hidden="true">⌄</span>
+                </button>
+                <button type="button" data-sort-points aria-pressed="false">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4v16m0 0-3-3m3 3 3-3M16 20V4m0 0-3 3m3-3 3 3" /></svg>
+                  <span>Trier</span><span aria-hidden="true">⌄</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="backlog-table-head" aria-hidden="true">
+              <span></span><span>Priorité</span><span>ID</span><span>User Story</span><span>Points</span><span>Statut</span><span></span>
+            </div>
+
+            <div class="backlog-table-scroll" role="grid" aria-label="User stories du backlog" data-backlog-list>
+              <article class="backlog-row is-selected" role="row" tabindex="0" data-backlog-row data-id="US-01" data-priority="P0" data-status="todo" data-points="5" data-epic="Authentification" data-assignee="Non assigné" data-title="En tant qu’utilisateur, je souhaite créer un compte pour accéder à la plateforme.">
+                <span class="backlog-drag" aria-hidden="true">⠿</span><span class="backlog-priority backlog-priority--p0">P0</span><strong>US-01</strong><p>En tant qu’utilisateur, je souhaite créer un compte pour accéder à la plateforme.</p><span class="backlog-points">5</span><span class="backlog-status backlog-status--todo">À faire</span><button type="button" aria-label="Options de US-01">⋮</button>
+              </article>
+              <article class="backlog-row" role="row" tabindex="0" data-backlog-row data-id="US-02" data-priority="P0" data-status="todo" data-points="3" data-epic="Authentification" data-assignee="Non assigné" data-title="En tant qu’utilisateur, je souhaite me connecter à mon espace personnel.">
+                <span class="backlog-drag" aria-hidden="true">⠿</span><span class="backlog-priority backlog-priority--p0">P0</span><strong>US-02</strong><p>En tant qu’utilisateur, je souhaite me connecter à mon espace personnel.</p><span class="backlog-points">3</span><span class="backlog-status backlog-status--todo">À faire</span><button type="button" aria-label="Options de US-02">⋮</button>
+              </article>
+              <article class="backlog-row" role="row" tabindex="0" data-backlog-row data-id="US-03" data-priority="P1" data-status="progress" data-points="5" data-epic="Recherche" data-assignee="Équipe produit" data-title="En tant qu’utilisateur, je souhaite rechercher des fiches par mot-clé.">
+                <span class="backlog-drag" aria-hidden="true">⠿</span><span class="backlog-priority backlog-priority--p1">P1</span><strong>US-03</strong><p>En tant qu’utilisateur, je souhaite rechercher des fiches par mot-clé.</p><span class="backlog-points">5</span><span class="backlog-status backlog-status--progress">En cours</span><button type="button" aria-label="Options de US-03">⋮</button>
+              </article>
+              <article class="backlog-row" role="row" tabindex="0" data-backlog-row data-id="US-04" data-priority="P1" data-status="todo" data-points="3" data-epic="Recherche" data-assignee="Non assigné" data-title="En tant qu’utilisateur, je souhaite filtrer les fiches par matière et niveau.">
+                <span class="backlog-drag" aria-hidden="true">⠿</span><span class="backlog-priority backlog-priority--p1">P1</span><strong>US-04</strong><p>En tant qu’utilisateur, je souhaite filtrer les fiches par matière et niveau.</p><span class="backlog-points">3</span><span class="backlog-status backlog-status--todo">À faire</span><button type="button" aria-label="Options de US-04">⋮</button>
+              </article>
+              <article class="backlog-row" role="row" tabindex="0" data-backlog-row data-id="US-05" data-priority="P1" data-status="todo" data-points="5" data-epic="Consultation" data-assignee="Non assigné" data-title="En tant qu’utilisateur, je souhaite télécharger une fiche pour la consulter hors ligne.">
+                <span class="backlog-drag" aria-hidden="true">⠿</span><span class="backlog-priority backlog-priority--p1">P1</span><strong>US-05</strong><p>En tant qu’utilisateur, je souhaite télécharger une fiche pour la consulter hors ligne.</p><span class="backlog-points">5</span><span class="backlog-status backlog-status--todo">À faire</span><button type="button" aria-label="Options de US-05">⋮</button>
+              </article>
+              <article class="backlog-row" role="row" tabindex="0" data-backlog-row data-id="US-06" data-priority="P2" data-status="progress" data-points="2" data-epic="Communauté" data-assignee="Équipe produit" data-title="En tant qu’utilisateur, je souhaite noter une fiche pour aider la communauté.">
+                <span class="backlog-drag" aria-hidden="true">⠿</span><span class="backlog-priority backlog-priority--p2">P2</span><strong>US-06</strong><p>En tant qu’utilisateur, je souhaite noter une fiche pour aider la communauté.</p><span class="backlog-points">2</span><span class="backlog-status backlog-status--progress">En cours</span><button type="button" aria-label="Options de US-06">⋮</button>
+              </article>
+              <article class="backlog-row" role="row" tabindex="0" data-backlog-row data-id="US-07" data-priority="P2" data-status="todo" data-points="3" data-epic="Communauté" data-assignee="Non assigné" data-title="En tant qu’utilisateur, je souhaite commenter une fiche pour donner mon avis.">
+                <span class="backlog-drag" aria-hidden="true">⠿</span><span class="backlog-priority backlog-priority--p2">P2</span><strong>US-07</strong><p>En tant qu’utilisateur, je souhaite commenter une fiche pour donner mon avis.</p><span class="backlog-points">3</span><span class="backlog-status backlog-status--todo">À faire</span><button type="button" aria-label="Options de US-07">⋮</button>
+              </article>
+              <article class="backlog-row" role="row" tabindex="0" data-backlog-row data-id="US-08" data-priority="P2" data-status="todo" data-points="5" data-epic="Collections" data-assignee="Non assigné" data-title="En tant qu’utilisateur, je souhaite créer et gérer mes collections de fiches.">
+                <span class="backlog-drag" aria-hidden="true">⠿</span><span class="backlog-priority backlog-priority--p2">P2</span><strong>US-08</strong><p>En tant qu’utilisateur, je souhaite <mark>créer et gérer</mark> mes collections de fiches.</p><span class="backlog-points">5</span><span class="backlog-status backlog-status--todo">À faire</span><button type="button" aria-label="Options de US-08">⋮</button>
+              </article>
+              <article class="backlog-row" role="row" tabindex="0" data-backlog-row data-id="US-09" data-priority="P1" data-status="done" data-points="2" data-epic="Profil" data-assignee="Équipe produit" data-title="En tant qu’utilisateur, je souhaite personnaliser mon profil.">
+                <span class="backlog-drag" aria-hidden="true">⠿</span><span class="backlog-priority backlog-priority--p1">P1</span><strong>US-09</strong><p>En tant qu’utilisateur, je souhaite personnaliser mon profil.</p><span class="backlog-points">2</span><span class="backlog-status backlog-status--done">Terminée</span><button type="button" aria-label="Options de US-09">⋮</button>
+              </article>
+              <article class="backlog-row" role="row" tabindex="0" data-backlog-row data-id="US-10" data-priority="P2" data-status="done" data-points="1" data-epic="Profil" data-assignee="Équipe produit" data-title="En tant qu’utilisateur, je souhaite modifier mes préférences.">
+                <span class="backlog-drag" aria-hidden="true">⠿</span><span class="backlog-priority backlog-priority--p2">P2</span><strong>US-10</strong><p>En tant qu’utilisateur, je souhaite modifier mes préférences.</p><span class="backlog-points">1</span><span class="backlog-status backlog-status--done">Terminée</span><button type="button" aria-label="Options de US-10">⋮</button>
+              </article>
+              <article class="backlog-row" role="row" tabindex="0" data-backlog-row data-id="US-11" data-priority="P2" data-status="todo" data-points="1" data-epic="Notifications" data-assignee="Non assigné" data-title="En tant qu’utilisateur, je souhaite recevoir des notifications utiles.">
+                <span class="backlog-drag" aria-hidden="true">⠿</span><span class="backlog-priority backlog-priority--p2">P2</span><strong>US-11</strong><p>En tant qu’utilisateur, je souhaite recevoir des notifications utiles.</p><span class="backlog-points">1</span><span class="backlog-status backlog-status--todo">À faire</span><button type="button" aria-label="Options de US-11">⋮</button>
+              </article>
+              <article class="backlog-row" role="row" tabindex="0" data-backlog-row data-id="US-12" data-priority="P1" data-status="todo" data-points="1" data-epic="Partage" data-assignee="Non assigné" data-title="En tant qu’utilisateur, je souhaite partager une fiche par lien.">
+                <span class="backlog-drag" aria-hidden="true">⠿</span><span class="backlog-priority backlog-priority--p1">P1</span><strong>US-12</strong><p>En tant qu’utilisateur, je souhaite partager une fiche par lien.</p><span class="backlog-points">1</span><span class="backlog-status backlog-status--todo">À faire</span><button type="button" aria-label="Options de US-12">⋮</button>
+              </article>
+            </div>
+
+            <footer class="backlog-product-footer">
+              <button type="button" data-add-story><span aria-hidden="true">＋</span> Ajouter une user story</button>
+              <span data-visible-count>12 éléments</span>
+              <strong>Estimation totale : 36 pts</strong>
+            </footer>
+          </section>
+
+          <aside class="backlog-detail-panel" aria-labelledby="backlog-detail-title" data-backlog-detail>
+            <header>
+              <div><h2 id="backlog-detail-title" data-detail-id>US-01</h2><span class="backlog-priority backlog-priority--p0" data-detail-priority>P0</span></div>
+              <button type="button" data-close-detail aria-label="Fermer le détail">×</button>
+            </header>
+            <p class="backlog-detail-story" data-detail-title>En tant qu’utilisateur, je souhaite créer un compte pour accéder à la plateforme.</p>
+
+            <dl class="backlog-detail-fields">
+              <div><dt>⌘ Points</dt><dd data-detail-points>5</dd></div>
+              <div><dt>▣ Statut</dt><dd><select data-detail-status aria-label="Statut"><option value="todo">À faire</option><option value="progress">En cours</option><option value="done">Terminée</option></select></dd></div>
+              <div><dt>▤ Épic</dt><dd><select data-detail-epic aria-label="Épic"><option>Authentification</option><option>Recherche</option><option>Consultation</option><option>Communauté</option><option>Collections</option><option>Profil</option><option>Notifications</option><option>Partage</option></select></dd></div>
+              <div><dt>♙ Assigné à</dt><dd><select data-detail-assignee aria-label="Assigné à"><option>Non assigné</option><option>Équipe produit</option><option>Équipe design</option></select></dd></div>
+              <div><dt>▣ Date de création</dt><dd>05/08/2025</dd></div>
+              <div><dt>◷ Dernière mise à jour</dt><dd data-detail-updated>05/08/2025</dd></div>
+            </dl>
+
+            <section class="backlog-criteria" aria-labelledby="criteria-title">
+              <div><h3 id="criteria-title">Critères d’acceptation</h3><button type="button" data-add-criterion aria-label="Ajouter un critère">＋</button></div>
+              <ul data-criteria-list>
+                <li><button class="is-checked" type="button" aria-pressed="true">✓</button><span>L’utilisateur peut saisir son email</span></li>
+                <li><button class="is-checked" type="button" aria-pressed="true">✓</button><span>L’utilisateur peut saisir son mot de passe</span></li>
+                <li><button class="is-checked" type="button" aria-pressed="true">✓</button><span>L’utilisateur reçoit un email de confirmation</span></li>
+                <li><button class="is-checked" type="button" aria-pressed="true">✓</button><span>Le compte est créé après confirmation</span></li>
+                <li><button class="is-checked" type="button" aria-pressed="true">✓</button><span>L’utilisateur est connecté automatiquement</span></li>
+              </ul>
+            </section>
+
+            <label class="backlog-notes">
+              <span>Notes</span>
+              <textarea rows="2" placeholder="Ajouter une note..." data-backlog-notes></textarea>
+            </label>
+          </aside>
+
+        </div>
+
+        <p class="project-status" data-project-status aria-live="polite"></p>
+      </main>
+    </div>
+
+    <dialog class="project-dialog" data-project-preferences-dialog>
+      <div><h2>Préférences</h2><button type="button" data-project-close-dialog aria-label="Fermer">×</button></div>
+      <p>Choisissez la palette utilisée dans votre espace IWant.</p>
+      <div class="project-dialog-theme-list" role="group" aria-label="Choisir une palette">
+        <button type="button" data-theme-choice="green"><span class="project-theme-dot project-theme-dot--green"></span>Vert</button>
+        <button type="button" data-theme-choice="orange"><span class="project-theme-dot project-theme-dot--orange"></span>Orange</button>
+        <button type="button" data-theme-choice="violet"><span class="project-theme-dot project-theme-dot--violet"></span>Violet</button>
+        <button type="button" data-theme-choice="blue"><span class="project-theme-dot project-theme-dot--blue"></span>Bleu</button>
+      </div>
+    </dialog>
+
+    <dialog class="project-dialog" data-project-legal-dialog>
+      <div><h2>Mentions légales</h2><button type="button" data-project-close-dialog aria-label="Fermer">×</button></div>
+      <p>IWant est actuellement proposé en version bêta. Les informations légales complètes seront ajoutées avant la mise en production.</p>
+    </dialog>
+  </body>
+</html>

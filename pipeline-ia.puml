@@ -1,0 +1,26 @@
+@startuml
+title Pipeline IA - IWant
+
+skinparam backgroundColor transparent
+skinparam shadowing false
+skinparam defaultFontName Arial
+
+actor "Utilisateur" as User
+participant "Interface IWant" as Front
+participant "Vue Django\n/ai/ask/" as Django
+participant "Client Groq" as Client
+participant "API Groq\nllama-3.3-70b-versatile" as Groq
+database "PostgreSQL" as DB
+
+User -> Front : Saisit une idée de projet
+Front -> Django : POST JSON + jeton CSRF
+Django -> Django : Vérifie la session et le message
+Django -> Client : Ajoute le prompt système
+Client -> Groq : Envoie la demande au modèle IA
+Groq --> Client : Retourne une spécification structurée
+Client --> Django : Réponse texte / JSON
+Django -> DB : Enregistre prompt, réponse et utilisateur
+Django --> Front : Réponse IA + identifiant projet
+Front --> User : Affiche l'analyse et met à jour Mes projets
+
+@enduml
