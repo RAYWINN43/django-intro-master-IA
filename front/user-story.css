@@ -2,6 +2,10 @@
   gap: 16px;
 }
 
+.story-history[hidden] {
+  display: none !important;
+}
+
 .story-generated-panel,
 .story-history {
   border: 1px solid var(--project-border);
@@ -42,6 +46,13 @@
 .story-list::-webkit-scrollbar { width: 12px; }
 .story-list::-webkit-scrollbar-track { border-radius: 999px; background: rgba(255, 255, 255, 0.08); }
 .story-list::-webkit-scrollbar-thumb { border: 3px solid transparent; border-radius: 999px; background: rgba(239, 250, 249, 0.76); background-clip: padding-box; }
+
+.story-empty-state {
+  margin: 4px 0 0;
+  color: rgba(255, 255, 255, 0.84);
+  font-size: 17px;
+  font-weight: 400;
+}
 
 .story-card {
   display: grid;

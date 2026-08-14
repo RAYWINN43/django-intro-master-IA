@@ -41,27 +41,6 @@
       data-mode="{{ account_mode|default:'connexion' }}"
       data-initial-mode="{{ account_mode|default:'connexion' }}"
     >
-      <section class="auth-story" aria-live="polite">
-        <div class="story-copy" data-account-story="connexion">
-          <h1>Revenez à<br />vos idées.</h1>
-          <p>Retrouvez vos projets et continuez<br />à leur donner une direction.</p>
-        </div>
-
-        <div class="story-copy" data-account-story="inscription" hidden>
-          <h1>Donnez un cap<br />à votre idée.</h1>
-          <p>Créez votre espace pour transformer<br />une intention en plan d’action.</p>
-        </div>
-
-        <svg class="journey-line" viewBox="0 0 700 300" aria-hidden="true">
-          <path class="journey-line__solid" d="M0 100h185c38 0 52-62 90-62h56" />
-          <circle cx="20" cy="100" r="13" />
-          <circle cx="331" cy="38" r="13" />
-          <path class="journey-line__dashed" d="M344 38c52 0 52 52 52 91v71c0 32 14 47 50 47h184" />
-          <circle cx="446" cy="247" r="13" />
-          <path class="journey-arrow" d="m613 230 17 17-17 17" />
-        </svg>
-      </section>
-
       <section class="auth-surface" aria-label="Accès à votre espace IWant">
         <section class="auth-panel" data-account-panel="connexion" aria-labelledby="login-title">
           <div class="panel-heading">

@@ -116,6 +116,13 @@ html[data-theme="blue"] .speech-side-panel > section { background: rgba(17, 39, 
   display: none;
 }
 
+.speech-empty-state {
+  margin: 18px;
+  color: rgba(255, 255, 255, 0.84);
+  font-size: 13px;
+  font-weight: 400;
+}
+
 .speech-section {
   display: grid;
   grid-template-columns: 20px minmax(0, 1fr) 20px;
@@ -340,6 +347,14 @@ html[data-theme="blue"] .speech-side-panel > section { background: rgba(17, 39, 
   font-size: 14px;
   font-style: normal;
   text-align: right;
+}
+
+.speech-slides li.speech-slide-empty {
+  display: block;
+  min-height: 32px;
+  padding: 8px;
+  color: rgba(255, 255, 255, 0.84);
+  font-size: 10.5px;
 }
 
 .speech-tips ul {

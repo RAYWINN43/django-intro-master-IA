@@ -3,8 +3,10 @@ from django.contrib.auth import get_user_model, login, logout, update_session_au
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
-from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_GET, require_POST
 
 from ai.models import GroqAnalysis
 
@@ -40,6 +42,35 @@ def project_page(request):
     return render(request, "project.html", {"project": project})
 
 
+@login_required
+def project_section_page(request, template_name):
+    project = None
+    project_id = request.GET.get("project")
+
+    if project_id:
+        project = get_object_or_404(
+            GroqAnalysis,
+            pk=project_id,
+            user=request.user,
+        )
+
+    return render(request, template_name, {"project": project})
+
+
+@login_required
+@require_GET
+def current_user(request):
+    username = request.user.get_username()
+
+    return JsonResponse(
+        {
+            "username": username,
+            "initial": username[:1].upper(),
+        }
+    )
+
+
+@csrf_exempt
 @require_POST
 def logout_view(request):
     logout(request)

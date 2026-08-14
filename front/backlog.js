@@ -1,4 +1,3 @@
-const backlogRows = [...document.querySelectorAll("[data-backlog-row]")];
 const backlogWorkspace = document.querySelector("[data-backlog-workspace]");
 const backlogDetail = document.querySelector("[data-backlog-detail]");
 const backlogList = document.querySelector("[data-backlog-list]");
@@ -8,57 +7,77 @@ const backlogStatusFilters = [...document.querySelectorAll("[data-status-filter]
 const backlogPriorityFilter = document.querySelector("[data-priority-filter]");
 const backlogSortPoints = document.querySelector("[data-sort-points]");
 const backlogNotes = document.querySelector("[data-backlog-notes]");
-const backlogProjectId = new URLSearchParams(window.location.search).get("project") || "demo";
-const backlogNotesKey = `iwant-backlog-notes-${backlogProjectId}`;
+const backlogProjectId = new URLSearchParams(window.location.search).get("project");
+const backlogNotesKey = `iwant-backlog-notes-${backlogProjectId || "demo"}`;
+const hasBacklogProject = /^\d+$/.test(backlogProjectId || "");
+let backlogRows = [...document.querySelectorAll("[data-backlog-row]")];
+let backlogItemsById = new Map();
 let backlogActiveStatus = "all";
 let backlogActivePriority = "all";
 let backlogSortDescending = false;
 let backlogSelectedRow = backlogRows[0] || null;
 
-const backlogCriteriaByEpic = {
-  Authentification: [
-    "L’utilisateur peut saisir son email",
-    "L’utilisateur peut saisir son mot de passe",
-    "L’utilisateur reçoit un email de confirmation",
-    "Le compte est créé après confirmation",
-    "L’utilisateur est connecté automatiquement",
-  ],
-  Recherche: [
-    "La recherche accepte plusieurs mots-clés",
-    "Les résultats pertinents apparaissent en premier",
-    "Un état vide explique l’absence de résultat",
-  ],
-  Consultation: [
-    "Le téléchargement démarre depuis la fiche",
-    "Le fichier reste lisible hors connexion",
-    "Le format du document est clairement indiqué",
-  ],
-  Communauté: [
-    "L’utilisateur peut publier son avis",
-    "Les contributions sont associées à leur auteur",
-    "Le contenu inadapté peut être signalé",
-  ],
-  Collections: [
-    "Une collection peut être créée et renommée",
-    "Une fiche peut être ajoutée ou retirée",
-    "Les collections restent accessibles depuis le profil",
-  ],
-  Profil: [
-    "Les informations peuvent être mises à jour",
-    "Les changements sont enregistrés immédiatement",
-    "Les données privées restent protégées",
-  ],
-  Notifications: [
-    "Les préférences de notification sont respectées",
-    "Chaque notification ouvre le bon contenu",
-    "L’utilisateur peut désactiver une catégorie",
-  ],
-  Partage: [
-    "Un lien de partage est généré",
-    "Le lien ouvre la bonne fiche",
-    "Le partage respecte la visibilité de la fiche",
-  ],
-};
+function getBacklogUrl() {
+  if (!hasBacklogProject) return null;
+  return `/ai/projects/${backlogProjectId}/backlog/`;
+}
+
+function notifyBacklog(message) {
+  if (typeof showProjectStatus === "function") {
+    showProjectStatus(message);
+  }
+}
+
+function statusSlug(status) {
+  const value = String(status || "").toLowerCase();
+  if (value.includes("cours") || value === "progress") return "progress";
+  if (value.includes("termin") || value === "done") return "done";
+  return "todo";
+}
+
+function statusLabel(slug) {
+  if (slug === "progress") return "En cours";
+  if (slug === "done") return "Terminée";
+  return "À faire";
+}
+
+function normalizeBacklogItem(item, index) {
+  const safeItem = item && typeof item === "object" ? item : {};
+  const priority = ["P0", "P1", "P2"].includes(safeItem.priority)
+    ? safeItem.priority
+    : index < 2 ? "P0" : "P1";
+  const story = String(safeItem.story || safeItem.title || `User story ${index + 1}`).trim();
+
+  return {
+    id: String(safeItem.id || `US-${index + 1}`),
+    priority,
+    title: String(safeItem.title || story).trim(),
+    story,
+    description: String(safeItem.description || "").trim(),
+    points: Number(safeItem.points || 3),
+    status: statusLabel(statusSlug(safeItem.status)),
+    status_key: statusSlug(safeItem.status),
+    epic: String(safeItem.epic || "Produit").trim(),
+    assignee: String(safeItem.assignee || "Non assigné").trim(),
+    acceptance_criteria: Array.isArray(safeItem.acceptance_criteria)
+      ? safeItem.acceptance_criteria.map((criterion) => String(criterion).trim()).filter(Boolean)
+      : [],
+    notes: String(safeItem.notes || "").trim(),
+  };
+}
+
+function getCurrentBacklogArtifact() {
+  return backlogRows.map((row) => ({
+    id: row.dataset.id,
+    priority: row.dataset.priority,
+    title: row.dataset.title,
+    story: row.dataset.title,
+    points: Number(row.dataset.points || 0),
+    status: statusLabel(row.dataset.status),
+    epic: row.dataset.epic,
+    assignee: row.dataset.assignee,
+  }));
+}
 
 function readBacklogNotes() {
   try {
@@ -72,16 +91,29 @@ function writeBacklogNotes(notes) {
   try {
     localStorage.setItem(backlogNotesKey, JSON.stringify(notes));
   } catch {
-    showProjectStatus("La note reste visible pour cette session.");
+    notifyBacklog("La note reste visible pour cette session.");
   }
 }
 
-function renderBacklogCriteria(epic) {
+function setSelectValue(select, value) {
+  if (!select) return;
+  const exists = [...select.options].some((option) => option.value === value || option.textContent === value);
+  if (!exists) {
+    const option = document.createElement("option");
+    option.value = value;
+    option.textContent = value;
+    select.append(option);
+  }
+  select.value = value;
+}
+
+function renderBacklogCriteria(criteria) {
   const list = document.querySelector("[data-criteria-list]");
   if (!list) return;
-  const criteria = backlogCriteriaByEpic[epic] || backlogCriteriaByEpic.Authentification;
+  const safeCriteria = criteria.length > 0 ? criteria : ["Le système affiche clairement cette fonctionnalité."];
+
   list.replaceChildren(
-    ...criteria.map((criterion) => {
+    ...safeCriteria.map((criterion) => {
       const item = document.createElement("li");
       const button = document.createElement("button");
       const text = document.createElement("span");
@@ -110,18 +142,19 @@ function selectBacklogRow(row, { announce = true } = {}) {
   backlogWorkspace?.classList.remove("is-detail-closed");
   backlogDetail.hidden = false;
 
+  const item = backlogItemsById.get(row.dataset.id) || {};
   document.querySelector("[data-detail-id]").textContent = row.dataset.id;
   document.querySelector("[data-detail-title]").textContent = row.dataset.title;
   document.querySelector("[data-detail-points]").textContent = row.dataset.points;
-  document.querySelector("[data-detail-status]").value = row.dataset.status;
-  document.querySelector("[data-detail-epic]").value = row.dataset.epic;
-  document.querySelector("[data-detail-assignee]").value = row.dataset.assignee;
+  setSelectValue(document.querySelector("[data-detail-status]"), row.dataset.status);
+  setSelectValue(document.querySelector("[data-detail-epic]"), row.dataset.epic);
+  setSelectValue(document.querySelector("[data-detail-assignee]"), row.dataset.assignee);
   updateBacklogPriorityBadge(row.dataset.priority);
-  renderBacklogCriteria(row.dataset.epic);
+  renderBacklogCriteria(item.acceptance_criteria || []);
 
   const notes = readBacklogNotes();
-  if (backlogNotes) backlogNotes.value = notes[row.dataset.id] || "";
-  if (announce) showProjectStatus(`${row.dataset.id} affichée dans le panneau de détail.`);
+  if (backlogNotes) backlogNotes.value = notes[row.dataset.id] || item.notes || "";
+  if (announce) notifyBacklog(`${row.dataset.id} affichée dans le panneau de détail.`);
 }
 
 function bindBacklogRow(row) {
@@ -136,13 +169,65 @@ function bindBacklogRow(row) {
     }
   });
   row.querySelector("button")?.addEventListener("click", () => {
-    showProjectStatus(`Options de ${row.dataset.id} ouvertes.`);
+    notifyBacklog(`Options de ${row.dataset.id} ouvertes.`);
   });
+}
+
+function createBacklogRow(item, index) {
+  const normalizedItem = normalizeBacklogItem(item, index);
+  backlogItemsById.set(normalizedItem.id, normalizedItem);
+
+  const row = document.createElement("article");
+  row.className = index === 0 ? "backlog-row is-selected" : "backlog-row";
+  row.role = "row";
+  row.tabIndex = 0;
+  row.dataset.backlogRow = "";
+  row.dataset.id = normalizedItem.id;
+  row.dataset.priority = normalizedItem.priority;
+  row.dataset.status = normalizedItem.status_key;
+  row.dataset.points = String(normalizedItem.points);
+  row.dataset.epic = normalizedItem.epic;
+  row.dataset.assignee = normalizedItem.assignee;
+  row.dataset.title = normalizedItem.story;
+
+  const drag = document.createElement("span");
+  drag.className = "backlog-drag";
+  drag.setAttribute("aria-hidden", "true");
+  drag.textContent = "⋮";
+
+  const priority = document.createElement("span");
+  priority.className = `backlog-priority backlog-priority--${normalizedItem.priority.toLowerCase()}`;
+  priority.textContent = normalizedItem.priority;
+
+  const id = document.createElement("strong");
+  id.textContent = normalizedItem.id;
+
+  const story = document.createElement("p");
+  story.textContent = normalizedItem.story;
+
+  const points = document.createElement("span");
+  points.className = "backlog-points";
+  points.textContent = String(normalizedItem.points);
+
+  const status = document.createElement("span");
+  status.className = `backlog-status backlog-status--${normalizedItem.status_key}`;
+  status.textContent = normalizedItem.status;
+
+  const options = document.createElement("button");
+  options.type = "button";
+  options.setAttribute("aria-label", `Options de ${normalizedItem.id}`);
+  options.textContent = "⋮";
+
+  row.append(drag, priority, id, story, points, status, options);
+  bindBacklogRow(row);
+  return row;
 }
 
 function updateBacklogSummary(visibleRows) {
   const totalPoints = visibleRows.reduce((total, row) => total + Number(row.dataset.points || 0), 0);
-  if (backlogVisibleCount) backlogVisibleCount.textContent = `${visibleRows.length} élément${visibleRows.length > 1 ? "s" : ""}`;
+  if (backlogVisibleCount) {
+    backlogVisibleCount.textContent = `${visibleRows.length} élément${visibleRows.length > 1 ? "s" : ""}`;
+  }
   if (backlogEstimate) backlogEstimate.textContent = `Estimation totale : ${totalPoints} pts`;
 }
 
@@ -174,7 +259,92 @@ function refreshBacklogTabs() {
   });
 }
 
-backlogRows.forEach(bindBacklogRow);
+function renderBacklogItems(items) {
+  const normalizedItems = items.map(normalizeBacklogItem).slice(0, 12);
+  if (!backlogList || normalizedItems.length === 0) {
+    notifyBacklog("Aucun élément de backlog n'a été généré.");
+    return;
+  }
+
+  backlogItemsById = new Map();
+  backlogList.replaceChildren(
+    ...normalizedItems.map((item, index) => createBacklogRow(item, index)),
+  );
+  backlogRows = [...backlogList.querySelectorAll("[data-backlog-row]")];
+  backlogSelectedRow = backlogRows[0] || null;
+  refreshBacklogTabs();
+  applyBacklogFilters();
+  selectBacklogRow(backlogSelectedRow, { announce: false });
+}
+
+function setBacklogLoading(message) {
+  if (backlogList) {
+    const state = document.createElement("p");
+    state.className = "backlog-empty-state";
+    state.textContent = message;
+    backlogList.replaceChildren(state);
+  }
+
+  backlogRows = [];
+  backlogItemsById = new Map();
+  backlogSelectedRow = null;
+  refreshBacklogTabs();
+  updateBacklogSummary([]);
+  if (backlogDetail) backlogDetail.hidden = true;
+  backlogWorkspace?.classList.add("is-detail-closed");
+}
+
+async function loadBacklog({ force = false } = {}) {
+  const url = getBacklogUrl();
+  if (!url) {
+    notifyBacklog("Ouvrez un projet depuis Mes projets pour générer son backlog.");
+    return;
+  }
+
+  const button = document.querySelector("[data-backlog-regenerate]");
+  const label = button?.querySelector("span");
+  const initialLabel = label?.textContent || "Régénérer";
+  const headers = { "Content-Type": "application/json" };
+  const csrfToken = typeof ensureCsrfToken === "function"
+    ? await ensureCsrfToken(backlogProjectId)
+    : null;
+  if (csrfToken) headers["X-CSRFToken"] = csrfToken;
+
+  if (button) button.disabled = true;
+  if (label) label.textContent = force ? "Régénération..." : "Génération...";
+  const currentArtifact = force ? getCurrentBacklogArtifact() : null;
+  setBacklogLoading(force ? "Régénération du backlog..." : "Génération du backlog...");
+  notifyBacklog(force ? "Régénération du backlog..." : "Génération du backlog...");
+
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers,
+      credentials: "same-origin",
+      body: JSON.stringify({
+        force,
+        current_artifact: currentArtifact,
+      }),
+    });
+    const data = typeof readJsonResponse === "function"
+      ? await readJsonResponse(response)
+      : await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || "Impossible de générer le backlog.");
+    }
+
+    renderBacklogItems(data.backlog || []);
+    notifyBacklog(data.cached ? "Backlog chargé depuis le projet." : "Backlog généré avec l'IA.");
+  } catch (error) {
+    console.error("Backlog generation error:", error);
+    setBacklogLoading(error.message);
+    notifyBacklog(error.message);
+  } finally {
+    if (button) button.disabled = false;
+    if (label) label.textContent = initialLabel;
+  }
+}
 
 backlogStatusFilters.forEach((button) => {
   button.addEventListener("click", () => {
@@ -205,7 +375,7 @@ backlogSortPoints?.addEventListener("click", () => {
       return backlogSortDescending ? -difference : difference;
     })
     .forEach((row) => backlogList?.append(row));
-  showProjectStatus(`Backlog trié par points ${backlogSortDescending ? "décroissants" : "croissants"}.`);
+  notifyBacklog(`Backlog trié par points ${backlogSortDescending ? "décroissants" : "croissants"}.`);
 });
 
 document.querySelector("[data-close-detail]")?.addEventListener("click", () => {
@@ -216,7 +386,7 @@ document.querySelector("[data-close-detail]")?.addEventListener("click", () => {
 document.querySelector("[data-detail-status]")?.addEventListener("change", (event) => {
   if (!backlogSelectedRow) return;
   const status = event.target.value;
-  const label = status === "todo" ? "À faire" : status === "progress" ? "En cours" : "Terminée";
+  const label = statusLabel(status);
   const badge = backlogSelectedRow.querySelector(".backlog-status");
   backlogSelectedRow.dataset.status = status;
   badge.textContent = label;
@@ -224,20 +394,19 @@ document.querySelector("[data-detail-status]")?.addEventListener("change", (even
   document.querySelector("[data-detail-updated]").textContent = new Intl.DateTimeFormat("fr-FR").format(new Date());
   refreshBacklogTabs();
   applyBacklogFilters();
-  showProjectStatus(`${backlogSelectedRow.dataset.id} est maintenant « ${label} ».`);
+  notifyBacklog(`${backlogSelectedRow.dataset.id} est maintenant « ${label} ».`);
 });
 
 document.querySelector("[data-detail-epic]")?.addEventListener("change", (event) => {
   if (!backlogSelectedRow) return;
   backlogSelectedRow.dataset.epic = event.target.value;
-  renderBacklogCriteria(event.target.value);
-  showProjectStatus(`Épic de ${backlogSelectedRow.dataset.id} mis à jour.`);
+  notifyBacklog(`Épic de ${backlogSelectedRow.dataset.id} mis à jour.`);
 });
 
 document.querySelector("[data-detail-assignee]")?.addEventListener("change", (event) => {
   if (!backlogSelectedRow) return;
   backlogSelectedRow.dataset.assignee = event.target.value;
-  showProjectStatus(`${backlogSelectedRow.dataset.id} assignée à ${event.target.value}.`);
+  notifyBacklog(`${backlogSelectedRow.dataset.id} assignée à ${event.target.value}.`);
 });
 
 document.querySelector("[data-criteria-list]")?.addEventListener("click", (event) => {
@@ -257,7 +426,7 @@ document.querySelector("[data-add-criterion]")?.addEventListener("click", () => 
   button.textContent = "✓";
   button.setAttribute("aria-pressed", "false");
   text.contentEditable = "true";
-  text.textContent = "Nouveau critère d’acceptation";
+  text.textContent = "Nouveau critère d'acceptation";
   item.append(button, text);
   list?.append(item);
   text.focus();
@@ -271,22 +440,25 @@ backlogNotes?.addEventListener("input", () => {
 });
 
 document.querySelector("[data-add-story]")?.addEventListener("click", () => {
-  showProjectStatus("La création d’une nouvelle user story est prête à être reliée au modèle.");
+  notifyBacklog("La création d'une nouvelle user story est prête à être reliée au modèle.");
 });
 
-document.querySelector("[data-backlog-regenerate]")?.addEventListener("click", (event) => {
-  const button = event.currentTarget;
-  const label = button.querySelector("span");
-  button.disabled = true;
-  if (label) label.textContent = "Régénération...";
-  showProjectStatus("Le backlog est en cours de régénération.");
-  window.setTimeout(() => {
-    button.disabled = false;
-    if (label) label.textContent = "Régénérer";
-    showProjectStatus("Une nouvelle version du backlog a été générée.");
-  }, 1100);
+document.querySelector("[data-backlog-regenerate]")?.addEventListener("click", () => {
+  loadBacklog({ force: true });
 });
 
-selectBacklogRow(backlogSelectedRow, { announce: false });
-refreshBacklogTabs();
-applyBacklogFilters();
+if (hasBacklogProject) {
+  setBacklogLoading("Génération du backlog...");
+} else {
+  backlogRows.forEach((row) => {
+    backlogItemsById.set(row.dataset.id, {
+      acceptance_criteria: [],
+      notes: "",
+    });
+    bindBacklogRow(row);
+  });
+  selectBacklogRow(backlogSelectedRow, { announce: false });
+  refreshBacklogTabs();
+  applyBacklogFilters();
+}
+loadBacklog();

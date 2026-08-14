@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="fr" data-theme="green">
   <head>
+    {% load static %}
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="Business Model généré pour votre projet IWant." />
@@ -18,11 +19,11 @@
         if (themes.includes(savedTheme)) document.documentElement.dataset.theme = savedTheme;
       })();
     </script>
-    <link rel="stylesheet" href="project.css?v=3" />
-    <link rel="stylesheet" href="business-model.css?v=1" />
-    <link rel="stylesheet" href="cursor.css?v=2" />
-    <script src="project.js?v=3" defer></script>
-    <script src="business-model.js?v=1" defer></script>
+    <link rel="stylesheet" href="{% static 'project.css' %}?v=4" />
+    <link rel="stylesheet" href="{% static 'business-model.css' %}?v=3" />
+    <link rel="stylesheet" href="{% static 'cursor.css' %}?v=2" />
+    <script src="{% static 'project.js' %}?v=9" defer></script>
+    <script src="{% static 'business-model.js' %}?v=4" defer></script>
   </head>
   <body class="project-body business-page">
     <header class="project-header">
@@ -43,13 +44,17 @@
             <span></span><span></span><span></span>
           </button>
           <div class="project-account-menu" data-project-menu hidden>
+            <p class="project-account-menu-name" data-project-account-name>Utilisateur</p>
             <a href="/profile/">Mon compte</a>
-            <a href="/home/">Mes projets</a>
+            <button type="button" data-project-open-preferences>Préférences</button>
             <button type="button" data-project-open-legal>Mentions légales</button>
+            <form method="post" action="/logout/">
+              <button class="project-logout-button" type="submit">Déconnexion</button>
+            </form>
           </div>
         </div>
 
-        <a class="project-avatar" href="/profile/" aria-label="Voir mon compte">S</a>
+        <a class="project-avatar" href="/profile/" aria-label="Voir mon compte" data-username="" data-user-avatar>?</a>
       </div>
     </header>
 
@@ -68,30 +73,30 @@
 
         <section class="project-prompt-card" aria-labelledby="project-prompt-heading">
           <h2 id="project-prompt-heading">Prompt du projet</h2>
-          <p data-project-prompt>Fais-moi une application de suivi pour mes cours.</p>
+          <p data-project-prompt>Chargement du prompt du projet...</p>
         </section>
 
         <nav class="project-section-nav" aria-label="Sections générées">
-          <a class="project-nav-item" href="project.html" data-project-page>
-            <img src="assets/persona.png" alt="" /><span>Personas</span>
+          <a class="project-nav-item" href="/project.html" data-project-page>
+            <img src="{% static 'assets/persona.png' %}" alt="" /><span>Personas</span>
           </a>
           <a class="project-nav-item" href="user-story.html" data-project-page>
-            <img src="assets/user story.png" alt="" /><span>User Story</span>
+            <img src="{% static 'assets/user story.png' %}" alt="" /><span>User Story</span>
           </a>
           <a class="project-nav-item" href="backlog.html" data-project-page>
-            <img src="assets/board.png" alt="" /><span>Backlog</span>
+            <img src="{% static 'assets/board.png' %}" alt="" /><span>Backlog</span>
           </a>
           <a class="project-nav-item is-active" href="#business-model" aria-current="page">
-            <img src="assets/business model.png" alt="" /><span>Business M..</span>
+            <img src="{% static 'assets/business model.png' %}" alt="" /><span>Business M..</span>
           </a>
           <a class="project-nav-item" href="swot.html" data-project-page>
-            <img src="assets/swot.png" alt="" /><span>SWOT</span>
+            <img src="{% static 'assets/swot.png' %}" alt="" /><span>SWOT</span>
           </a>
           <a class="project-nav-item" href="sprint-planning.html" data-project-page>
             <img src="assets/sprint planning.png" alt="" /><span>Sprint plan..</span>
           </a>
           <a class="project-nav-item" href="speech.html" data-project-page>
-            <img src="assets/speech.png" alt="" /><span>Speech</span>
+            <img src="{% static 'assets/speech.png' %}" alt="" /><span>Speech</span>
           </a>
         </nav>
       </aside>
@@ -100,7 +105,7 @@
         <div class="project-title-row business-title-row">
           <div class="project-title-copy">
             <div class="project-title-line">
-              <img src="assets/business model.png" alt="" aria-hidden="true" />
+              <img src="{% static 'assets/business model.png' %}" alt="" aria-hidden="true" />
               <h1>Business Model</h1>
             </div>
             <p>Modèle économique de votre projet.</p>
@@ -146,6 +151,10 @@
                 <h3><span>➤</span> Canaux</h3>
                 <ul><li>Site web et application</li><li>Réseaux sociaux</li><li>Partenariats écoles et entreprises</li><li>Référencement (SEO)</li><li>Contenu et marketing</li></ul>
               </article>
+              <article class="business-block business-block--segments" tabindex="0" data-business-block>
+                <h3><span>👥</span> Segments clients</h3>
+                <ul><li>Utilisateurs principaux du service</li><li>Clients prêts à payer</li><li>Partenaires prescripteurs</li><li>Premiers testeurs du produit</li></ul>
+              </article>
               <article class="business-block business-block--costs" tabindex="0" data-business-block>
                 <h3><span>◔</span> Structure des coûts</h3>
                 <ul><li>Coûts d’infrastructure cloud</li><li>Frais des API IA (Groq, etc.)</li><li>Développement et maintenance</li><li>Marketing et acquisition</li><li>Support client</li></ul>
@@ -188,6 +197,17 @@
         <p class="project-status" data-project-status aria-live="polite"></p>
       </main>
     </div>
+
+    <dialog class="project-dialog" data-project-preferences-dialog>
+      <div><h2>Préférences</h2><button type="button" data-project-close-dialog aria-label="Fermer">×</button></div>
+      <p>Choisissez la palette utilisée dans votre espace IWant.</p>
+      <div class="project-dialog-theme-list" role="group" aria-label="Choisir une palette">
+        <button type="button" data-theme-choice="green"><span class="project-theme-dot project-theme-dot--green"></span>Vert</button>
+        <button type="button" data-theme-choice="orange"><span class="project-theme-dot project-theme-dot--orange"></span>Orange</button>
+        <button type="button" data-theme-choice="violet"><span class="project-theme-dot project-theme-dot--violet"></span>Violet</button>
+        <button type="button" data-theme-choice="blue"><span class="project-theme-dot project-theme-dot--blue"></span>Bleu</button>
+      </div>
+    </dialog>
 
     <dialog class="project-dialog" data-project-legal-dialog>
       <div><h2>Mentions légales</h2><button type="button" data-project-close-dialog aria-label="Fermer">×</button></div>

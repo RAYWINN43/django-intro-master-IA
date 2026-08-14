@@ -132,6 +132,10 @@ html[data-theme="blue"] .swot-analysis { background: rgba(17, 39, 65, 0.52); }
   padding-left: 16px;
 }
 
+.swot-quadrant li.swot-empty-state {
+  color: rgba(255, 255, 255, 0.84);
+}
+
 .swot-quadrant li::before {
   position: absolute;
   top: 0.54em;

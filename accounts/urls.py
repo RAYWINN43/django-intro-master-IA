@@ -5,11 +5,13 @@ from django.views.generic import RedirectView
 from .forms import EmailOrUsernameAuthenticationForm
 from .views import (
     change_password,
+    current_user,
     home,
     index,
     logout_view,
     profile,
     project_page,
+    project_section_page,
     register,
 )
 
@@ -27,7 +29,38 @@ urlpatterns = [
     path("login/", login_view, name="login"),
     path("register/", register, name="register"),
     path("home/", home, name="home"),
+    path("me/", current_user, name="current_user"),
     path("project.html", project_page, name="project_page"),
+    path(
+        "user-story.html",
+        project_section_page,
+        {"template_name": "user-story.html"},
+        name="user_story_page",
+    ),
+    path(
+        "backlog.html",
+        project_section_page,
+        {"template_name": "backlog.html"},
+        name="backlog_page",
+    ),
+    path(
+        "business-model.html",
+        project_section_page,
+        {"template_name": "business-model.html"},
+        name="business_model_page",
+    ),
+    path(
+        "swot.html",
+        project_section_page,
+        {"template_name": "swot.html"},
+        name="swot_page",
+    ),
+    path(
+        "speech.html",
+        project_section_page,
+        {"template_name": "speech.html"},
+        name="speech_page",
+    ),
     path("logout/", logout_view, name="logout"),
     path("profile/", profile, name="profile"),
     path("profile/change-password/", change_password, name="change_password"),

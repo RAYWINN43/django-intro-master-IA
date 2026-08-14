@@ -40,6 +40,15 @@ class AuthenticationViewsTests(TestCase):
         self.assertRedirects(response, reverse("index"))
         self.assertIsNone(self.client.session.get("_auth_user_id"))
 
+    def test_current_user_returns_connected_user(self):
+        self.client.force_login(self.user)
+
+        response = self.client.get(reverse("current_user"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["username"], self.user.username)
+        self.assertEqual(response.json()["initial"], "T")
+
     def test_register_creates_and_connects_user(self):
         response = self.client.post(
             reverse("register"),
@@ -148,6 +157,28 @@ class AuthenticationViewsTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Projet personnel visible")
         self.assertNotContains(response, "Projet prive invisible")
+
+    def test_project_section_pages_are_served_for_project_owner(self):
+        project = GroqAnalysis.objects.create(
+            user=self.user,
+            prompt="Projet avec sections",
+            response_text="Reponse de test",
+        )
+        self.client.force_login(self.user)
+
+        page_names = [
+            "user_story_page",
+            "backlog_page",
+            "business_model_page",
+            "swot_page",
+            "speech_page",
+        ]
+
+        for page_name in page_names:
+            with self.subTest(page_name=page_name):
+                response = self.client.get(f"{reverse(page_name)}?project={project.pk}")
+
+                self.assertEqual(response.status_code, 200)
 
     def test_password_change_keeps_user_connected(self):
         self.client.force_login(self.user)

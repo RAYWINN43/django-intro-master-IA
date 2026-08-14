@@ -7,6 +7,7 @@ const projectPreferencesDialog = document.querySelector("[data-project-preferenc
 const projectLegalDialog = document.querySelector("[data-project-legal-dialog]");
 const projectPrompt = document.querySelector("[data-project-prompt]");
 const projectAvatar = document.querySelector("[data-user-avatar]");
+const projectAccountName = document.querySelector("[data-project-account-name]");
 const projectMain = document.querySelector("[data-project-main]");
 const personaGrid = document.querySelector("[data-persona-grid]");
 const personaLoading = document.querySelector("[data-persona-loading]");
@@ -158,6 +159,7 @@ const fallbackPersonaDetails = {
       "Recherche efficace, synchronisation des ressources, contenus à jour et consultation rapide sur mobile.",
   },
 };
+
 function getCookie(name) {
   const value = `; ${document.cookie}`;
   const parts = value.split(`; ${name}=`);
@@ -169,6 +171,57 @@ function getCsrfToken() {
   const cookieToken = getCookie("csrftoken");
   if (cookieToken) return cookieToken;
   return document.querySelector("input[name='csrfmiddlewaretoken']")?.value || null;
+}
+
+function applyProjectAvatar(username, initial) {
+  if (!projectAvatar) return;
+
+  const safeUsername = username || projectAvatar.dataset.username || "IWant";
+  const safeInitial = initial || safeUsername.slice(0, 1).toUpperCase() || "?";
+  const avatarColors = ["#6cc46b", "#d06d4b", "#8c52ad", "#477dba", "#d7933e", "#3b9c92"];
+  const colorIndex = [...safeUsername].reduce((total, character) => {
+    return total + character.codePointAt(0);
+  }, 0) % avatarColors.length;
+
+  projectAvatar.dataset.username = safeUsername;
+  projectAvatar.textContent = safeInitial;
+  projectAvatar.setAttribute("aria-label", `Voir le profil de ${safeUsername}`);
+  projectAvatar.style.backgroundColor = avatarColors[colorIndex];
+}
+
+async function loadProjectAccount() {
+  try {
+    const response = await fetch("/me/", {
+      credentials: "same-origin",
+      headers: { Accept: "application/json" },
+    });
+    if (!response.ok) return;
+
+    const user = await response.json();
+    if (projectAccountName && user.username) {
+      projectAccountName.textContent = user.username;
+    }
+    applyProjectAvatar(user.username, user.initial);
+  } catch {
+    applyProjectAvatar();
+  }
+}
+
+async function ensureCsrfToken(projectId) {
+  const existingToken = getCsrfToken();
+  if (existingToken) return existingToken;
+  if (!/^\d+$/.test(String(projectId || ""))) return null;
+
+  try {
+    await fetch(`/ai/projects/${projectId}/`, {
+      credentials: "same-origin",
+      headers: { Accept: "application/json" },
+    });
+  } catch {
+    // The next POST will surface the real error if the session is unavailable.
+  }
+
+  return getCsrfToken();
 }
 
 async function readJsonResponse(response) {
@@ -404,7 +457,7 @@ async function loadPersonas({ force = false } = {}) {
     return;
   }
 
-  const csrfToken = getCsrfToken();
+  const csrfToken = await ensureCsrfToken(projectMain?.dataset.projectId);
   const headers = { "Content-Type": "application/json" };
   if (csrfToken) headers["X-CSRFToken"] = csrfToken;
 
@@ -446,15 +499,7 @@ projectThemeChoices.forEach((choice) => {
   choice.addEventListener("click", () => setProjectTheme(choice.dataset.themeChoice));
 });
 
-if (projectAvatar) {
-  const avatarColors = ["#6cc46b", "#d06d4b", "#8c52ad", "#477dba", "#d7933e", "#3b9c92"];
-  const username = projectAvatar.dataset.username || "IWant";
-  const colorIndex = [...username].reduce((total, character) => {
-    return total + character.codePointAt(0);
-  }, 0) % avatarColors.length;
-
-  projectAvatar.style.backgroundColor = avatarColors[colorIndex];
-}
+applyProjectAvatar();
 
 projectMenuToggle?.addEventListener("click", (event) => {
   event.stopPropagation();
@@ -531,5 +576,6 @@ document.querySelectorAll(".project-nav-item:not(.is-active):not([data-project-p
   });
 });
 
+loadProjectAccount();
 loadProjectPrompt();
 loadPersonas();

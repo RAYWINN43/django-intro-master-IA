@@ -1,5 +1,6 @@
 from django.conf import settings
 
+
 class GroqConfigurationError(RuntimeError):
     pass
 
