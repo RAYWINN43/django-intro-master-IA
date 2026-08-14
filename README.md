@@ -2,7 +2,9 @@
 
 # IWant - Projet Django IA
 
-**Lien du site hébergé :** [https://django-intro-master-ia.onrender.com/](https://django-intro-master-ia.onrender.com/)
+**Lien du site hébergé :** [https://django-intro-master.onrender.com/](https://django-intro-master.onrender.com/)
+
+**compte test :** user user1234
 
 ## 1. Présentation
 
