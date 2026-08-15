@@ -107,7 +107,7 @@ technique.
 
 Les paramètres IA principaux sont :
 
-- modèle : `llama-3.3-70b-versatile`,
+- modèle : ~~`llama-3.3-70b-versatile`~~ fin du support le 16 aout on a du changer en urgence le model par `qwen/qwen3.6-27b`
 - température : `0.2` pour obtenir une réponse plus stable,
 - limite de sortie : `1600` tokens.
 
