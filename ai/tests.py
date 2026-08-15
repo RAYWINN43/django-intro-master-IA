@@ -132,6 +132,125 @@ class GroqAnalysisViewsTests(TestCase):
             response_text="Voici le projet propose.",
         )
 
+    def make_user_stories_payload(self):
+        return {
+            "user_stories": [
+                {
+                    "id": f"US-{index:02d}",
+                    "role": "visiteur" if index == 1 else "utilisateur",
+                    "action": f"realiser l'action {index}",
+                    "benefit": f"obtenir le benefice {index}",
+                    "story": (
+                        f"En tant qu'utilisateur, je souhaite realiser "
+                        f"l'action {index} afin de progresser."
+                    ),
+                    "priority": "Haute" if index <= 2 else "Moyenne",
+                    "points": 5 if index <= 2 else 3,
+                    "epic": "Authentification" if index == 1 else "Produit",
+                    "status": "A faire",
+                    "acceptance_criteria": [
+                        f"L'utilisateur peut verifier le critere {criterion}"
+                        for criterion in range(1, 5)
+                    ],
+                }
+                for index in range(1, 9)
+            ],
+            "summary": {
+                "total": 8,
+                "high_priority": 2,
+                "medium_priority": 6,
+                "low_priority": 0,
+            },
+        }
+
+    def make_backlog_payload(self):
+        return {
+            "backlog": [
+                {
+                    "id": f"US-{index:02d}",
+                    "priority": "P0" if index <= 2 else "P1",
+                    "title": f"Fonctionnalite {index}",
+                    "story": (
+                        f"En tant qu'utilisateur, je souhaite utiliser "
+                        f"la fonctionnalite {index}."
+                    ),
+                    "description": f"Description courte {index}",
+                    "points": 5 if index <= 2 else 3,
+                    "status": "A faire",
+                    "epic": "Authentification" if index == 1 else "Produit",
+                    "assignee": "Non assigne",
+                    "acceptance_criteria": [
+                        f"L'utilisateur peut valider le critere {criterion}"
+                        for criterion in range(1, 6)
+                    ],
+                    "notes": "",
+                }
+                for index in range(1, 13)
+            ],
+            "summary": {
+                "total_items": 12,
+                "todo": 12,
+                "in_progress": 0,
+                "done": 0,
+                "total_points": 40,
+            },
+        }
+
+    def make_speech_payload(self):
+        titles = [
+            "Introduction",
+            "Le probleme",
+            "Notre solution",
+            "Demonstration",
+            "Valeur ajoutee",
+            "Conclusion",
+        ]
+        time_ranges = [
+            "0:00 - 0:30",
+            "0:30 - 1:00",
+            "1:00 - 1:45",
+            "1:45 - 2:30",
+            "2:30 - 3:10",
+            "3:10 - 3:30",
+        ]
+        sections = [
+            {
+                "id": index,
+                "emoji": "🎤",
+                "title": title,
+                "time_range": time_ranges[index - 1],
+                "content": f"Contenu court pour la section {index}.",
+            }
+            for index, title in enumerate(titles, start=1)
+        ]
+        return {
+            "speech": {
+                "title": "Pitch du projet",
+                "estimated_duration": "3:30 min",
+                "word_count": 520,
+                "sections": sections,
+                "slide_plan": [
+                    {
+                        "id": section["id"],
+                        "title": section["title"],
+                        "visual_suggestion": "Visuel simple",
+                    }
+                    for section in sections
+                ],
+                "presentation_tips": [
+                    "Parler clairement",
+                    "Regarder le jury",
+                    "Montrer la valeur",
+                    "Conclure avec impact",
+                ],
+            },
+            "quick_preview": {
+                "duration": "3:30 min",
+                "words": 520,
+                "sections": 6,
+            },
+        }
+
     def test_owner_can_open_project_detail(self):
         self.client.force_login(self.user)
 
@@ -332,22 +451,7 @@ class GroqAnalysisViewsTests(TestCase):
     @patch("ai.views.StorymapGenerator")
     def test_owner_can_generate_user_stories(self, generator_class):
         generator = generator_class.return_value
-        generator.generate.return_value = json.dumps(
-            {
-                "user_stories": [
-                    {
-                        "id": "US-01",
-                        "role": "visiteur",
-                        "action": "creer un compte",
-                        "benefit": "acceder a son espace",
-                        "priority": "Haute",
-                        "points": 5,
-                        "epic": "Authentification",
-                        "acceptance_criteria": ["L'utilisateur peut saisir son email"],
-                    },
-                ],
-            },
-        )
+        generator.generate.return_value = json.dumps(self.make_user_stories_payload())
         self.client.force_login(self.user)
 
         response = self.client.post(
@@ -359,27 +463,12 @@ class GroqAnalysisViewsTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertFalse(response.json()["cached"])
         self.analysis.refresh_from_db()
-        self.assertEqual(len(self.analysis.response_json["user_stories"]), 1)
+        self.assertEqual(len(self.analysis.response_json["user_stories"]), 8)
 
     @patch("ai.views.BacklogGenerator")
     def test_owner_can_generate_backlog(self, generator_class):
         generator = generator_class.return_value
-        generator.generate.return_value = json.dumps(
-            {
-                "backlog": [
-                    {
-                        "id": "US-01",
-                        "priority": "P0",
-                        "title": "Creer un compte",
-                        "story": "En tant que visiteur, je souhaite creer un compte.",
-                        "points": 5,
-                        "status": "A faire",
-                        "epic": "Authentification",
-                        "acceptance_criteria": ["L'utilisateur peut saisir son email"],
-                    },
-                ],
-            },
-        )
+        generator.generate.return_value = json.dumps(self.make_backlog_payload())
         self.client.force_login(self.user)
 
         response = self.client.post(
@@ -391,7 +480,7 @@ class GroqAnalysisViewsTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()["backlog"][0]["priority"], "P0")
         self.analysis.refresh_from_db()
-        self.assertEqual(len(self.analysis.response_json["backlog"]), 1)
+        self.assertEqual(len(self.analysis.response_json["backlog"]), 12)
 
     @patch("ai.views.BusinessModelGenerator")
     def test_owner_can_generate_business_model(self, generator_class):
@@ -471,37 +560,7 @@ class GroqAnalysisViewsTests(TestCase):
     @patch("ai.views.SpeechGenerator")
     def test_owner_can_generate_speech(self, generator_class):
         generator = generator_class.return_value
-        generator.generate.return_value = json.dumps(
-            {
-                "speech": {
-                    "title": "Pitch du projet",
-                    "estimated_duration": "3:30 min",
-                    "word_count": 520,
-                    "sections": [
-                        {
-                            "id": 1,
-                            "emoji": "🎤",
-                            "title": "Introduction",
-                            "time_range": "0:00 - 0:30",
-                            "content": "Bonjour, voici notre projet.",
-                        },
-                    ],
-                    "slide_plan": [
-                        {
-                            "id": 1,
-                            "title": "Introduction",
-                            "visual_suggestion": "Logo et promesse",
-                        },
-                    ],
-                    "presentation_tips": ["Parler clairement"],
-                },
-                "quick_preview": {
-                    "duration": "3:30 min",
-                    "words": 520,
-                    "sections": 1,
-                },
-            },
-        )
+        generator.generate.return_value = json.dumps(self.make_speech_payload())
         self.client.force_login(self.user)
 
         response = self.client.post(
@@ -575,22 +634,7 @@ class GroqAnalysisViewsTests(TestCase):
 
         response = self.client.post(
             reverse("groq_project_speech_slides", args=[self.analysis.pk]),
-            data=json.dumps(
-                {
-                    "speech": {
-                        "estimated_duration": "3:00 min",
-                        "word_count": 320,
-                        "sections": [
-                            {
-                                "id": 1,
-                                "title": "Introduction",
-                                "time_range": "0:00 - 0:30",
-                                "content": "Bonjour, voici le projet.",
-                            }
-                        ],
-                    }
-                }
-            ),
+            data=json.dumps({"speech": self.make_speech_payload()["speech"]}),
             content_type="application/json",
         )
 
