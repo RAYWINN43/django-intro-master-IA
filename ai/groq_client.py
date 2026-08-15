@@ -50,6 +50,27 @@ class GroqClient:
             or "Failed to validate JSON" in error_message
         )
 
+    def _reasoning_options(self):
+        if not settings.GROQ_MODEL.startswith("openai/gpt-oss"):
+            return {}
+
+        reasoning_effort = settings.GROQ_REASONING_EFFORT.strip()
+        if not reasoning_effort:
+            return {}
+
+        return {"reasoning_effort": reasoning_effort}
+
+    def _compatible_response_format(self, response_format):
+        if not response_format:
+            return None
+
+        if response_format.get(
+            "type"
+        ) == "json_schema" and not settings.GROQ_MODEL.startswith("openai/gpt-oss"):
+            return {"type": "json_object"}
+
+        return response_format
+
     def chat(
         self,
         system_prompt: str,
@@ -59,8 +80,10 @@ class GroqClient:
         temperature=0.2,
     ):
         request_options = {}
+        response_format = self._compatible_response_format(response_format)
         if response_format:
             request_options["response_format"] = response_format
+        request_options.update(self._reasoning_options())
 
         max_tokens = min(max_tokens, settings.GROQ_MAX_TOKENS)
         retries = settings.GROQ_RATE_LIMIT_RETRIES
@@ -92,6 +115,16 @@ class GroqClient:
 
                 time.sleep(self._rate_limit_wait_seconds(error))
             except self.bad_request_error as error:
+                if response_format and response_format.get("type") == "json_schema":
+                    response_format = {"type": "json_object"}
+                    request_options["response_format"] = response_format
+                    user_prompt = (
+                        f"{user_prompt}\n\n"
+                        "Rappel strict : retourne uniquement un objet JSON valide, "
+                        "sans Markdown et sans texte avant ou après."
+                    )
+                    continue
+
                 if response_format and self._is_json_validation_error(error):
                     response_format = None
                     request_options.pop("response_format", None)

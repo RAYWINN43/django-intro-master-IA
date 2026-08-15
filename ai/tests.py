@@ -49,9 +49,10 @@ class PersonaGenerationTests(SimpleTestCase):
 
         groq_client.chat.assert_called_once()
         _, _, kwargs = groq_client.chat.mock_calls[0]
-        self.assertEqual(kwargs["max_tokens"], 2500)
-        self.assertEqual(kwargs["response_format"], {"type": "json_object"})
-        self.assertEqual(kwargs["temperature"], 0.7)
+        self.assertEqual(kwargs["max_tokens"], 2600)
+        self.assertEqual(kwargs["response_format"]["type"], "json_schema")
+        self.assertTrue(kwargs["response_format"]["json_schema"]["strict"])
+        self.assertEqual(kwargs["temperature"], 0.4)
 
 
 class LlamaViewsTests(TestCase):

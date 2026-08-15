@@ -61,9 +61,7 @@ def extract_json_payload(raw_response):
             except json.JSONDecodeError:
                 continue
 
-        raise ValueError(
-            "La réponse IA des personas n'est pas un JSON valide."
-        ) from error
+        raise ValueError("La réponse IA n'est pas un JSON valide.") from error
 
 
 def clean_list(value):
@@ -142,8 +140,8 @@ def normalize_sprint_status(value):
     if "cours" in status or status in {"progress", "in_progress"}:
         return "En cours"
     if "termin" in status or status in {"done", "complete", "completed"}:
-        return "TerminÃ©"
-    return "Ã€ faire"
+        return "Terminé"
+    return "À faire"
 
 
 def normalize_sprint_priority(value):
@@ -157,8 +155,8 @@ def normalize_sprint_priority(value):
 
 def normalize_sprint_risk(value):
     risk = str(value or "").strip().lower()
-    if "elev" in risk or "Ã©lev" in risk or "high" in risk:
-        return "Ã‰levÃ©"
+    if "elev" in risk or "élev" in risk or "high" in risk:
+        return "Élevé"
     if "faible" in risk or "low" in risk:
         return "Faible"
     return "Moyen"
@@ -204,7 +202,7 @@ def summarize_sprint_statuses(stories):
     summary = {"done": 0, "in_progress": 0, "todo": 0}
     for story in stories:
         status = story.get("status")
-        if status == "TerminÃ©":
+        if status == "Terminé":
             summary["done"] += 1
         elif status == "En cours":
             summary["in_progress"] += 1
@@ -242,8 +240,8 @@ def normalize_user_stories_payload(raw_response):
     payload = coerce_payload(raw_response)
     stories = payload.get("user_stories", []) if isinstance(payload, dict) else payload
 
-    if not isinstance(stories, list) or len(stories) < 1:
-        raise ValueError("La réponse IA doit contenir des user stories.")
+    if not isinstance(stories, list) or len(stories) < 8:
+        raise ValueError("La réponse IA doit contenir 8 user stories.")
 
     return [
         normalize_user_story(story, index) for index, story in enumerate(stories[:8])
@@ -275,8 +273,8 @@ def normalize_backlog_payload(raw_response):
     payload = coerce_payload(raw_response)
     backlog = payload.get("backlog", []) if isinstance(payload, dict) else payload
 
-    if not isinstance(backlog, list) or len(backlog) < 1:
-        raise ValueError("La réponse IA doit contenir un backlog.")
+    if not isinstance(backlog, list) or len(backlog) < 8:
+        raise ValueError("La réponse IA doit contenir un backlog complet.")
 
     return [
         normalize_backlog_item(item, index) for index, item in enumerate(backlog[:12])
@@ -373,8 +371,8 @@ def normalize_speech_payload(raw_response):
         raise TypeError("La réponse IA doit contenir un speech.")
 
     raw_sections = speech.get("sections", [])
-    if not isinstance(raw_sections, list) or len(raw_sections) < 1:
-        raise ValueError("La réponse IA doit contenir des sections de speech.")
+    if not isinstance(raw_sections, list) or len(raw_sections) < 6:
+        raise ValueError("La réponse IA doit contenir 6 sections de speech.")
 
     sections = [
         normalize_speech_section(section, index)

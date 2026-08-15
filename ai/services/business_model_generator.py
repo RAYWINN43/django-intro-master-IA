@@ -21,5 +21,5 @@ Projet :
             prompt,
             max_tokens=3000,
             response_format={"type": "json_object"},
-            temperature=0.7,
+            temperature=0.5,
         )
