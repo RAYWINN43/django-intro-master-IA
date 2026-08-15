@@ -280,5 +280,8 @@ sécurité des secrets, la qualité de code et la documentation.
 Home page : ![](src/homepage.png)
 ![](src/homepage2.png)
 maquette Figma : ![](src/maquette_figma.png)
-lien de la maquette : https://www.figma.com/design/nb8sZ0HtAib1RrgGGWqXq7/Messagerie--Copy-?node-id=18-79&p=f&t=DBORX0MkIUz2fPnJ-0
+lien de la maquette : https://www.figma.com/design/nb8sZ0HtAib1RrgGGWqXq7/Messagerie--Copy-?node-id=18-79&p=f&t=DBORX0MkIUz2fPnJ-0  
 interface personas : ![](src/personas.png)
+Home page render : ![](src/renderhome.png)
+![](src/renderhome2.png)
+interface personas : ![](src/renderpersona.png)

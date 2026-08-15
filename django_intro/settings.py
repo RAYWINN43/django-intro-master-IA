@@ -193,7 +193,9 @@ if render_external_hostname:
 
 # Groq
 GROQ_API_KEY = os.environ.get("GROQ_API_KEY", "")
-GROQ_MODEL = os.environ.get("GROQ_MODEL", "llama-3.3-70b-versatile")
+GROQ_MODEL = os.environ.get("GROQ_MODEL", "openai/gpt-oss-20b")
+GROQ_MAX_TOKENS = int(os.environ.get("GROQ_MAX_TOKENS", "2000"))
+GROQ_RATE_LIMIT_RETRIES = int(os.environ.get("GROQ_RATE_LIMIT_RETRIES", "2"))
 
 
 # Taches asynchrones
